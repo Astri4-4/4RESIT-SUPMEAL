@@ -1,0 +1,26 @@
+{
+  "name": "supmeal-server",
+  "version": "1.0.0",
+  "description": "",
+  "license": "ISC",
+  "author": "",
+  "type": "module",
+  "main": "index.js",
+  "scripts": {
+    "start": "node .",
+    "dev": "nodemon ."
+  },
+  "dependencies": {
+    "express": "^5.2.1",
+    "express-validator": "^7.3.2",
+    "jsonwebtoken": "^9.0.3",
+    "multer": "^2.2.0",
+    "pg": "^8.22.0"
+  },
+  "devDependencies": {
+    "chalk": "^5.6.2",
+    "dotenv": "^17.4.2",
+    "eslint": "^10.6.0",
+    "nodemon": "^3.1.14"
+  }
+}

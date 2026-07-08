@@ -1,0 +1,29 @@
+services:
+    app:
+        build:
+            dockerfile: Dockerfile
+            context: ./server
+        depends_on:
+            -   db
+        container_name: my_app
+        ports:
+            - "3000:3000"
+        volumes:
+            - ./server:/app
+            - /app/node_modules
+        environment:
+            - NODE_ENV=developpement
+
+    db:
+        image: postgres:18-alpine
+        container_name: my_db
+        environment:
+            - POSTGRES_USER=user
+            - POSTGRES_PASSWORD=password
+            - POSTGRES_DB=mydatabase
+        ports:
+            - "5432:5432"
+        volumes:
+            - db_data:/var/lib/postgresql
+volumes:
+    db_data:
