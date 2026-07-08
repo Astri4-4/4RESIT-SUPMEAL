@@ -1,3 +1,8 @@
 ./server/node_modules
 ./server/package-lock.json
 ./server/.env
+
+./db/.env
+./db/18/
+
+./redis/

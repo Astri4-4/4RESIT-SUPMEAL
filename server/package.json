@@ -8,19 +8,28 @@
   "main": "index.js",
   "scripts": {
     "start": "node .",
-    "dev": "nodemon ."
+    "dev": "nodemon .",
+    "lint": "eslint",
+    "lint:fix": "eslint --fix",
+    "lint:check": "eslint --max-warnings=0",
+    "migrate": "node ./src/database/migrate.js"
   },
   "dependencies": {
+    "bcrypt": "^6.0.0",
     "express": "^5.2.1",
     "express-validator": "^7.3.2",
+    "ioredis": "^5.11.1",
     "jsonwebtoken": "^9.0.3",
     "multer": "^2.2.0",
-    "pg": "^8.22.0"
+    "pg": "^8.22.0",
+    "rate-limiter-flexible": "^11.2.0"
   },
   "devDependencies": {
+    "@eslint/js": "^10.0.1",
     "chalk": "^5.6.2",
     "dotenv": "^17.4.2",
     "eslint": "^10.6.0",
+    "globals": "^17.7.0",
     "nodemon": "^3.1.14"
   }
 }
