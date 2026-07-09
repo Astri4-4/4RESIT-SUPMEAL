@@ -16,6 +16,9 @@ export async function register(user) {
 export async function login(userCreds) {
     try {
         const user = await userService.getUserByUsername(userCreds, true);
+        if (!user) {
+            throw new Error('Invalid credentials');
+        }
         if (bcrypt.compareSync(userCreds.password, user.password_hash)) {
             user.token = generateToken(user);
             return user;
@@ -29,7 +32,6 @@ export async function login(userCreds) {
 }
 
 function generateToken(user) {
-    console.log(process.env.JWT_SECRET);
     return jwt.sign(
         {id: user.id, username: user.username},
         process.env.JWT_SECRET,

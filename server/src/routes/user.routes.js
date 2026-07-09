@@ -2,9 +2,7 @@ import {Router} from 'express';
 import {verifyToken} from "../middlewares/jwt.middleware.js";
 import {validate} from "../middlewares/validate.js";
 import {
-    doParamUserExistsById,
     doTokenUserExistsById,
-    getUserByIdValidator,
     updateUserValidator
 } from "../middlewares/user.middleware.js";
 import {rateLimitGeneral} from "../middlewares/rateLimit.middleware.js";
@@ -22,6 +20,7 @@ router.get("/me", [rateLimitGeneral, verifyToken, doTokenUserExistsById, validat
 
 });
 
+/**
 router.get("/:id", [rateLimitGeneral, verifyToken, getUserByIdValidator, validate, doParamUserExistsById], async (req, res) => {
     try {
         const user = await getUserById({id: req.params.id});
@@ -30,8 +29,8 @@ router.get("/:id", [rateLimitGeneral, verifyToken, getUserByIdValidator, validat
         res.status(500).json({ message: error.message });
     }
 })
-
-router.put("/:id", [rateLimitGeneral, verifyToken, updateUserValidator, validate, doTokenUserExistsById], async (req, res) => {
+*/
+router.put("/", [rateLimitGeneral, verifyToken, updateUserValidator, validate, doTokenUserExistsById], async (req, res) => {
     const updates = req.body;
     const user = req.user;
     try {
@@ -48,7 +47,7 @@ router.delete("/", [rateLimitGeneral, verifyToken, doTokenUserExistsById], async
         await deleteUser(user);
         res.json({ message: 'User deleted successfully' });
     } catch (error) {
-        console.log(error);
+        console.error(error);
         res.status(500).json({ message: "Error during deletion", error: error.message });
     }
 })
