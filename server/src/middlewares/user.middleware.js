@@ -8,7 +8,7 @@ export const getUserByIdValidator = [
 export const updateUserValidator = [
     body("username").optional().isString().withMessage("Username must be a string"),
     body("email").optional().isEmail().withMessage("Email must be a valid email address"),
-    body("password").optional().isString().withMessage("Password must be a string"),
+    body("password").optional().isString().withMessage("Password must be a string").notEmpty().withMessage("Password cannot be empty"),
     body("image_url").optional().isString().withMessage("Image URL must be a string")
 ]
 
