@@ -28,9 +28,9 @@ export const registerValidation = [
         .withMessage('Password is required'),
 
     body('rgpd')
-        .notEmpty()
-        .withMessage('rgpd confirmation is required')
-];
+        .isBoolean().withMessage('rgpd must be a boolean')
+        .custom((value) => value === true || value === 'true')
+        .withMessage('rgpd confirmation must be true'),
 export const loginValidation = [
     body('username')
         .isString()
