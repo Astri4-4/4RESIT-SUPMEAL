@@ -18,6 +18,16 @@ const registerLimiter = new RateLimiterRedis({
     blockDuration: 600,
 });
 
+const limiter = new RateLimiterRedis({
+    storeClient: redis,
+    keyPrefix: 'ratelimit:general',
+    points: 10,
+    duration: 60,
+    blockDuration: 300,
+});
+
+
+
 function createRateLimitMiddleware(limiter) {
     return async (req, res, next) => {
         try {
@@ -36,3 +46,4 @@ function createRateLimitMiddleware(limiter) {
 
 export const rateLimitLogin = createRateLimitMiddleware(loginLimiter);
 export const rateLimitRegister = createRateLimitMiddleware(registerLimiter);
+export const rateLimitGeneral = createRateLimitMiddleware(limiter);

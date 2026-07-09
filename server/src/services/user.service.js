@@ -24,6 +24,30 @@ export async function getUserByUsername(user, returnPasswordHash = false) {
     return result.rows[0];
 }
 
+export async function updateUser(id, updates) {
+    const fields = [];
+    const values = [];
+    let index = 1;
+
+    for (const [key, value] of Object.entries(updates)) {
+        fields.push(`${key} = $${index}`);
+        values.push(value);
+        index++;
+    }
+
+    if (fields.length === 0) {
+        return getUserById(id);
+    }
+
+    values.push(id);
+
+    const result = await query(
+        `UPDATE users SET ${fields.join(', ')} WHERE id = $${index} RETURNING id, username, email, rgpd, image_url`,
+        values
+    );
+    return result.rows[0];
+}
+
 export async function getUserById(id, returnPasswordHash = false) {
     let result;
     if (returnPasswordHash) {
@@ -37,5 +61,13 @@ export async function getUserById(id, returnPasswordHash = false) {
             [id]
         )
     }
+    return result.rows[0];
+}
+
+export async function deleteUserById(id) {
+    const result = await query(
+        'DELETE FROM users WHERE id = $1 RETURNING id, username, email, rgpd, image_url',
+        [id]
+    );
     return result.rows[0];
 }
