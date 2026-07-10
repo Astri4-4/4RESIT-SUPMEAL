@@ -1,6 +1,8 @@
 ./server/node_modules
 ./server/package-lock.json
 ./server/.env
+./server/.claude/
+./server/public/
 
 ./db/.env
 ./db/18/
