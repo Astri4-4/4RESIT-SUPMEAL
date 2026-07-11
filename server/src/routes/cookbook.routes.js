@@ -3,14 +3,21 @@ import fs from "fs/promises";
 import {rateLimitGeneral} from "../middlewares/rateLimit.middleware.js";
 import {verifyToken} from "../middlewares/jwt.middleware.js";
 import {
+    addMemberToCookbookValidator,
     createCookbookValidator,
     doCookbookExistsById,
-    getCookbookValidator, isMemberOfCookbook, isOwnerOfCookbook, updateCookbookValidator
+    getCookbookValidator,
+    isBodyUserNotMemberOfCookbook,
+    isEditorOrOwnerOfCookbook,
+    isMemberOfCookbook,
+    isOwnerOfCookbook,
+    updateCookbookValidator
 } from "../middlewares/cookbook.middleware.js";
 import {validate} from "../middlewares/validate.js";
 import {doTokenUserExistsById} from "../middlewares/user.middleware.js";
 import {uploadCookbookImage, deleteCookbookImage} from "../middlewares/asset.middleware.js";
 import {
+    addUserToCookbook,
     createCookbook,
     getCookbookById,
     getCookbookMembers,
@@ -93,6 +100,20 @@ router.patch("/:cookbookId", [rateLimitGeneral, verifyToken, uploadCookbookImage
         if (req.file) {
             await fs.unlink(req.file.path).catch(() => {});
         }
+        res.status(500).json({ message: error.message });
+    }
+
+})
+
+router.post("/:id/members", [rateLimitGeneral, verifyToken, addMemberToCookbookValidator, validate, doCookbookExistsById, isMemberOfCookbook, isEditorOrOwnerOfCookbook, isBodyUserNotMemberOfCookbook ], async (req, res) => {
+    const userId = req.body.userId;
+    const role = req.body.role;
+    const cookbookId = req.params.id;
+
+    try {
+        const result = await addUserToCookbook(cookbookId, userId, role);
+        res.status(201).json(result);
+    } catch (error) {
         res.status(500).json({ message: error.message });
     }
 

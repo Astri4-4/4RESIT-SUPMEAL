@@ -52,3 +52,11 @@ export async function updateCookbook(cookbookId, updatedCookbook) {
         throw new Error('Error updating cookbook: ' + error.message);
     }
 }
+
+export async function addUserToCookbook(cookbookId, userId, role) {
+    try {
+        return await cookbookService.addUserToCookbook(cookbookId, userId, role);
+    } catch (error) {
+        throw new Error('Error adding user to cookbook: ' + error.message);
+    }
+}
