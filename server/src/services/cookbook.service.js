@@ -112,3 +112,39 @@ export async function updateCookbook(cookbookId, updatedCookbook) {
         throw new Error('Error updating cookbook: ' + error.message);
     }
 }
+
+export async function changeRoleInCookbook(cookbookId, userId, newRole) {
+    try {
+        const result = await query(
+            'UPDATE cookbook_users SET role = $1 WHERE cookbook_id = $2 AND user_id = $3 RETURNING *',
+            [newRole, cookbookId, userId]
+        );
+        return result.rows[0];
+    } catch (error) {
+        throw new Error('Error changing user role in cookbook: ' + error.message);
+    }
+}
+
+export async function deleteCookbook(cookbookId) {
+    try {
+        const result = await query(
+            'DELETE FROM cookbooks WHERE id = $1 RETURNING *',
+            [cookbookId]
+        );
+        return result.rows[0];
+    } catch (error) {
+        throw new Error('Error deleting cookbook: ' + error.message);
+    }
+}
+
+export async function removeMember(cookbookId, userId) {
+    try {
+        const result = await query(
+            'DELETE FROM cookbook_users WHERE cookbook_id = $1 AND user_id = $2 RETURNING *',
+            [cookbookId, userId]
+        );
+        return result.rows[0];
+    } catch (error) {
+        throw new Error('Error removing member from cookbook: ' + error.message);
+    }
+}

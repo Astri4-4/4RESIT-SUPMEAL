@@ -48,7 +48,7 @@ export const getCookbookValidator = [
 ];
 
 export const addMemberToCookbookValidator = [
-    param("id")
+    param("cookbookId")
         .notEmpty()
         .withMessage("Cookbook ID is required")
         .isInt({ min: 1 })
@@ -65,6 +65,34 @@ export const addMemberToCookbookValidator = [
         .withMessage("Role is required")
         .isIn(["owner", "editor", "viewer"])
         .withMessage("Role must be one of the following: owner, editor, viewer"),
+];
+
+export const changeRoleInCookbookValidator = [
+    param("cookbookId")
+        .notEmpty()
+        .withMessage("Cookbook ID is required")
+        .isInt({ min: 1 })
+        .withMessage("Cookbook ID must be a positive integer"),
+
+    param("userId")
+        .notEmpty()
+        .withMessage("User ID is required")
+        .isInt({ min: 1 })
+        .withMessage("User ID must be a positive integer"),
+
+    body("role")
+        .notEmpty()
+        .withMessage("Role is required")
+        .isIn(["owner", "editor", "viewer"])
+        .withMessage("Role must be one of the following: owner, editor, viewer"),
+];
+
+export const deleteCookbookValidator = [
+    param("cookbookId")
+        .notEmpty()
+        .withMessage("Cookbook ID is required")
+        .isInt({ min: 1 })
+        .withMessage("Cookbook ID must be a positive integer"),
 ];
 
 export async function doCookbookExistsById(req, res, next) {
@@ -138,4 +166,22 @@ export async function isEditorOrOwnerOfCookbook(req, res, next) {
     } catch (error) {
         return res.status(500).json({ message: "Internal server error" });
     }
+}
+
+export async function hasRightToKick(req, res, next) {
+    const cookbookId = req.params.cookbookId;
+    const userId = req.user.id;
+    const targetUserId = req.params.userId;
+
+    const isOwner = await cookbookService.getUserRoleInCookbook(cookbookId, userId) === "owner";
+
+    if (!isOwner) {
+        const isHimself = userId === targetUserId;
+        if (!isHimself) {
+            return res.status(403).json({ message: "Forbidden: You are not the owner of this cookbook and cannot kick other members" });
+        }
+    }
+
+    next();
+
 }

@@ -60,3 +60,27 @@ export async function addUserToCookbook(cookbookId, userId, role) {
         throw new Error('Error adding user to cookbook: ' + error.message);
     }
 }
+
+export async function changeRoleInCookbook(cookbookId, userId, newRole) {
+    try {
+        return await cookbookService.changeRoleInCookbook(cookbookId, userId, newRole);
+    } catch (error) {
+        throw new Error('Error changing user role in cookbook: ' + error.message);
+    }
+}
+
+export async function deleteCookbook(cookbookId) {
+    try {
+        return await cookbookService.deleteCookbook(cookbookId);
+    } catch (error) {
+        throw new Error('Error deleting cookbook: ' + error.message);
+    }
+}
+
+export async function quitOrKickMember(cookbookId, userId) {
+    try {
+        return await cookbookService.removeMember(cookbookId, userId);
+    } catch (error) {
+        throw new Error('Error quitting or kicking member from cookbook: ' + error.message);
+    }
+}
