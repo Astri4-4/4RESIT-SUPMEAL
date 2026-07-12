@@ -30,7 +30,8 @@ export const registerValidation = [
     body('rgpd')
         .isBoolean().withMessage('rgpd must be a boolean')
         .custom((value) => value === true || value === 'true')
-        .withMessage('rgpd confirmation must be true'),
+        .withMessage('rgpd confirmation must be true')
+]
 export const loginValidation = [
     body('username')
         .isString()

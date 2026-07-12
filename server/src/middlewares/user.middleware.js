@@ -39,3 +39,17 @@ export async function doParamUserExistsById(req, res, next) {
         res.status(500).json({ message: 'Internal server error' });
     }
 }
+
+export async function doBodyUserExistsById(req, res, next) {
+    const id = req.body.id;
+    try {
+        const user = await userService.getUserById(id);
+        if (!user) {
+            return res.status(404).json({ message: 'User not found' });
+        }
+        next();
+    } catch (error) {
+        console.error('Error checking user existence:', error);
+        res.status(500).json({ message: 'Internal server error' });
+    }
+}
