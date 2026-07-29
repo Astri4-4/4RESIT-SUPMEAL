@@ -1,4 +1,5 @@
 import * as cookbookService from '../services/cookbook.service.js';
+import {deleteCookbookImage} from '../middlewares/asset.middleware.js';
 
 export async function createCookbook(user, cookbook) {
     cookbook.ownerId = user.id;
@@ -71,7 +72,11 @@ export async function changeRoleInCookbook(cookbookId, userId, newRole) {
 
 export async function deleteCookbook(cookbookId) {
     try {
-        return await cookbookService.deleteCookbook(cookbookId);
+        const deleted = await cookbookService.deleteCookbook(cookbookId);
+        if (deleted && deleted.image_url) {
+            await deleteCookbookImage(deleted.image_url);
+        }
+        return deleted;
     } catch (error) {
         throw new Error('Error deleting cookbook: ' + error.message);
     }

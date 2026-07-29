@@ -26,7 +26,43 @@ import {
 
 const router = Router();
 
-// Create a new cookbook
+/**
+ * @openapi
+ * /cookbooks/create:
+ *   post:
+ *     summary: Create a new cookbook
+ *     tags: [Cookbooks]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         multipart/form-data:
+ *           schema:
+ *             type: object
+ *             required: [name]
+ *             properties:
+ *               name:
+ *                 type: string
+ *               description:
+ *                 type: string
+ *               image:
+ *                 type: string
+ *                 format: binary
+ *     responses:
+ *       201:
+ *         description: The created cookbook
+ *       400:
+ *         description: Validation or upload error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
+ *       500:
+ *         description: Error creating cookbook
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
+ */
 router.post("/create", [rateLimitGeneral, verifyToken, validate, doTokenUserExistsById, uploadCookbookImage, createCookbookValidator, validate], async (req, res) => {
     const user = req.user;
     const cookbook = req.body;
@@ -44,7 +80,33 @@ router.post("/create", [rateLimitGeneral, verifyToken, validate, doTokenUserExis
     }
 })
 
-// Get all cookbooks in which the user is a member
+/**
+ * @openapi
+ * /cookbooks:
+ *   get:
+ *     summary: Get all cookbooks in which the current user is a member
+ *     tags: [Cookbooks]
+ *     parameters:
+ *       - in: query
+ *         name: limit
+ *         schema:
+ *           type: integer
+ *           default: 10
+ *       - in: query
+ *         name: offset
+ *         schema:
+ *           type: integer
+ *           default: 0
+ *     responses:
+ *       200:
+ *         description: List of cookbooks
+ *       500:
+ *         description: Error retrieving cookbooks
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
+ */
 router.get("/", [rateLimitGeneral, verifyToken, validate], async (req, res) => {
     const userId = req.user.id;
     const limit = parseInt(req.query.limit) || 10;
@@ -58,7 +120,28 @@ router.get("/", [rateLimitGeneral, verifyToken, validate], async (req, res) => {
     }
 })
 
-// Get a specific cookbook by ID
+/**
+ * @openapi
+ * /cookbooks/{cookbookId}:
+ *   get:
+ *     summary: Get a specific cookbook by id
+ *     tags: [Cookbooks]
+ *     parameters:
+ *       - in: path
+ *         name: cookbookId
+ *         required: true
+ *         schema:
+ *           type: string
+ *     responses:
+ *       200:
+ *         description: The cookbook
+ *       500:
+ *         description: Error retrieving cookbook
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
+ */
 router.get("/:cookbookId", [rateLimitGeneral, verifyToken, getCookbookValidator, validate, doCookbookExistsById, isMemberOfCookbook, validate], async ( req, res ) => {
     const cookbookId = req.params.cookbookId;
     try {
@@ -69,7 +152,28 @@ router.get("/:cookbookId", [rateLimitGeneral, verifyToken, getCookbookValidator,
     }
 });
 
-// Get all users in a cookbook
+/**
+ * @openapi
+ * /cookbooks/{cookbookId}/users:
+ *   get:
+ *     summary: Get all users/members of a cookbook
+ *     tags: [Cookbooks]
+ *     parameters:
+ *       - in: path
+ *         name: cookbookId
+ *         required: true
+ *         schema:
+ *           type: string
+ *     responses:
+ *       200:
+ *         description: List of members
+ *       500:
+ *         description: Error retrieving members
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
+ */
 router.get("/:cookbookId/users", [rateLimitGeneral, verifyToken, getCookbookValidator, validate, doCookbookExistsById, isMemberOfCookbook, validate], async (req, res) => {
     const cookbookId = req.params.cookbookId;
     try {
@@ -80,7 +184,48 @@ router.get("/:cookbookId/users", [rateLimitGeneral, verifyToken, getCookbookVali
     }
 });
 
-// Update a cookbook by id
+/**
+ * @openapi
+ * /cookbooks/{cookbookId}:
+ *   patch:
+ *     summary: Update a cookbook by id
+ *     tags: [Cookbooks]
+ *     parameters:
+ *       - in: path
+ *         name: cookbookId
+ *         required: true
+ *         schema:
+ *           type: string
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         multipart/form-data:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               name:
+ *                 type: string
+ *               description:
+ *                 type: string
+ *               image:
+ *                 type: string
+ *                 format: binary
+ *     responses:
+ *       200:
+ *         description: The updated cookbook
+ *       400:
+ *         description: Validation or upload error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
+ *       500:
+ *         description: Error updating cookbook
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
+ */
 router.patch("/:cookbookId", [rateLimitGeneral, verifyToken, uploadCookbookImage, updateCookbookValidator, validate, doCookbookExistsById, isMemberOfCookbook, isOwnerOfCookbook, validate], async (req, res) => {
     const cookbookId = req.params.cookbookId;
     const updatedCookbook = req.body;
@@ -105,7 +250,40 @@ router.patch("/:cookbookId", [rateLimitGeneral, verifyToken, uploadCookbookImage
 
 })
 
-// Add a user to a cookbook
+/**
+ * @openapi
+ * /cookbooks/{cookbookId}/members:
+ *   post:
+ *     summary: Add a user to a cookbook
+ *     tags: [Cookbooks]
+ *     parameters:
+ *       - in: path
+ *         name: cookbookId
+ *         required: true
+ *         schema:
+ *           type: string
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required: [userId, role]
+ *             properties:
+ *               userId:
+ *                 type: string
+ *               role:
+ *                 type: string
+ *     responses:
+ *       201:
+ *         description: The membership created
+ *       500:
+ *         description: Error adding user to cookbook
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
+ */
 router.post("/:cookbookId/members", [rateLimitGeneral, verifyToken, addMemberToCookbookValidator, validate, doCookbookExistsById, isMemberOfCookbook, isEditorOrOwnerOfCookbook, isBodyUserNotMemberOfCookbook ], async (req, res) => {
     const userId = req.body.userId;
     const role = req.body.role;
@@ -121,7 +299,43 @@ router.post("/:cookbookId/members", [rateLimitGeneral, verifyToken, addMemberToC
 
 })
 
-// Change role of a user in a cookbook
+/**
+ * @openapi
+ * /cookbooks/{cookbookId}/members/{userId}:
+ *   patch:
+ *     summary: Change the role of a user in a cookbook
+ *     tags: [Cookbooks]
+ *     parameters:
+ *       - in: path
+ *         name: cookbookId
+ *         required: true
+ *         schema:
+ *           type: string
+ *       - in: path
+ *         name: userId
+ *         required: true
+ *         schema:
+ *           type: string
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required: [role]
+ *             properties:
+ *               role:
+ *                 type: string
+ *     responses:
+ *       200:
+ *         description: The updated membership
+ *       500:
+ *         description: Error changing role
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
+ */
 router.patch("/:cookbookId/members/:userId", [rateLimitGeneral, verifyToken, doCookbookExistsById, isMemberOfCookbook, isEditorOrOwnerOfCookbook, changeRoleInCookbookValidator, validate
 ], async (req, res) => {
     const cookbookId = req.params.cookbookId;
@@ -137,6 +351,28 @@ router.patch("/:cookbookId/members/:userId", [rateLimitGeneral, verifyToken, doC
 
 });
 
+/**
+ * @openapi
+ * /cookbooks/{cookbookId}:
+ *   delete:
+ *     summary: Delete a cookbook
+ *     tags: [Cookbooks]
+ *     parameters:
+ *       - in: path
+ *         name: cookbookId
+ *         required: true
+ *         schema:
+ *           type: string
+ *     responses:
+ *       200:
+ *         description: Cookbook deleted successfully
+ *       500:
+ *         description: Error deleting cookbook
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
+ */
 router.delete("/:cookbookId", [rateLimitGeneral, verifyToken, doCookbookExistsById, isMemberOfCookbook, isOwnerOfCookbook], async (req, res) => {
     const cookbookId = req.params.cookbookId;
 
@@ -149,6 +385,33 @@ router.delete("/:cookbookId", [rateLimitGeneral, verifyToken, doCookbookExistsBy
 
 });
 
+/**
+ * @openapi
+ * /cookbooks/{cookbookId}/members/{userId}:
+ *   delete:
+ *     summary: Remove a user from a cookbook (quit or kick)
+ *     tags: [Cookbooks]
+ *     parameters:
+ *       - in: path
+ *         name: cookbookId
+ *         required: true
+ *         schema:
+ *           type: string
+ *       - in: path
+ *         name: userId
+ *         required: true
+ *         schema:
+ *           type: string
+ *     responses:
+ *       200:
+ *         description: User removed from cookbook successfully
+ *       500:
+ *         description: Error removing user
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
+ */
 router.delete("/:cookbookId/members/:userId", [rateLimitGeneral, verifyToken, doCookbookExistsById, hasRightToKick], async (req, res) => {
     const cookbookId = req.params.cookbookId;
     const userId = req.params.userId;

@@ -6,6 +6,45 @@ import {rateLimitLogin, rateLimitRegister} from "../middlewares/rateLimit.middle
 
 const router = Router();
 
+/**
+ * @openapi
+ * /auth/register:
+ *   post:
+ *     summary: Register a new user
+ *     tags: [Auth]
+ *     security: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required: [username, email, password]
+ *             properties:
+ *               username:
+ *                 type: string
+ *               email:
+ *                 type: string
+ *                 format: email
+ *               password:
+ *                 type: string
+ *                 format: password
+ *     responses:
+ *       201:
+ *         description: User registered successfully
+ *       400:
+ *         description: Validation error, email or username already used
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
+ *       500:
+ *         description: Error registering user
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
+ */
 router.post("/register", [rateLimitRegister, authMiddleware.registerValidation, authMiddleware.isEmailUsed, authMiddleware.isUsernameUsed, validate], async (req, res) => {
     const user = req.body;
     try {
@@ -16,6 +55,46 @@ router.post("/register", [rateLimitRegister, authMiddleware.registerValidation, 
     }
 });
 
+/**
+ * @openapi
+ * /auth/login:
+ *   post:
+ *     summary: Log in with email and password
+ *     tags: [Auth]
+ *     security: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required: [email, password]
+ *             properties:
+ *               email:
+ *                 type: string
+ *                 format: email
+ *               password:
+ *                 type: string
+ *                 format: password
+ *     responses:
+ *       200:
+ *         description: Login successful
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                 user:
+ *                   type: object
+ *       401:
+ *         description: Invalid credentials
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
+ */
 router.post("/login", [rateLimitLogin, authMiddleware.loginValidation, validate], async (req, res) => {
     const userCreds = req.body;
 

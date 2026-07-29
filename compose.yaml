@@ -4,8 +4,10 @@ services:
             dockerfile: Dockerfile
             context: ./server
         depends_on:
-            -  db
-            -  redis
+            db:
+                condition: service_healthy
+            redis:
+                condition: service_started
         container_name: my_app
         ports:
             - "3000:3000"
@@ -24,6 +26,11 @@ services:
             - "5432:5432"
         volumes:
             - ./db:/var/lib/postgresql
+        healthcheck:
+            test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB}"]
+            interval: 5s
+            timeout: 5s
+            retries: 10
 
     redis:
         image: redis:7-alpine
