@@ -31,6 +31,7 @@ export async function updateUser(user, updates) {
     try {
         return await userService.updateUser(user.id, fieldsToUpdate);
     } catch (error) {
+        console.log(error)
         throw new Error('Error updating user information');
     }
 }
