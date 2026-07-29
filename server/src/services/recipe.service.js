@@ -3,8 +3,8 @@ import {query} from "../database/db.js";
 export async function createRecipe(recipe) {
     try {
         return await query(
-            `INSERT INTO recipes (title, description, preptime, servings, owner) VALUES ($1, $2, $3, $4, $5) RETURNING *`,
-            [recipe.title, recipe.description, recipe.prepTime, recipe.servings, recipe.owner]
+            `INSERT INTO recipes (title, description, preptime, cooktime, servings, owner) VALUES ($1, $2, $3, $4, $5, $6) RETURNING *`,
+            [recipe.title, recipe.description, recipe.prepTime, recipe.cookTime ?? 0, recipe.servings, recipe.owner]
         );
     } catch (error) {
         console.error(error);
