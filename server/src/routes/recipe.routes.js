@@ -27,15 +27,15 @@ const router = Router();
  *         application/json:
  *           schema:
  *             type: object
- *             required: [title, preptime, cooktime, servings]
+ *             required: [title, prepTime, servings, ingredients, steps]
  *             properties:
  *               title:
  *                 type: string
  *               description:
  *                 type: string
- *               preptime:
+ *               prepTime:
  *                 type: integer
- *               cooktime:
+ *               cookTime:
  *                 type: integer
  *               servings:
  *                 type: integer
