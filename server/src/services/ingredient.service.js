@@ -16,7 +16,7 @@ export async function createIngredient(ingredient) {
 export async function addIngredientToRecipe(recipeId, ingredientId, quantity) {
     try {
         const result = await query(
-            `INSERT INTO recipe_ingredients (recipe_id, ingredient_id, quantity) VALUES ($1, $2, $3)`,
+            `INSERT INTO recipe_ingredients (recipe_id, ingredient_id, quantity) VALUES ($1, $2, $3) RETURNING *`,
             [recipeId, ingredientId, quantity]
         );
         return result.rows[0];
