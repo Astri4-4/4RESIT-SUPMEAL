@@ -24,6 +24,7 @@ const options = {
                     type: "object",
                     properties: {
                         message: { type: "string" },
+                        error: { type: "string" },
                     },
                 },
             },
