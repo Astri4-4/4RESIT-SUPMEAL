@@ -163,9 +163,9 @@ export const updateRecipeValidator = [
 export const uploadRecipeImageValidator = [
     param("recipeId")
         .notEmpty()
-        .withMessage("Recipe image is required")
+        .withMessage("Recipe id is required")
         .isInt({ min: 1 })
-        .withMessage("Recipe image must be a valid integer"),
+        .withMessage("Recipe id must be a valid integer"),
 ]
 
 export const getRecipeByIdValidator = [
