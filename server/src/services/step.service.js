@@ -11,3 +11,12 @@ export async function createStep(recipeId, step) {
         throw error;
     }
 }
+
+export async function clearRecipeSteps(recipeId) {
+    try {
+        await query(`DELETE FROM recipe_steps WHERE recipe_id = $1`, [recipeId]);
+    } catch (error) {
+        console.error(error);
+        throw error;
+    }
+}

@@ -25,3 +25,12 @@ export async function addIngredientToRecipe(recipeId, ingredientId, quantity) {
         throw error;
     }
 }
+
+export async function clearRecipeIngredients(recipeId) {
+    try {
+        await query(`DELETE FROM recipe_ingredients WHERE recipe_id = $1`, [recipeId]);
+    } catch (error) {
+        console.error(error);
+        throw error;
+    }
+}
