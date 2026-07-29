@@ -83,7 +83,7 @@ export async function isRecipeInCookbook(recipeId) {
             `SELECT id FROM cookbook_recipes WHERE recipe_id = $1`,
             [recipeId]
         );
-        return result.rows > 0;
+        return result.rows.length > 0;
     } catch (error) {
         console.error(error);
         throw error;
