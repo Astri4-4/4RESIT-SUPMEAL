@@ -30,6 +30,7 @@ export async function createRecipe(recipe) {
         }
     }
 
+    return result.rows[0];
 }
 
 export async function updateImage(imageUrl, recipeId) {
