@@ -124,7 +124,7 @@ router.post("/", [rateLimitGeneral, verifyToken, createRecipeValidator, validate
  *             schema:
  *               $ref: '#/components/schemas/Error'
  */
-router.post("/:recipeId/image", [rateLimitGeneral, verifyToken, uploadRecipeImage, uploadRecipeImageValidator, validate, doRecipeExistsParam, doUserHasWritePermission], async (req, res) => {
+router.post("/:recipeId/image", [rateLimitGeneral, verifyToken, uploadRecipeImageValidator, validate, doRecipeExistsParam, doUserHasWritePermission, uploadRecipeImage], async (req, res) => {
     if (!req.file) {
         return res.status(400).json({ message: "No image file provided" });
     }
