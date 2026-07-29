@@ -60,7 +60,7 @@ const router = Router();
  *                     type:
  *                       type: string
  *                     quantity:
- *                       type: string
+ *                       type: number
  *     responses:
  *       201:
  *         description: The created recipe
