@@ -46,9 +46,19 @@ export async function getCookbookMembers(cookbookId) {
     }
 }
 
+const UPDATABLE_COOKBOOK_FIELDS = ['title', 'description', 'image_url'];
+
 export async function updateCookbook(cookbookId, updatedCookbook) {
+    const fieldsToUpdate = {};
+
+    for (const field of UPDATABLE_COOKBOOK_FIELDS) {
+        if (updatedCookbook[field] !== undefined) {
+            fieldsToUpdate[field] = updatedCookbook[field];
+        }
+    }
+
     try {
-        return await cookbookService.updateCookbook(cookbookId, updatedCookbook);
+        return await cookbookService.updateCookbook(cookbookId, fieldsToUpdate);
     } catch (error) {
         throw new Error('Error updating cookbook: ' + error.message);
     }
