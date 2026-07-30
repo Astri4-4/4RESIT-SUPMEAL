@@ -1,5 +1,5 @@
 import {body, param, query} from "express-validator";
-import {getRecipeById, isRecipeInCookbook} from "../services/recipe.service.js";
+import {getRecipeById, isRecipeInCookbook, getCookbookIdForRecipe} from "../services/recipe.service.js";
 import * as cookbookService from "../services/cookbook.service.js";
 
 export const createRecipeValidator = [
@@ -226,7 +226,8 @@ export async function doUserHasWritePermission(req, res, next) {
     try {
         const isRequestedRecipeInCookbook = await isRecipeInCookbook(recipeId);
         if (isRequestedRecipeInCookbook) {
-            const role = await cookbookService.getUserRoleInCookbook(userId);
+            const cookbookId = await getCookbookIdForRecipe(recipeId);
+            const role = await cookbookService.getUserRoleInCookbook(cookbookId, userId);
             if (role === "owner" || role === "editor") {
                 next()
             } else {
@@ -260,7 +261,8 @@ export async function doUserHasViewPermission(req, res, next) {
     try {
         const isRequestedRecipeInCookbook = await isRecipeInCookbook(recipeId);
         if (isRequestedRecipeInCookbook) {
-            const role = await cookbookService.getUserRoleInCookbook(userId);
+            const cookbookId = await getCookbookIdForRecipe(recipeId);
+            const role = await cookbookService.getUserRoleInCookbook(cookbookId, userId);
             if (role === "owner" || role === "editor" || role === "viewer") {
                 next()
             } else {

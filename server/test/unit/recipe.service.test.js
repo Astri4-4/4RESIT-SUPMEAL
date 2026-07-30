@@ -11,6 +11,7 @@ import {
     updateRecipe,
     deleteRecipe,
     isRecipeInCookbook,
+    getCookbookIdForRecipe,
     updateImage,
     searchRecipes,
 } from '../../src/services/recipe.service.js';
@@ -91,6 +92,24 @@ describe('isRecipeInCookbook', () => {
         query.mockResolvedValue({rows: []});
 
         await expect(isRecipeInCookbook(5)).resolves.toBe(false);
+    });
+});
+
+describe('getCookbookIdForRecipe', () => {
+    it('returns the cookbook_id when the recipe is linked to a cookbook', async () => {
+        query.mockResolvedValue({rows: [{cookbook_id: 7}]});
+
+        await expect(getCookbookIdForRecipe(5)).resolves.toBe(7);
+
+        const [sql, params] = query.mock.calls[0];
+        expect(sql).toMatch(/SELECT cookbook_id FROM cookbook_recipes WHERE recipe_id = \$1/);
+        expect(params).toEqual([5]);
+    });
+
+    it('returns null when the recipe is not linked to any cookbook', async () => {
+        query.mockResolvedValue({rows: []});
+
+        await expect(getCookbookIdForRecipe(5)).resolves.toBeNull();
     });
 });
 

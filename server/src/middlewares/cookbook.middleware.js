@@ -32,11 +32,11 @@ export const updateCookbookValidator = [
         .optional()
         .isString()
         .withMessage("Description must be a valid string"),
-    param("id")
+    param("cookbookId")
         .notEmpty()
-        .withMessage("Id is required")
+        .withMessage("Cookbook ID is required")
         .isInt({ min: 1 })
-        .withMessage("Id must be a positive integer"),
+        .withMessage("Cookbook ID must be a positive integer"),
 ]
 
 export const getCookbookValidator = [
@@ -176,7 +176,7 @@ export async function hasRightToKick(req, res, next) {
     const isOwner = await cookbookService.getUserRoleInCookbook(cookbookId, userId) === "owner";
 
     if (!isOwner) {
-        const isHimself = userId === targetUserId;
+        const isHimself = String(userId) === targetUserId;
         if (!isHimself) {
             return res.status(403).json({ message: "Forbidden: You are not the owner of this cookbook and cannot kick other members" });
         }

@@ -90,6 +90,19 @@ export async function isRecipeInCookbook(recipeId) {
     }
 }
 
+export async function getCookbookIdForRecipe(recipeId) {
+    try {
+        const result = await query(
+            `SELECT cookbook_id FROM cookbook_recipes WHERE recipe_id = $1 LIMIT 1`,
+            [recipeId]
+        );
+        return result.rows[0] ? result.rows[0].cookbook_id : null;
+    } catch (error) {
+        console.error(error);
+        throw error;
+    }
+}
+
 export async function updateImage(imageUrl, recipeId) {
     try {
         const result = await query(

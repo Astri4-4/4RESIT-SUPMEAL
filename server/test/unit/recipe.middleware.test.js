@@ -3,12 +3,13 @@ import {describe, it, expect, vi, beforeEach} from 'vitest';
 vi.mock('../../src/services/recipe.service.js', () => ({
     getRecipeById: vi.fn(),
     isRecipeInCookbook: vi.fn(),
+    getCookbookIdForRecipe: vi.fn(),
 }));
 vi.mock('../../src/services/cookbook.service.js', () => ({
     getUserRoleInCookbook: vi.fn(),
 }));
 
-import {getRecipeById, isRecipeInCookbook} from '../../src/services/recipe.service.js';
+import {getRecipeById, isRecipeInCookbook, getCookbookIdForRecipe} from '../../src/services/recipe.service.js';
 import * as cookbookService from '../../src/services/cookbook.service.js';
 import {
     doRecipeExistsParam,
@@ -70,6 +71,7 @@ describe('doRecipeExistsParam', () => {
 describe('doUserHasWritePermission', () => {
     it('allows an owner-role cookbook member to write', async () => {
         isRecipeInCookbook.mockResolvedValue(true);
+        getCookbookIdForRecipe.mockResolvedValue(42);
         cookbookService.getUserRoleInCookbook.mockResolvedValue('owner');
         const req = {user: {id: 1}, params: {recipeId: '5'}, body: {}};
         const res = mockRes();
@@ -77,11 +79,13 @@ describe('doUserHasWritePermission', () => {
 
         await doUserHasWritePermission(req, res, next);
 
+        expect(cookbookService.getUserRoleInCookbook).toHaveBeenCalledWith(42, 1);
         expect(next).toHaveBeenCalled();
     });
 
     it('allows an editor-role cookbook member to write', async () => {
         isRecipeInCookbook.mockResolvedValue(true);
+        getCookbookIdForRecipe.mockResolvedValue(42);
         cookbookService.getUserRoleInCookbook.mockResolvedValue('editor');
         const req = {user: {id: 1}, params: {recipeId: '5'}, body: {}};
         const res = mockRes();
@@ -94,6 +98,7 @@ describe('doUserHasWritePermission', () => {
 
     it('forbids a viewer-role cookbook member from writing', async () => {
         isRecipeInCookbook.mockResolvedValue(true);
+        getCookbookIdForRecipe.mockResolvedValue(42);
         cookbookService.getUserRoleInCookbook.mockResolvedValue('viewer');
         const req = {user: {id: 1}, params: {recipeId: '5'}, body: {}};
         const res = mockRes();
@@ -107,6 +112,7 @@ describe('doUserHasWritePermission', () => {
 
     it('forbids a non-member (null role) of the recipe\'s cookbook from writing', async () => {
         isRecipeInCookbook.mockResolvedValue(true);
+        getCookbookIdForRecipe.mockResolvedValue(42);
         cookbookService.getUserRoleInCookbook.mockResolvedValue(null);
         const req = {user: {id: 1}, params: {recipeId: '5'}, body: {}};
         const res = mockRes();
@@ -172,6 +178,7 @@ describe('doUserHasWritePermission', () => {
 describe('doUserHasViewPermission', () => {
     it('allows an owner-role cookbook member to view', async () => {
         isRecipeInCookbook.mockResolvedValue(true);
+        getCookbookIdForRecipe.mockResolvedValue(42);
         cookbookService.getUserRoleInCookbook.mockResolvedValue('owner');
         const req = {user: {id: 1}, params: {recipeId: '5'}};
         const res = mockRes();
@@ -179,11 +186,13 @@ describe('doUserHasViewPermission', () => {
 
         await doUserHasViewPermission(req, res, next);
 
+        expect(cookbookService.getUserRoleInCookbook).toHaveBeenCalledWith(42, 1);
         expect(next).toHaveBeenCalled();
     });
 
     it('allows a viewer-role cookbook member to view (unlike write permission)', async () => {
         isRecipeInCookbook.mockResolvedValue(true);
+        getCookbookIdForRecipe.mockResolvedValue(42);
         cookbookService.getUserRoleInCookbook.mockResolvedValue('viewer');
         const req = {user: {id: 1}, params: {recipeId: '5'}};
         const res = mockRes();
@@ -196,6 +205,7 @@ describe('doUserHasViewPermission', () => {
 
     it('forbids a non-member (null role) of the recipe\'s cookbook from viewing', async () => {
         isRecipeInCookbook.mockResolvedValue(true);
+        getCookbookIdForRecipe.mockResolvedValue(42);
         cookbookService.getUserRoleInCookbook.mockResolvedValue(null);
         const req = {user: {id: 1}, params: {recipeId: '5'}};
         const res = mockRes();
