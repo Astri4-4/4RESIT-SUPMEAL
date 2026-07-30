@@ -42,7 +42,7 @@ export async function updateUser(id, updates) {
     values.push(id);
 
     const result = await query(
-        `UPDATE users SET ${fields.join(', ')} WHERE id = ${index} RETURNING id, username, email, rgpd, image_url`,
+        `UPDATE users SET ${fields.join(', ')} WHERE id = $${index} RETURNING id, username, email, rgpd, image_url`,
         values
     );
     return result.rows[0];
