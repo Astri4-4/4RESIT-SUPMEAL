@@ -162,3 +162,50 @@ export async function searchRecipes({name, tag, servings, prepTime, page = 1} = 
         throw error;
     }
 }
+
+export async function searchRecipesInCookbook(cookbookId, {name, tag, servings, prepTime, page = 1} = {}) {
+    const limit = 10;
+    const offset = (page - 1) * limit;
+
+    const conditions = [`EXISTS (SELECT 1 FROM cookbook_recipes cr WHERE cr.recipe_id = recipes.id AND cr.cookbook_id = $1)`];
+    const params = [cookbookId];
+
+    if (name) {
+        params.push(`%${name}%`);
+        conditions.push(`recipes.title ILIKE $${params.length}`);
+    }
+    if (servings) {
+        params.push(servings);
+        conditions.push(`recipes.servings = $${params.length}`);
+    }
+    if (prepTime) {
+        params.push(prepTime);
+        conditions.push(`recipes.preptime <= $${params.length}`);
+    }
+    if (tag) {
+        params.push(`%${tag}%`);
+        conditions.push(`EXISTS (
+            SELECT 1 FROM recipe_tags rt
+            JOIN tags t ON t.id = rt.tag_id
+            WHERE rt.recipe_id = recipes.id AND t.name ILIKE $${params.length}
+        )`);
+    }
+
+    const whereClause = `WHERE ${conditions.join(" AND ")}`;
+
+    params.push(limit);
+    const limitIndex = params.length;
+    params.push(offset);
+    const offsetIndex = params.length;
+
+    try {
+        const result = await query(
+            `SELECT * FROM recipes ${whereClause} ORDER BY recipes.id LIMIT $${limitIndex} OFFSET $${offsetIndex}`,
+            params
+        );
+        return result.rows;
+    } catch (error) {
+        console.error(error);
+        throw error;
+    }
+}

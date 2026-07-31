@@ -148,3 +148,39 @@ export async function removeMember(cookbookId, userId) {
         throw new Error('Error removing member from cookbook: ' + error.message);
     }
 }
+
+export async function addRecipeToCookbook(cookbookId, recipeId) {
+    try {
+        const result = await query(
+            `INSERT INTO cookbook_recipes (cookbook_id, recipe_id) VALUES ($1, $2) RETURNING *`,
+            [cookbookId, recipeId]
+        );
+        return result.rows[0];
+    } catch (error) {
+        throw new Error('Error adding recipe to cookbook: ' + error.message);
+    }
+}
+
+export async function isRecipeInCookbook(cookbookId, recipeId) {
+    try {
+        const result = await query(
+            'SELECT * FROM cookbook_recipes WHERE cookbook_id = $1 AND recipe_id = $2',
+            [cookbookId, recipeId]
+        );
+        return result.rows.length > 0;
+    } catch (error) {
+        throw new Error('Error checking if recipe is in cookbook: ' + error.message);
+    }
+}
+
+export async function deleteRecipeFromCookbook(cookbookId) {
+    try {
+        const result = await query(
+            `DELETE FROM cookbook_recipes WHERE cookbook_id = $1`,
+            [cookbookId]
+        );
+        return result.rows[0];
+    } catch (error) {
+        throw new Error('Error deleting recipe from cookbook: ' + error.message);
+    }
+}

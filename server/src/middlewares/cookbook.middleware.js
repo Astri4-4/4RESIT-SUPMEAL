@@ -95,6 +95,34 @@ export const deleteCookbookValidator = [
         .withMessage("Cookbook ID must be a positive integer"),
 ];
 
+export const addRecipeValidator = [
+    param("cookbookId")
+        .notEmpty()
+        .withMessage("Cookbook ID is required")
+        .isInt({ min: 1 })
+        .withMessage("Cookbook ID must be a positive integer"),
+
+    body("recipeId")
+        .notEmpty()
+        .withMessage("Recipe ID is required")
+        .isInt({ min: 1 })
+        .withMessage("Recipe ID must be a positive integer"),
+];
+
+export const deleteRecipeValidator = [
+    param("cookbookId")
+        .notEmpty()
+        .withMessage("Cookbook ID is required")
+        .isInt({ min: 1 })
+        .withMessage("Cookbook ID must be a positive integer"),
+
+    param("recipeId")
+        .notEmpty()
+        .withMessage("Recipe ID is required")
+        .isInt({ min: 1 })
+        .withMessage("Recipe ID must be a positive integer"),
+];
+
 export async function doCookbookExistsById(req, res, next) {
     const cookbookId = req.params.cookbookId;
     try {
@@ -183,5 +211,21 @@ export async function hasRightToKick(req, res, next) {
     }
 
     next();
+
+}
+
+export async function isRecipeInCookbook(req, res, next) {
+    const cookbookId = req.params.cookbookId;
+    const recipeId = req.params.recipeId;
+
+    try {
+        const isInCookbook = await cookbookService.isRecipeInCookbook(cookbookId, recipeId);
+        if (!isInCookbook) {
+            return res.status(404).json({ message: "Recipe not found in cookbook" });
+        }
+        next();
+    } catch (error) {
+        return res.status(500).json({ message: "Internal server error" });
+    }
 
 }

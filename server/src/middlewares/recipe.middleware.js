@@ -219,6 +219,26 @@ export async function doRecipeExistsParam(req, res, next) {
 
 }
 
+export async function doRecipeExistsBody(req, res, next) {
+    const recipeId = req.body.recipeId;
+
+    try {
+        const recipe = await getRecipeById(recipeId);
+        if (recipe.length === 0) {
+            return res.status(404).send({
+                message: "Recipe not found",
+            })
+        } else {
+            next()
+        }
+    } catch (error) {
+        return res.status(500).send({
+            error: error.message,
+        })
+    }
+
+}
+
 export async function doUserHasWritePermission(req, res, next) {
     const userId = req.user.id;
     const recipeId = req.params.recipeId || req.body.recipeId || null;
