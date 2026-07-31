@@ -3,26 +3,30 @@ import fs from "fs/promises";
 import {rateLimitGeneral} from "../middlewares/rateLimit.middleware.js";
 import {verifyToken} from "../middlewares/jwt.middleware.js";
 import {
-    addMemberToCookbookValidator, changeRoleInCookbookValidator,
-    createCookbookValidator,
+    addMemberToCookbookValidator, addRecipeValidator, changeRoleInCookbookValidator,
+    createCookbookValidator, deleteRecipeValidator,
     doCookbookExistsById,
     getCookbookValidator, hasRightToKick,
     isBodyUserNotMemberOfCookbook,
     isEditorOrOwnerOfCookbook,
     isMemberOfCookbook,
-    isOwnerOfCookbook,
+    isOwnerOfCookbook, isRecipeInCookbook,
     updateCookbookValidator
 } from "../middlewares/cookbook.middleware.js";
 import {validate} from "../middlewares/validate.js";
 import {doTokenUserExistsById} from "../middlewares/user.middleware.js";
 import {uploadCookbookImage, deleteCookbookImage} from "../middlewares/asset.middleware.js";
 import {
+    addRecipeToCookbook,
     addUserToCookbook, changeRoleInCookbook,
     createCookbook, deleteCookbook,
     getCookbookById,
     getCookbookMembers,
     getCookbooksByUserId, quitOrKickMember, updateCookbook
 } from "../controllers/cookbook.controller.js";
+import {doRecipeExistsBody, doRecipeExistsParam, doUserHasWritePermission, searchRecipesValidator} from "../middlewares/recipe.middleware.js";
+import {searchRecipesInCookbook} from "../controllers/recipe.controller.js";
+import {deleteRecipeFromCookbook} from "../services/cookbook.service.js";
 
 const router = Router();
 
@@ -419,6 +423,195 @@ router.delete("/:cookbookId/members/:userId", [rateLimitGeneral, verifyToken, do
     try {
         await quitOrKickMember(cookbookId, userId);
         res.status(200).json({ message: "User removed from cookbook successfully" });
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+
+})
+
+/**
+ * @openapi
+ * /cookbooks/{cookbookId}/recipes:
+ *   get:
+ *     summary: Search recipes within a specific cookbook by name, tag, servings, and/or max prep time
+ *     tags: [Cookbooks]
+ *     parameters:
+ *       - in: path
+ *         name: cookbookId
+ *         required: true
+ *         schema:
+ *           type: string
+ *       - in: query
+ *         name: name
+ *         schema:
+ *           type: string
+ *         description: Partial, case-insensitive match on recipe title
+ *       - in: query
+ *         name: tag
+ *         schema:
+ *           type: string
+ *         description: Partial, case-insensitive match on an associated tag name
+ *       - in: query
+ *         name: servings
+ *         schema:
+ *           type: integer
+ *         description: Exact number of servings
+ *       - in: query
+ *         name: prepTime
+ *         schema:
+ *           type: integer
+ *         description: Maximum prep time in minutes
+ *       - in: query
+ *         name: page
+ *         schema:
+ *           type: integer
+ *           default: 1
+ *         description: Page number (10 results per page)
+ *     responses:
+ *       200:
+ *         description: Matching recipes within the cookbook
+ *       400:
+ *         description: Invalid search parameters
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
+ *       404:
+ *         description: Cookbook not found
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
+ *       500:
+ *         description: Error searching recipes
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
+ */
+router.get("/:cookbookId/recipes", [rateLimitGeneral, verifyToken, getCookbookValidator, searchRecipesValidator, validate, doCookbookExistsById, isMemberOfCookbook], async (req, res) => {
+    const cookbookId = req.params.cookbookId;
+    const queries = req.query;
+
+    try {
+        const result = await searchRecipesInCookbook(cookbookId, queries);
+        res.status(200).json(result);
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({
+            error: error.message
+        });
+    }
+});
+
+/**
+ * @openapi
+ * /cookbooks/{cookbookId}/recipes:
+ *   post:
+ *     summary: Add an existing recipe to a cookbook
+ *     tags: [Cookbooks]
+ *     parameters:
+ *       - in: path
+ *         name: cookbookId
+ *         required: true
+ *         schema:
+ *           type: string
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required: [recipeId]
+ *             properties:
+ *               recipeId:
+ *                 type: integer
+ *     responses:
+ *       201:
+ *         description: The created cookbook/recipe link
+ *       400:
+ *         description: Validation error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
+ *       403:
+ *         description: You do not have permission to add this recipe to the cookbook
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
+ *       404:
+ *         description: Cookbook or recipe not found
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
+ *       500:
+ *         description: Error adding recipe to cookbook
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
+ */
+router.post("/:cookbookId/recipes/", [rateLimitGeneral, verifyToken, doCookbookExistsById, doRecipeExistsBody, isMemberOfCookbook, doUserHasWritePermission, addRecipeValidator], async (req, res) => {
+    const cookbookId = req.params.cookbookId;
+    const recipeId = req.body.recipeId;
+
+    try {
+        const result = await addRecipeToCookbook(cookbookId, recipeId);
+        res.status(201).json(result);
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+})
+
+/**
+ * @openapi
+ * /cookbooks/{cookbookId}/recipes/{recipeId}:
+ *   delete:
+ *     summary: Remove a recipe from a cookbook
+ *     tags: [Cookbooks]
+ *     parameters:
+ *       - in: path
+ *         name: cookbookId
+ *         required: true
+ *         schema:
+ *           type: string
+ *       - in: path
+ *         name: recipeId
+ *         required: true
+ *         schema:
+ *           type: string
+ *     responses:
+ *       200:
+ *         description: The removed cookbook/recipe link
+ *       403:
+ *         description: You do not have permission to remove this recipe from the cookbook
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
+ *       404:
+ *         description: Cookbook not found, recipe not found, or recipe not in this cookbook
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
+ *       500:
+ *         description: Error removing recipe from cookbook
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
+ */
+router.delete("/:cookbookId/recipes/:recipeId", [rateLimitGeneral, verifyToken, doCookbookExistsById, doRecipeExistsParam, isMemberOfCookbook, doUserHasWritePermission, isRecipeInCookbook, deleteRecipeValidator], async (req, res) => {
+    const cookbookId = req.params.cookbookId;
+    const recipeId = req.params.recipeId;
+
+    try {
+        const result = await deleteRecipeFromCookbook(cookbookId, recipeId);
+        res.status(200).json(result);
     } catch (error) {
         res.status(500).json({ message: error.message });
     }

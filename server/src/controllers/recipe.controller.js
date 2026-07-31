@@ -35,8 +35,7 @@ export async function createRecipe(recipe) {
 
 export async function updateImage(imageUrl, recipeId) {
     try {
-        const result = await recipeService.updateImage(imageUrl, recipeId);
-        return result;
+        return await recipeService.updateImage(imageUrl, recipeId);
     } catch (error) {
         console.error(error);
         throw error;
@@ -106,6 +105,24 @@ export async function searchRecipes(queries) {
 
     try {
         return await recipeService.searchRecipes({
+            name,
+            tag,
+            servings: servings !== undefined ? parseInt(servings, 10) : undefined,
+            prepTime: prepTime !== undefined ? parseInt(prepTime, 10) : undefined,
+            page: page !== undefined ? parseInt(page, 10) : 1,
+        });
+    } catch (error) {
+        console.error(error);
+        throw error;
+    }
+
+}
+
+export async function searchRecipesInCookbook(cookbookId, queries) {
+    const {name, tag, servings, prepTime, page} = queries;
+
+    try {
+        return await recipeService.searchRecipesInCookbook(cookbookId, {
             name,
             tag,
             servings: servings !== undefined ? parseInt(servings, 10) : undefined,

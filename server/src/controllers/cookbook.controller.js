@@ -99,3 +99,19 @@ export async function quitOrKickMember(cookbookId, userId) {
         throw new Error('Error quitting or kicking member from cookbook: ' + error.message);
     }
 }
+
+export async function addRecipeToCookbook(cookbookId, recipeId) {
+    try {
+        return await cookbookService.addRecipeToCookbook(cookbookId, recipeId);
+    } catch (error) {
+        throw new Error('Error adding recipe to cookbook: ' + error.message);
+    }
+}
+
+export async function deleteRecipeFromCookbook(cookbookId, recipeId) {
+    try {
+        return await cookbookService.deleteRecipeFromCookbook(cookbookId, recipeId);
+    } catch (error) {
+        throw new Error('Error deleting recipe from cookbook: ' + error.message);
+    }
+}
