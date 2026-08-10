@@ -16,7 +16,6 @@ CREATE TABLE users (
     email VARCHAR(100) NOT NULL UNIQUE,
     password_hash VARCHAR(255) NOT NULL,
     rgpd BOOLEAN NOT NULL DEFAULT FALSE,
-    image_url VARCHAR(255) DEFAULT NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
@@ -111,3 +110,37 @@ CREATE TABLE cookbook_recipe_comments (
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
+
+CREATE TABLE meal_plans (
+    id SERIAL PRIMARY KEY,
+    user_id INT REFERENCES users(id) ON DELETE CASCADE,
+    cookbook_id INT REFERENCES cookbooks(id) ON DELETE CASCADE,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE meal_plan_items (
+    id SERIAL PRIMARY KEY,
+    meal_plan_id INT NOT NULL REFERENCES meal_plans(id) ON DELETE CASCADE,
+    recipe_id INT NOT NULL REFERENCES recipes(id) ON DELETE CASCADE,
+    date DATE NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+
+
+
+
+INSERT INTO tags (name) VALUES
+('Vegan'),
+('Vegetarian'),
+('Gluten-Free'),
+('Dairy-Free'),
+('Low-Carb'),
+('Keto'),
+('Paleo'),
+('Whole30'),
+('Low-Fat'),
+('High-Protein');
+

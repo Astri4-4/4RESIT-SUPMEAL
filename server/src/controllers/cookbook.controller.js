@@ -1,6 +1,7 @@
 import * as cookbookService from '../services/cookbook.service.js';
 import {deleteCookbookImage} from '../middlewares/asset.middleware.js';
 import {createComment} from "../services/cookbook.service.js";
+import * as planService from "../services/plan.service.js";
 
 export async function createCookbook(user, cookbook) {
     cookbook.ownerId = user.id;
@@ -8,6 +9,7 @@ export async function createCookbook(user, cookbook) {
         const storedCookbook = await cookbookService.create(cookbook);
         const cookbookId = storedCookbook.id;
         await cookbookService.addUserToCookbook(cookbookId, user.id, "owner");
+        await planService.createPlan(null, cookbookId);
         return storedCookbook;
     } catch (error) {
         throw new Error('Error creating cookbook: ' + error.message, { cause: error });

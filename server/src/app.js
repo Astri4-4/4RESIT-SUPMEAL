@@ -5,6 +5,7 @@ import authRouter from "./routes/auth.routes.js";
 import userRouter from "./routes/user.routes.js";
 import cookbookRouter from "./routes/cookbook.routes.js";
 import recipeRouter from "./routes/recipe.routes.js";
+import planRouter from "./routes/plan.routes.js";
 
 const app = express();
 
@@ -18,6 +19,7 @@ app.use('/auth', authRouter);
 app.use('/users', userRouter);
 app.use('/cookbooks', cookbookRouter);
 app.use('/recipes', recipeRouter);
+app.use('/plans', planRouter);
 
 app.use('/public', express.static('src/public'));
 
