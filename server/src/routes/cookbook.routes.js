@@ -4,13 +4,13 @@ import {rateLimitGeneral} from "../middlewares/rateLimit.middleware.js";
 import {verifyToken} from "../middlewares/jwt.middleware.js";
 import {
     addMemberToCookbookValidator, addRecipeValidator, changeRoleInCookbookValidator,
-    createCookbookValidator, deleteRecipeValidator,
-    doCookbookExistsById,
+    createCookbookValidator, deleteCommentValidator, deleteRecipeValidator, doCommentExistOnRecipeId,
+    doCookbookExistsById, getCommentValidator,
     getCookbookValidator, hasRightToKick,
     isBodyUserNotMemberOfCookbook,
     isEditorOrOwnerOfCookbook,
-    isMemberOfCookbook,
-    isOwnerOfCookbook, isRecipeInCookbook,
+    isMemberOfCookbook, isOwnerOfComment,
+    isOwnerOfCookbook, isRecipeInCookbook, patchCommentValidator, postCommentValidator,
     updateCookbookValidator
 } from "../middlewares/cookbook.middleware.js";
 import {validate} from "../middlewares/validate.js";
@@ -18,15 +18,23 @@ import {doTokenUserExistsById} from "../middlewares/user.middleware.js";
 import {uploadCookbookImage, deleteCookbookImage} from "../middlewares/asset.middleware.js";
 import {
     addRecipeToCookbook,
-    addUserToCookbook, changeRoleInCookbook,
-    createCookbook, deleteCookbook,
+    addUserToCookbook,
+    changeRoleInCookbook,
+    createCookbook,
+    deleteCookbook,
     getCookbookById,
     getCookbookMembers,
-    getCookbooksByUserId, quitOrKickMember, updateCookbook
+    getCookbooksByUserId,
+    postComment,
+    quitOrKickMember,
+    updateCookbook,
+    deleteRecipeFromCookbook,
+    getCommentsByRecipeId,
+    updateComment
 } from "../controllers/cookbook.controller.js";
 import {doRecipeExistsBody, doRecipeExistsParam, doUserHasWritePermission, searchRecipesValidator} from "../middlewares/recipe.middleware.js";
 import {searchRecipesInCookbook} from "../controllers/recipe.controller.js";
-import {deleteRecipeFromCookbook} from "../services/cookbook.service.js";
+import {deleteComment} from "../services/cookbook.service.js";
 
 const router = Router();
 
@@ -292,7 +300,6 @@ router.post("/:cookbookId/members", [rateLimitGeneral, verifyToken, addMemberToC
     const userId = req.body.userId;
     const role = req.body.role;
     const cookbookId = req.params.cookbookId;
-    console.log(`Adding user ${userId} with role ${role} to cookbook ${cookbookId}`);
 
     try {
         const result = await addUserToCookbook(cookbookId, userId, role);
@@ -614,6 +621,59 @@ router.delete("/:cookbookId/recipes/:recipeId", [rateLimitGeneral, verifyToken, 
         res.status(200).json(result);
     } catch (error) {
         res.status(500).json({ message: error.message });
+    }
+
+})
+
+router.post("/:cookbookId/recipes/:recipeId/comments", [rateLimitGeneral, verifyToken, postCommentValidator, validate, doCookbookExistsById, doRecipeExistsParam, isMemberOfCookbook, isRecipeInCookbook], async (req, res) => {
+    const cookbookId = req.params.cookbookId;
+    const recipeId = req.params.recipeId;
+    const userId = req.user.id;
+    const { comment } = req.body;
+
+    try {
+        const result = await postComment(cookbookId, recipeId, userId, comment);
+        res.status(201).json(result);
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+
+})
+
+router.get("/:cookbookId/recipes/:recipeId/comments", [rateLimitGeneral, verifyToken, getCommentValidator, validate, doCookbookExistsById, doRecipeExistsParam, isMemberOfCookbook, isRecipeInCookbook], async (req, res) => {
+    const cookbookId = req.params.cookbookId;
+    const recipeId = req.params.recipeId;
+
+    try {
+        const result = await getCommentsByRecipeId(cookbookId, recipeId);
+        res.status(200).json(result);
+    } catch (e) {
+        res.status(500).json({ message: e.message });
+    }
+
+})
+
+router.patch("/:cookbookId/recipes/:recipeId/comments/:commentId", [rateLimitGeneral, verifyToken, patchCommentValidator, validate, doCookbookExistsById, doRecipeExistsParam, isMemberOfCookbook, isRecipeInCookbook, doCommentExistOnRecipeId, isOwnerOfComment], async (req, res) => {
+    const commentId = req.params.commentId;
+    const comment = req.body.comment;
+
+    try {
+        const result = await updateComment(commentId, comment);
+        res.status(200).json(result);
+    } catch (e) {
+        res.status(500).json({ message: e.message });
+    }
+
+});
+
+router.delete("/:cookbookId/recipes/:recipeId/comments/:commentId", [rateLimitGeneral, verifyToken, deleteCommentValidator, validate, doCookbookExistsById, doRecipeExistsParam, isMemberOfCookbook, isRecipeInCookbook, doCommentExistOnRecipeId, isOwnerOfComment], async (req, res) => {
+    const commentId = req.params.commentId;
+
+    try {
+        await deleteComment(commentId);
+        res.status(200).json({ message: "Comment deleted successfully" });
+    } catch (e) {
+        res.status(500).json({ message: e.message });
     }
 
 })

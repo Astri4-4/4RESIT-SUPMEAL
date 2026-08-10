@@ -4,6 +4,7 @@ vi.mock('../../src/services/cookbook.service.js', () => ({
     getCookbookById: vi.fn(),
     isInCookbook: vi.fn(),
     getUserRoleInCookbook: vi.fn(),
+    getCommentById: vi.fn(),
 }));
 
 import * as cookbookService from '../../src/services/cookbook.service.js';
@@ -14,6 +15,8 @@ import {
     isOwnerOfCookbook,
     isEditorOrOwnerOfCookbook,
     hasRightToKick,
+    doCommentExistOnRecipeId,
+    isOwnerOfComment,
 } from '../../src/middlewares/cookbook.middleware.js';
 
 function mockRes() {
@@ -237,5 +240,95 @@ describe('hasRightToKick', () => {
         await hasRightToKick(req, res, next);
 
         expect(next).toHaveBeenCalled();
+    });
+});
+
+describe('doCommentExistOnRecipeId', () => {
+    it('calls next() when the comment exists', async () => {
+        cookbookService.getCommentById.mockResolvedValue({id: 1, user_id: 2, comment: 'Nice!'});
+        const req = {params: {commentId: '1'}};
+        const res = mockRes();
+        const next = vi.fn();
+
+        await doCommentExistOnRecipeId(req, res, next);
+
+        expect(next).toHaveBeenCalled();
+    });
+
+    it('returns 404 when the comment does not exist', async () => {
+        cookbookService.getCommentById.mockResolvedValue(undefined);
+        const req = {params: {commentId: '999'}};
+        const res = mockRes();
+        const next = vi.fn();
+
+        await doCommentExistOnRecipeId(req, res, next);
+
+        expect(res.status).toHaveBeenCalledWith(404);
+        expect(next).not.toHaveBeenCalled();
+    });
+
+    it('returns 500 when the lookup throws', async () => {
+        cookbookService.getCommentById.mockRejectedValue(new Error('db down'));
+        const req = {params: {commentId: '1'}};
+        const res = mockRes();
+        const next = vi.fn();
+
+        await doCommentExistOnRecipeId(req, res, next);
+
+        expect(res.status).toHaveBeenCalledWith(500);
+        expect(next).not.toHaveBeenCalled();
+    });
+
+    it('does not verify the comment actually belongs to the recipe/cookbook in the URL', async () => {
+        // The middleware only looks up the comment by its own id and never
+        // cross-checks req.params.recipeId or req.params.cookbookId against
+        // the comment's actual cookbook_recipe_id, so any recipeId/cookbookId
+        // in the URL is accepted as long as the commentId itself resolves.
+        cookbookService.getCommentById.mockResolvedValue({id: 1, user_id: 2, comment: 'Nice!'});
+        const req = {params: {cookbookId: '999999', recipeId: '999999', commentId: '1'}};
+        const res = mockRes();
+        const next = vi.fn();
+
+        await doCommentExistOnRecipeId(req, res, next);
+
+        expect(cookbookService.getCommentById).toHaveBeenCalledWith('1');
+        expect(next).toHaveBeenCalled();
+    });
+});
+
+describe('isOwnerOfComment', () => {
+    it('calls next() when the requester owns the comment', async () => {
+        cookbookService.getCommentById.mockResolvedValue({id: 1, user_id: 2, comment: 'Nice!'});
+        const req = {params: {commentId: '1'}, user: {id: 2}};
+        const res = mockRes();
+        const next = vi.fn();
+
+        await isOwnerOfComment(req, res, next);
+
+        expect(next).toHaveBeenCalled();
+    });
+
+    it('returns 403 when the requester does not own the comment', async () => {
+        cookbookService.getCommentById.mockResolvedValue({id: 1, user_id: 999, comment: 'Nice!'});
+        const req = {params: {commentId: '1'}, user: {id: 2}};
+        const res = mockRes();
+        const next = vi.fn();
+
+        await isOwnerOfComment(req, res, next);
+
+        expect(res.status).toHaveBeenCalledWith(403);
+        expect(next).not.toHaveBeenCalled();
+    });
+
+    it('returns 500 when the lookup throws', async () => {
+        cookbookService.getCommentById.mockRejectedValue(new Error('db down'));
+        const req = {params: {commentId: '1'}, user: {id: 2}};
+        const res = mockRes();
+        const next = vi.fn();
+
+        await isOwnerOfComment(req, res, next);
+
+        expect(res.status).toHaveBeenCalledWith(500);
+        expect(next).not.toHaveBeenCalled();
     });
 });

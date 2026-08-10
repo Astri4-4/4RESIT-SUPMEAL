@@ -14,6 +14,9 @@ vi.mock('../../src/services/cookbook.service.js', () => ({
     changeRoleInCookbook: vi.fn(),
     deleteCookbook: vi.fn(),
     removeMember: vi.fn(),
+    createComment: vi.fn(),
+    getCommentsByRecipeId: vi.fn(),
+    getCookbookRecipeId: vi.fn(),
 }));
 
 import {deleteCookbookImage} from '../../src/middlewares/asset.middleware.js';
@@ -28,6 +31,8 @@ import {
     changeRoleInCookbook,
     deleteCookbook,
     quitOrKickMember,
+    postComment,
+    getCommentsByRecipeId as getCommentsByRecipeIdController,
 } from '../../src/controllers/cookbook.controller.js';
 
 beforeEach(() => {
@@ -198,5 +203,45 @@ describe('quitOrKickMember', () => {
         cookbookService.removeMember.mockRejectedValue(new Error('db down'));
 
         await expect(quitOrKickMember(1, 2)).rejects.toThrow('Error quitting or kicking member from cookbook: db down');
+    });
+});
+
+describe('postComment', () => {
+    it('resolves the cookbook_recipe_id from cookbookId/recipeId before creating the comment', async () => {
+        cookbookService.getCookbookRecipeId.mockResolvedValue(6);
+        cookbookService.createComment.mockResolvedValue({id: 1, cookbook_recipe_id: 6, user_id: 2, comment: 'Nice!'});
+
+        const result = await postComment(41, 60, 2, 'Nice!');
+
+        expect(cookbookService.getCookbookRecipeId).toHaveBeenCalledWith(41, 60);
+        expect(cookbookService.createComment).toHaveBeenCalledWith(6, 2, 'Nice!');
+        expect(result).toEqual({id: 1, cookbook_recipe_id: 6, user_id: 2, comment: 'Nice!'});
+    });
+
+    it('wraps errors with a descriptive message', async () => {
+        cookbookService.getCookbookRecipeId.mockResolvedValue(6);
+        cookbookService.createComment.mockRejectedValue(new Error('db down'));
+
+        await expect(postComment(41, 60, 2, 'Nice!')).rejects.toThrow('Error creating comment: db down');
+    });
+});
+
+describe('getCommentsByRecipeId (controller)', () => {
+    it('resolves the cookbook_recipe_id from cookbookId/recipeId before listing comments', async () => {
+        cookbookService.getCookbookRecipeId.mockResolvedValue(6);
+        cookbookService.getCommentsByRecipeId.mockResolvedValue({rows: [{id: 1, comment: 'Nice!'}]});
+
+        const result = await getCommentsByRecipeIdController(41, 60);
+
+        expect(cookbookService.getCookbookRecipeId).toHaveBeenCalledWith(41, 60);
+        expect(cookbookService.getCommentsByRecipeId).toHaveBeenCalledWith(6);
+        expect(result).toEqual([{id: 1, comment: 'Nice!'}]);
+    });
+
+    it('wraps errors with a descriptive message', async () => {
+        cookbookService.getCookbookRecipeId.mockResolvedValue(6);
+        cookbookService.getCommentsByRecipeId.mockRejectedValue(new Error('db down'));
+
+        await expect(getCommentsByRecipeIdController(41, 60)).rejects.toThrow('Error retrieving comment: db down');
     });
 });
