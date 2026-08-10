@@ -41,6 +41,41 @@ async function createCookbookViaApi(token, {title, description} = {}) {
     return res.body;
 }
 
+async function createRecipeLinkedToCookbook(token, cookbookId, overrides = {}) {
+    const recipeRes = await request(app)
+        .post('/recipes')
+        .set('Authorization', `Bearer ${token}`)
+        .send({
+            title: `Vitest CB Recipe ${suffix} ${Math.random()}`,
+            prepTime: 10,
+            servings: 2,
+            ingredients: [],
+            steps: [],
+            ...overrides,
+        })
+        .expect(201);
+
+    const linkRes = await request(app)
+        .post(`/cookbooks/${cookbookId}/recipes`)
+        .set('Authorization', `Bearer ${token}`)
+        .send({recipeId: recipeRes.body.id})
+        .expect(201);
+
+    return {recipe: recipeRes.body, link: linkRes.body};
+}
+
+// POST .../comments is currently broken (see the "creates a comment" test
+// below), so GET/PATCH/DELETE tests seed comments directly via SQL using the
+// correct cookbook_recipes.id (the "link" row's own id) to stay isolated
+// from that bug and actually exercise the read/update/delete logic.
+async function seedComment(cookbookRecipeId, userId, comment) {
+    const result = await query(
+        'INSERT INTO cookbook_recipe_comments (cookbook_recipe_id, user_id, comment) VALUES ($1, $2, $3) RETURNING *',
+        [cookbookRecipeId, userId, comment]
+    );
+    return result.rows[0];
+}
+
 beforeEach(async () => {
     await resetRateLimits();
 });
@@ -688,5 +723,274 @@ describe('DELETE /cookbooks/:cookbookId/members/:userId (quit or kick)', () => {
 
     it('rejects a request with no auth token', async () => {
         await request(app).delete('/cookbooks/1/members/1').expect(403);
+    });
+});
+
+describe('POST /cookbooks/:cookbookId/recipes/:recipeId/comments', () => {
+    it('creates a comment and makes it retrievable via GET', async () => {
+        const user = await registerAndLogin('cmt_create');
+        const cookbook = await createCookbookViaApi(user.token);
+        const {recipe} = await createRecipeLinkedToCookbook(user.token, cookbook.id);
+
+        const res = await request(app)
+            .post(`/cookbooks/${cookbook.id}/recipes/${recipe.id}/comments`)
+            .set('Authorization', `Bearer ${user.token}`)
+            .send({comment: 'Great recipe!'});
+
+        expect(res.status).toBe(201);
+        expect(res.body.comment).toBe('Great recipe!');
+
+        const getRes = await request(app)
+            .get(`/cookbooks/${cookbook.id}/recipes/${recipe.id}/comments`)
+            .set('Authorization', `Bearer ${user.token}`);
+        expect(getRes.body.some((c) => c.id === res.body.id)).toBe(true);
+    });
+
+    it('rejects a comment shorter than 2 characters', async () => {
+        const user = await registerAndLogin('cmt_too_short');
+        const cookbook = await createCookbookViaApi(user.token);
+        const {recipe} = await createRecipeLinkedToCookbook(user.token, cookbook.id);
+
+        const res = await request(app)
+            .post(`/cookbooks/${cookbook.id}/recipes/${recipe.id}/comments`)
+            .set('Authorization', `Bearer ${user.token}`)
+            .send({comment: 'x'});
+
+        expect(res.status).toBe(400);
+    });
+
+    it('rejects a comment longer than 200 characters', async () => {
+        const user = await registerAndLogin('cmt_too_long');
+        const cookbook = await createCookbookViaApi(user.token);
+        const {recipe} = await createRecipeLinkedToCookbook(user.token, cookbook.id);
+
+        const res = await request(app)
+            .post(`/cookbooks/${cookbook.id}/recipes/${recipe.id}/comments`)
+            .set('Authorization', `Bearer ${user.token}`)
+            .send({comment: 'x'.repeat(201)});
+
+        expect(res.status).toBe(400);
+    });
+
+    it('rejects a missing comment field', async () => {
+        const user = await registerAndLogin('cmt_missing');
+        const cookbook = await createCookbookViaApi(user.token);
+        const {recipe} = await createRecipeLinkedToCookbook(user.token, cookbook.id);
+
+        const res = await request(app)
+            .post(`/cookbooks/${cookbook.id}/recipes/${recipe.id}/comments`)
+            .set('Authorization', `Bearer ${user.token}`)
+            .send({});
+
+        expect(res.status).toBe(400);
+    });
+
+    it('returns 404 for a non-member', async () => {
+        const owner = await registerAndLogin('cmt_owner');
+        const outsider = await registerAndLogin('cmt_outsider');
+        const cookbook = await createCookbookViaApi(owner.token);
+        const {recipe} = await createRecipeLinkedToCookbook(owner.token, cookbook.id);
+
+        const res = await request(app)
+            .post(`/cookbooks/${cookbook.id}/recipes/${recipe.id}/comments`)
+            .set('Authorization', `Bearer ${outsider.token}`)
+            .send({comment: 'Great recipe!'});
+
+        expect(res.status).toBe(404);
+    });
+
+    it('returns 404 when the recipe is not linked to the cookbook', async () => {
+        const user = await registerAndLogin('cmt_unlinked');
+        const cookbook = await createCookbookViaApi(user.token);
+        const recipeRes = await request(app)
+            .post('/recipes')
+            .set('Authorization', `Bearer ${user.token}`)
+            .send({title: `Unlinked ${suffix}`, prepTime: 5, servings: 1, ingredients: [], steps: []})
+            .expect(201);
+
+        const res = await request(app)
+            .post(`/cookbooks/${cookbook.id}/recipes/${recipeRes.body.id}/comments`)
+            .set('Authorization', `Bearer ${user.token}`)
+            .send({comment: 'Great recipe!'});
+
+        expect(res.status).toBe(404);
+    });
+
+    it('rejects a request with no auth token', async () => {
+        await request(app).post('/cookbooks/1/recipes/1/comments').send({comment: 'x'}).expect(403);
+    });
+});
+
+describe('GET /cookbooks/:cookbookId/recipes/:recipeId/comments', () => {
+    it('returns comments posted on the recipe', async () => {
+        const user = await registerAndLogin('cmt_get');
+        const cookbook = await createCookbookViaApi(user.token);
+        const {recipe, link} = await createRecipeLinkedToCookbook(user.token, cookbook.id);
+        await seedComment(link.id, user.id, 'First comment');
+        await seedComment(link.id, user.id, 'Second comment');
+
+        const res = await request(app)
+            .get(`/cookbooks/${cookbook.id}/recipes/${recipe.id}/comments`)
+            .set('Authorization', `Bearer ${user.token}`);
+
+        expect(res.status).toBe(200);
+        expect(res.body).toHaveLength(2);
+        expect(res.body.map((c) => c.comment).sort()).toEqual(['First comment', 'Second comment']);
+    });
+
+    it('returns 404 for a non-member', async () => {
+        const owner = await registerAndLogin('cmt_get_owner');
+        const outsider = await registerAndLogin('cmt_get_outsider');
+        const cookbook = await createCookbookViaApi(owner.token);
+        const {recipe} = await createRecipeLinkedToCookbook(owner.token, cookbook.id);
+
+        const res = await request(app)
+            .get(`/cookbooks/${cookbook.id}/recipes/${recipe.id}/comments`)
+            .set('Authorization', `Bearer ${outsider.token}`);
+
+        expect(res.status).toBe(404);
+    });
+
+    it('returns 404 when the recipe is not linked to the cookbook', async () => {
+        const user = await registerAndLogin('cmt_get_unlinked');
+        const cookbook = await createCookbookViaApi(user.token);
+        const recipeRes = await request(app)
+            .post('/recipes')
+            .set('Authorization', `Bearer ${user.token}`)
+            .send({title: `Unlinked Get ${suffix}`, prepTime: 5, servings: 1, ingredients: [], steps: []})
+            .expect(201);
+
+        const res = await request(app)
+            .get(`/cookbooks/${cookbook.id}/recipes/${recipeRes.body.id}/comments`)
+            .set('Authorization', `Bearer ${user.token}`);
+
+        expect(res.status).toBe(404);
+    });
+
+    it('rejects a request with no auth token', async () => {
+        await request(app).get('/cookbooks/1/recipes/1/comments').expect(403);
+    });
+});
+
+describe('PATCH /cookbooks/:cookbookId/recipes/:recipeId/comments/:commentId', () => {
+    it("allows the comment's owner to update it", async () => {
+        const user = await registerAndLogin('cmt_patch');
+        const cookbook = await createCookbookViaApi(user.token);
+        const {recipe, link} = await createRecipeLinkedToCookbook(user.token, cookbook.id);
+        const comment = await seedComment(link.id, user.id, 'Original text');
+
+        const res = await request(app)
+            .patch(`/cookbooks/${cookbook.id}/recipes/${recipe.id}/comments/${comment.id}`)
+            .set('Authorization', `Bearer ${user.token}`)
+            .send({comment: 'Updated text'});
+
+        expect(res.status).toBe(200);
+        expect(res.body.comment).toBe('Updated text');
+    });
+
+    it('rejects a comment shorter than 2 characters', async () => {
+        const user = await registerAndLogin('cmt_patch_short');
+        const cookbook = await createCookbookViaApi(user.token);
+        const {recipe, link} = await createRecipeLinkedToCookbook(user.token, cookbook.id);
+        const comment = await seedComment(link.id, user.id, 'Original text');
+
+        const res = await request(app)
+            .patch(`/cookbooks/${cookbook.id}/recipes/${recipe.id}/comments/${comment.id}`)
+            .set('Authorization', `Bearer ${user.token}`)
+            .send({comment: 'x'});
+
+        expect(res.status).toBe(400);
+    });
+
+    it('forbids a non-owner from updating the comment', async () => {
+        const owner = await registerAndLogin('cmt_patch_owner');
+        const intruder = await registerAndLogin('cmt_patch_intruder');
+        const cookbook = await createCookbookViaApi(owner.token);
+        const {recipe, link} = await createRecipeLinkedToCookbook(owner.token, cookbook.id);
+        const comment = await seedComment(link.id, owner.id, 'Original text');
+        await request(app)
+            .post(`/cookbooks/${cookbook.id}/members`)
+            .set('Authorization', `Bearer ${owner.token}`)
+            .send({userId: intruder.id, role: 'viewer'})
+            .expect(201);
+
+        const res = await request(app)
+            .patch(`/cookbooks/${cookbook.id}/recipes/${recipe.id}/comments/${comment.id}`)
+            .set('Authorization', `Bearer ${intruder.token}`)
+            .send({comment: 'Hijacked'});
+
+        expect(res.status).toBe(403);
+    });
+
+    it('returns 404 for a nonexistent comment', async () => {
+        const user = await registerAndLogin('cmt_patch_404');
+        const cookbook = await createCookbookViaApi(user.token);
+        const {recipe} = await createRecipeLinkedToCookbook(user.token, cookbook.id);
+
+        const res = await request(app)
+            .patch(`/cookbooks/${cookbook.id}/recipes/${recipe.id}/comments/999999999`)
+            .set('Authorization', `Bearer ${user.token}`)
+            .send({comment: 'Updated text'});
+
+        expect(res.status).toBe(404);
+    });
+
+    it('rejects a request with no auth token', async () => {
+        await request(app).patch('/cookbooks/1/recipes/1/comments/1').send({comment: 'x'}).expect(403);
+    });
+});
+
+describe('DELETE /cookbooks/:cookbookId/recipes/:recipeId/comments/:commentId', () => {
+    it("allows the comment's owner to delete it", async () => {
+        const user = await registerAndLogin('cmt_delete');
+        const cookbook = await createCookbookViaApi(user.token);
+        const {recipe, link} = await createRecipeLinkedToCookbook(user.token, cookbook.id);
+        const comment = await seedComment(link.id, user.id, 'To be deleted');
+
+        await request(app)
+            .delete(`/cookbooks/${cookbook.id}/recipes/${recipe.id}/comments/${comment.id}`)
+            .set('Authorization', `Bearer ${user.token}`)
+            .expect(200);
+
+        const stillThere = await query('SELECT id FROM cookbook_recipe_comments WHERE id = $1', [comment.id]);
+        expect(stillThere.rows).toHaveLength(0);
+    });
+
+    it('forbids a non-owner from deleting the comment', async () => {
+        const owner = await registerAndLogin('cmt_del_owner');
+        const intruder = await registerAndLogin('cmt_del_intruder');
+        const cookbook = await createCookbookViaApi(owner.token);
+        const {recipe, link} = await createRecipeLinkedToCookbook(owner.token, cookbook.id);
+        const comment = await seedComment(link.id, owner.id, 'Should survive');
+        await request(app)
+            .post(`/cookbooks/${cookbook.id}/members`)
+            .set('Authorization', `Bearer ${owner.token}`)
+            .send({userId: intruder.id, role: 'viewer'})
+            .expect(201);
+
+        const res = await request(app)
+            .delete(`/cookbooks/${cookbook.id}/recipes/${recipe.id}/comments/${comment.id}`)
+            .set('Authorization', `Bearer ${intruder.token}`);
+
+        expect(res.status).toBe(403);
+
+        const stillThere = await query('SELECT id FROM cookbook_recipe_comments WHERE id = $1', [comment.id]);
+        expect(stillThere.rows).toHaveLength(1);
+    });
+
+    it('returns 404 for a nonexistent comment', async () => {
+        const user = await registerAndLogin('cmt_del_404');
+        const cookbook = await createCookbookViaApi(user.token);
+        const {recipe} = await createRecipeLinkedToCookbook(user.token, cookbook.id);
+
+        const res = await request(app)
+            .delete(`/cookbooks/${cookbook.id}/recipes/${recipe.id}/comments/999999999`)
+            .set('Authorization', `Bearer ${user.token}`);
+
+        expect(res.status).toBe(404);
+    });
+
+    it('rejects a request with no auth token', async () => {
+        await request(app).delete('/cookbooks/1/recipes/1/comments/1').expect(403);
     });
 });

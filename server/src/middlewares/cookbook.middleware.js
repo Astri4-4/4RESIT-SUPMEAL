@@ -123,6 +123,86 @@ export const deleteRecipeValidator = [
         .withMessage("Recipe ID must be a positive integer"),
 ];
 
+export const postCommentValidator = [
+    param("cookbookId")
+        .notEmpty()
+        .withMessage("Cookbook ID is required")
+        .isInt({ min: 1 })
+        .withMessage("Cookbook ID must be a positive integer"),
+
+    param("recipeId")
+        .notEmpty()
+        .withMessage("Recipe ID is required")
+        .isInt({ min: 1 })
+        .withMessage("Recipe ID must be a positive integer"),
+
+    body("comment")
+        .notEmpty()
+        .withMessage("Comment is required")
+        .isLength({ min: 2, max: 200 })
+        .withMessage("Comment must be between 2 and 200 characters"),
+];
+
+export const getCommentValidator = [
+    param("cookbookId")
+        .notEmpty()
+        .withMessage("Cookbook ID is required")
+        .isInt({ min: 1 })
+        .withMessage("Cookbook ID must be a positive integer"),
+
+    param("recipeId")
+        .notEmpty()
+        .withMessage("Recipe ID is required")
+        .isInt({ min: 1 })
+        .withMessage("Recipe ID must be a positive integer"),
+]
+
+export const patchCommentValidator = [
+    param("cookbookId")
+        .notEmpty()
+        .withMessage("Cookbook ID is required")
+        .isInt({ min: 1 })
+        .withMessage("Cookbook ID must be a positive integer"),
+
+    param("recipeId")
+        .notEmpty()
+        .withMessage("Recipe ID is required")
+        .isInt({ min: 1 })
+        .withMessage("Recipe ID must be a positive integer"),
+
+    param("commentId")
+        .notEmpty()
+        .withMessage("Comment ID is required")
+        .isInt({ min: 1 })
+        .withMessage("Comment ID must be a positive integer"),
+
+    body("comment")
+        .notEmpty()
+        .withMessage("Comment is required")
+        .isLength({ min: 2, max: 200 })
+        .withMessage("Comment must be between 2 and 200 characters"),
+]
+
+export const deleteCommentValidator = [
+    param("cookbookId")
+        .notEmpty()
+        .withMessage("Cookbook ID is required")
+        .isInt({ min: 1 })
+        .withMessage("Cookbook ID must be a positive integer"),
+
+    param("recipeId")
+        .notEmpty()
+        .withMessage("Recipe ID is required")
+        .isInt({ min: 1 })
+        .withMessage("Recipe ID must be a positive integer"),
+
+    param("commentId")
+        .notEmpty()
+        .withMessage("Comment ID is required")
+        .isInt({ min: 1 })
+        .withMessage("Comment ID must be a positive integer"),
+]
+
 export async function doCookbookExistsById(req, res, next) {
     const cookbookId = req.params.cookbookId;
     try {
@@ -226,6 +306,37 @@ export async function isRecipeInCookbook(req, res, next) {
         next();
     } catch (error) {
         return res.status(500).json({ message: "Internal server error" });
+    }
+
+}
+
+export async function doCommentExistOnRecipeId(req, res, next) {
+    const commentId = req.params.commentId;
+
+    try {
+        const comment = await cookbookService.getCommentById(commentId);
+        if (!comment) {
+            return res.status(404).json({ message: "Comment not found" });
+        }
+        next();
+    } catch (error) {
+        return res.status(500).json({ message: "Internal server error" });
+    }
+
+}
+
+export async function isOwnerOfComment(req, res, next) {
+    const commentId = req.params.commentId;
+    const userId = req.user.id;
+
+    try {
+        const comment = await cookbookService.getCommentById(commentId);
+        if (comment.user_id !== userId) {
+            return res.status(403).json({ message: "Forbidden: You are not the owner of this comment" });
+        }
+        next();
+    } catch (error) {
+        return res.status(500).json({ message: "Internal server error", error: error });
     }
 
 }

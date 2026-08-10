@@ -8,7 +8,7 @@ export async function create(cookbook) {
         );
         return result.rows[0];
     } catch (error) {
-        throw new Error('Error creating cookbook: ' + error.message);
+        throw new Error('Error creating cookbook: ' + error.message, { cause: error });
     }
 }
 
@@ -20,7 +20,7 @@ export async function addUserToCookbook(cookbookId, userId, role) {
         );
         return result.rows[0];
     } catch (error) {
-        throw new Error('Error adding user to cookbook: ' + error.message);
+        throw new Error('Error adding user to cookbook: ' + error.message, { cause: error });
     }
 }
 
@@ -32,7 +32,7 @@ export async function getCookbookById(cookbookId) {
         );
         return result.rows[0];
     } catch (error) {
-        throw new Error('Error retrieving cookbook: ' + error.message);
+        throw new Error('Error retrieving cookbook: ' + error.message, { cause: error });
     }
 }
 
@@ -44,7 +44,7 @@ export async function isInCookbook(cookbookId, userId) {
         );
         return result.rows.length > 0;
     } catch (error) {
-        throw new Error('Error checking if user is in cookbook: ' + error.message);
+        throw new Error('Error checking if user is in cookbook: ' + error.message, { cause: error });
     }
 }
 
@@ -56,7 +56,7 @@ export async function getCookbookMembers(cookbookId) {
         );
         return result.rows;
     } catch (error) {
-        throw new Error('Error retrieving cookbook members: ' + error.message);
+        throw new Error('Error retrieving cookbook members: ' + error.message, { cause: error });
     }
 }
 
@@ -66,10 +66,9 @@ export async function getCookbooksByUserId(userId, offset, limit) {
             'SELECT c.* FROM cookbooks c JOIN cookbook_users cu ON c.id = cu.cookbook_id WHERE cu.user_id = $1 ORDER BY c.id LIMIT $2 OFFSET $3',
             [userId, limit, offset]
         )
-        console.log(`SELECT c.* FROM cookbooks c JOIN cookbook_users cu ON c.id = cu.cookbook_id WHERE cu.user_id = ${userId} ORDER BY c.id LIMIT ${limit} OFFSET ${offset}`)
         return result.rows;
     } catch (error) {
-        throw new Error('Error retrieving cookbooks for user: ' + error.message);
+        throw new Error('Error retrieving cookbooks for user: ' + error.message, { cause: error });
     }
 }
 
@@ -81,7 +80,7 @@ export async function getUserRoleInCookbook(cookbookId, userId) {
         );
         return result.rows[0] ? result.rows[0].role : null;
     } catch (error) {
-        throw new Error('Error retrieving user role in cookbook: ' + error.message);
+        throw new Error('Error retrieving user role in cookbook: ' + error.message, { cause: error });
     }
 }
 
@@ -109,7 +108,7 @@ export async function updateCookbook(cookbookId, updatedCookbook) {
         );
         return result.rows[0];
     } catch (error) {
-        throw new Error('Error updating cookbook: ' + error.message);
+        throw new Error('Error updating cookbook: ' + error.message, { cause: error });
     }
 }
 
@@ -121,7 +120,7 @@ export async function changeRoleInCookbook(cookbookId, userId, newRole) {
         );
         return result.rows[0];
     } catch (error) {
-        throw new Error('Error changing user role in cookbook: ' + error.message);
+        throw new Error('Error changing user role in cookbook: ' + error.message, { cause: error });
     }
 }
 
@@ -133,7 +132,7 @@ export async function deleteCookbook(cookbookId) {
         );
         return result.rows[0];
     } catch (error) {
-        throw new Error('Error deleting cookbook: ' + error.message);
+        throw new Error('Error deleting cookbook: ' + error.message, { cause: error });
     }
 }
 
@@ -145,7 +144,7 @@ export async function removeMember(cookbookId, userId) {
         );
         return result.rows[0];
     } catch (error) {
-        throw new Error('Error removing member from cookbook: ' + error.message);
+        throw new Error('Error removing member from cookbook: ' + error.message, { cause: error });
     }
 }
 
@@ -157,7 +156,7 @@ export async function addRecipeToCookbook(cookbookId, recipeId) {
         );
         return result.rows[0];
     } catch (error) {
-        throw new Error('Error adding recipe to cookbook: ' + error.message);
+        throw new Error('Error adding recipe to cookbook: ' + error.message, { cause: error });
     }
 }
 
@@ -169,7 +168,19 @@ export async function isRecipeInCookbook(cookbookId, recipeId) {
         );
         return result.rows.length > 0;
     } catch (error) {
-        throw new Error('Error checking if recipe is in cookbook: ' + error.message);
+        throw new Error('Error checking if recipe is in cookbook: ' + error.message, { cause: error });
+    }
+}
+
+export async function getCookbookRecipeId(cookbookId, recipeId) {
+    try {
+        const result = await query(
+            'SELECT id FROM cookbook_recipes WHERE cookbook_id = $1 AND recipe_id = $2',
+            [cookbookId, recipeId]
+        );
+        return result.rows[0] ? result.rows[0].id : null;
+    } catch (error) {
+        throw new Error('Error retrieving cookbook_recipe link: ' + error.message, { cause: error });
     }
 }
 
@@ -181,6 +192,66 @@ export async function deleteRecipeFromCookbook(cookbookId) {
         );
         return result.rows[0];
     } catch (error) {
-        throw new Error('Error deleting recipe from cookbook: ' + error.message);
+        throw new Error('Error deleting recipe from cookbook: ' + error.message, { cause: error });
+    }
+}
+
+export async function createComment(recipeId, userId, content) {
+
+    try {
+        const result = await query(
+            `INSERT INTO cookbook_recipe_comments (cookbook_recipe_id, user_id, comment) VALUES ($1, $2, $3) RETURNING *`,
+            [recipeId, userId, content]
+        );
+        return result.rows[0];
+    } catch (error) {
+        throw new Error('Error creating comment: ' + error.message, { cause: error });
+    }
+
+}
+
+export async function getCommentsByRecipeId(recipeId) {
+    try {
+        return await query(
+            `SELECT * FROM cookbook_recipe_comments WHERE cookbook_recipe_id = $1`,
+            [recipeId]
+        );
+    } catch (e) {
+        throw new Error("Error retrieving comments for recipe: " + e.message, { cause: e });
+    }
+}
+
+export async function getCommentById(commentId) {
+    try {
+        const result = await query(
+            `SELECT * FROM cookbook_recipe_comments WHERE id = $1`,
+            [commentId]
+        )
+        return result.rows[0];
+    } catch (e) {
+        throw new Error("Error retrieving comments" + e.message, { cause: e });
+    }
+}
+
+export async function updateComment(commentId, comment) {
+    try {
+        const result = await query(
+            `UPDATE cookbook_recipe_comments SET comment = $1 WHERE id = $2 RETURNING *`,
+            [comment, commentId]
+        );
+        return result.rows[0];
+    } catch (e) {
+        throw new Error("Error updating comment: " + e.message, { cause: e });
+    }
+}
+
+export async function deleteComment(commentId) {
+    try {
+        await query(
+            `DELETE FROM cookbook_recipe_comments WHERE id = $1`,
+            [commentId]
+        );
+    } catch (e) {
+        throw new Error("Error deleting comment: " + e.message, { cause: e });
     }
 }

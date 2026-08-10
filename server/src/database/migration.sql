@@ -1,3 +1,4 @@
+DROP TABLE IF EXISTS cookbook_recipe_comments;
 DROP TABLE IF EXISTS cookbook_recipes;
 DROP TABLE IF EXISTS recipe_steps;
 DROP TABLE IF EXISTS recipe_ingredients;
@@ -98,6 +99,15 @@ CREATE TABLE cookbook_recipes (
     id SERIAL PRIMARY KEY,
     cookbook_id INT NOT NULL REFERENCES cookbooks(id) ON DELETE CASCADE,
     recipe_id INT NOT NULL REFERENCES recipes(id) ON DELETE CASCADE,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE cookbook_recipe_comments (
+    id SERIAL PRIMARY KEY,
+    cookbook_recipe_id INT NOT NULL REFERENCES cookbook_recipes(id) ON DELETE CASCADE,
+    user_id INT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+    comment TEXT NOT NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );

@@ -17,6 +17,12 @@ import {
     changeRoleInCookbook,
     deleteCookbook,
     removeMember,
+    createComment,
+    getCommentsByRecipeId,
+    getCommentById,
+    updateComment,
+    deleteComment,
+    getCookbookRecipeId,
 } from '../../src/services/cookbook.service.js';
 
 beforeEach(() => {
@@ -195,5 +201,113 @@ describe('removeMember', () => {
         const [sql, params] = query.mock.calls[0];
         expect(sql).toMatch(/DELETE FROM cookbook_users WHERE cookbook_id = \$1 AND user_id = \$2/);
         expect(params).toEqual([1, 2]);
+    });
+});
+
+describe('getCookbookRecipeId', () => {
+    it('returns the cookbook_recipes.id for the given cookbook/recipe pair', async () => {
+        query.mockResolvedValue({rows: [{id: 6}]});
+
+        const result = await getCookbookRecipeId(41, 60);
+
+        const [sql, params] = query.mock.calls[0];
+        expect(sql).toMatch(/SELECT id FROM cookbook_recipes WHERE cookbook_id = \$1 AND recipe_id = \$2/);
+        expect(params).toEqual([41, 60]);
+        expect(result).toBe(6);
+    });
+
+    it('returns null when the recipe is not linked to the cookbook', async () => {
+        query.mockResolvedValue({rows: []});
+
+        await expect(getCookbookRecipeId(41, 60)).resolves.toBeNull();
+    });
+});
+
+describe('createComment', () => {
+    it('inserts the first argument directly as cookbook_recipe_id', async () => {
+        query.mockResolvedValue({rows: [{id: 1, cookbook_recipe_id: 60, user_id: 2, comment: 'Nice!'}]});
+
+        await createComment(60, 2, 'Nice!');
+
+        const [sql, params] = query.mock.calls[0];
+        expect(sql).toMatch(/INSERT INTO cookbook_recipe_comments \(cookbook_recipe_id, user_id, comment\)/);
+        // This function trusts its first argument to already be the
+        // cookbook_recipes.id (the join-table row id) — it's the caller's
+        // job (cookbook.controller.js postComment) to resolve that from
+        // cookbookId/recipeId via getCookbookRecipeId() first.
+        expect(params).toEqual([60, 2, 'Nice!']);
+    });
+
+    it('propagates errors (e.g. a foreign key violation) from the query', async () => {
+        query.mockRejectedValue(new Error('foreign key violation'));
+
+        await expect(createComment(60, 2, 'Nice!')).rejects.toThrow('foreign key violation');
+    });
+});
+
+describe('getCommentsByRecipeId', () => {
+    it('selects comments by cookbook_recipe_id and returns the full query result (not .rows)', async () => {
+        const fakeResult = {rows: [{id: 1, comment: 'Nice!'}]};
+        query.mockResolvedValue(fakeResult);
+
+        const result = await getCommentsByRecipeId(60);
+
+        const [sql, params] = query.mock.calls[0];
+        expect(sql).toMatch(/SELECT \* FROM cookbook_recipe_comments WHERE cookbook_recipe_id = \$1/);
+        expect(params).toEqual([60]);
+        // Unlike every other read function in this file, this one returns
+        // the raw pg result object rather than unwrapping .rows itself —
+        // the caller (cookbook.controller.js) does that instead.
+        expect(result).toBe(fakeResult);
+    });
+});
+
+describe('getCommentById', () => {
+    it('selects a comment by id', async () => {
+        query.mockResolvedValue({rows: [{id: 1, user_id: 2, comment: 'Nice!'}]});
+
+        const result = await getCommentById(1);
+
+        const [sql, params] = query.mock.calls[0];
+        expect(sql).toMatch(/SELECT \* FROM cookbook_recipe_comments WHERE id = \$1/);
+        expect(params).toEqual([1]);
+        expect(result).toEqual({id: 1, user_id: 2, comment: 'Nice!'});
+    });
+
+    it('returns undefined when no comment matches', async () => {
+        query.mockResolvedValue({rows: []});
+
+        await expect(getCommentById(999)).resolves.toBeUndefined();
+    });
+});
+
+describe('updateComment', () => {
+    it('updates the comment text for the given id', async () => {
+        query.mockResolvedValue({rows: [{id: 1, comment: 'Updated'}]});
+
+        const result = await updateComment(1, 'Updated');
+
+        const [sql, params] = query.mock.calls[0];
+        expect(sql).toMatch(/UPDATE cookbook_recipe_comments SET comment = \$1 WHERE id = \$2 RETURNING \*/);
+        expect(params).toEqual(['Updated', 1]);
+        expect(result).toEqual({id: 1, comment: 'Updated'});
+    });
+});
+
+describe('deleteComment', () => {
+    it('deletes the comment by id', async () => {
+        query.mockResolvedValue({rows: []});
+
+        await deleteComment(1);
+
+        const [sql, params] = query.mock.calls[0];
+        expect(sql).toMatch(/DELETE FROM cookbook_recipe_comments WHERE id = \$1/);
+        expect(params).toEqual([1]);
+    });
+
+    it('propagates errors from the query', async () => {
+        query.mockRejectedValue(new Error('db down'));
+
+        await expect(deleteComment(1)).rejects.toThrow('db down');
     });
 });
