@@ -1,4 +1,5 @@
 import { Router } from "express";
+import passport from "../config/passport.js";
 import * as authController from "../controllers/auth.controller.js";
 import * as authMiddleware from "../middlewares/auth.middleware.js";
 import {validate} from "../middlewares/validate.js";
@@ -106,5 +107,58 @@ router.post("/login", [rateLimitLogin, authMiddleware.loginValidation, validate]
         res.status(401).json({ message: "Invalid credentials", error: error.message });
     }
 })
+
+/**
+ * @openapi
+ * /auth/google:
+ *   get:
+ *     summary: Start Google OAuth login flow
+ *     tags: [Auth]
+ *     security: []
+ *     responses:
+ *       302:
+ *         description: Redirect to Google's consent screen
+ */
+router.get("/google", passport.authenticate("google", { scope: ["profile", "email"], session: false }));
+
+/**
+ * @openapi
+ * /auth/google/callback:
+ *   get:
+ *     summary: Google OAuth callback
+ *     tags: [Auth]
+ *     security: []
+ *     responses:
+ *       200:
+ *         description: Login successful
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                 user:
+ *                   type: object
+ *       401:
+ *         description: Google authentication failed
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
+ */
+router.get("/google/callback",
+    passport.authenticate("google", { session: false, failureRedirect: "/auth/google/failure" }),
+    (req, res) => {
+        const user = req.user;
+        user.token = authController.generateToken(user);
+        user.password_hash = undefined;
+        res.status(200).json({ message: "Login successful", user });
+    }
+);
+
+router.get("/google/failure", (req, res) => {
+    res.status(401).json({ message: "Google authentication failed" });
+});
 
 export default router;
