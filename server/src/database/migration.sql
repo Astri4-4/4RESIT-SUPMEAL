@@ -1,3 +1,6 @@
+DROP TABLE IF EXISTS favorites;
+DROP TABLE IF EXISTS meal_plan_items;
+DROP TABLE IF EXISTS meal_plans;
 DROP TABLE IF EXISTS cookbook_recipe_comments;
 DROP TABLE IF EXISTS cookbook_recipes;
 DROP TABLE IF EXISTS recipe_steps;
@@ -124,6 +127,14 @@ CREATE TABLE meal_plan_items (
     meal_plan_id INT NOT NULL REFERENCES meal_plans(id) ON DELETE CASCADE,
     recipe_id INT NOT NULL REFERENCES recipes(id) ON DELETE CASCADE,
     date DATE NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE favorites (
+    id SERIAL PRIMARY KEY,
+    user_id INT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+    recipe_id INT NOT NULL REFERENCES recipes(id) ON DELETE CASCADE,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
