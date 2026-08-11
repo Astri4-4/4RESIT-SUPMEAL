@@ -1,12 +1,16 @@
 import * as userService from "../services/user.service.js";
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
+import * as planService from "../services/plan.service.js";
 
 
 export async function register(user) {
     try {
         user.password = await bcrypt.hash(user.password, 10);
-        return await userService.createUser(user);
+        // CREATE USER MEAL PLAN
+        const userStored = await userService.createUser(user);
+        await planService.createPlan(userStored.id);
+        return user;
     } catch (error) {
         console.error('Error registering user:', error);
         throw error;

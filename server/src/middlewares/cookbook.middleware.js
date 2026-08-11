@@ -340,3 +340,32 @@ export async function isOwnerOfComment(req, res, next) {
     }
 
 }
+
+export async function isUserMemberOfBodyCookbook(req, res, next) {
+    const cookbookId = req.body.cookbookId;
+    const userId = req.user.id;
+
+    try {
+        const isMember = await cookbookService.isInCookbook(cookbookId, userId);
+        if (!isMember) {
+            return res.status(404).json({ message: "Cookbook not found" });
+        }
+        next();
+    } catch (error) {
+        return res.status(500).json({ message: "Internal server error" });
+    }
+}
+
+export async function isUserOwnerOrEditorBody(req, res, next) {
+    const cookbookId = req.body.cookbookId;
+    const userId = req.user.id;
+    try {
+        const role = await cookbookService.getUserRoleInCookbook(cookbookId, userId);
+        if (role !== "owner" && role !== "editor") {
+            return res.status(403).json({ message: "Forbidden: You are not the owner or editor of this cookbook" });
+        }
+        next();
+    } catch (error) {
+        return res.status(500).json({ message: "Internal server error" });
+    }
+}
