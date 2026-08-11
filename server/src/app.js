@@ -7,6 +7,7 @@ import userRouter from "./routes/user.routes.js";
 import cookbookRouter from "./routes/cookbook.routes.js";
 import recipeRouter from "./routes/recipe.routes.js";
 import planRouter from "./routes/plan.routes.js";
+import favoriteRouter from "./routes/favorite.routes.js";
 
 const app = express();
 
@@ -22,6 +23,7 @@ app.use('/users', userRouter);
 app.use('/cookbooks', cookbookRouter);
 app.use('/recipes', recipeRouter);
 app.use('/plans', planRouter);
+app.use('/favorites', favoriteRouter);
 
 app.use('/public', express.static('src/public'));
 
