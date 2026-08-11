@@ -35,7 +35,7 @@ export async function login(userCreds) {
     }
 }
 
-function generateToken(user) {
+export function generateToken(user) {
     return jwt.sign(
         {id: user.id, username: user.username},
         process.env.JWT_SECRET,
