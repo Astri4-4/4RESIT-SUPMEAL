@@ -24,6 +24,51 @@ export async function getUserByUsername(user, returnPasswordHash = false) {
     return result.rows[0];
 }
 
+export async function getUserByEmail(email) {
+    const result = await query(
+        'SELECT * FROM users WHERE email = $1',
+        [email]
+    );
+    return result.rows[0];
+}
+
+export async function getUserByGoogleId(googleId) {
+    const result = await query(
+        'SELECT * FROM users WHERE google_id = $1',
+        [googleId]
+    );
+    return result.rows[0];
+}
+
+export async function createGoogleUser(user) {
+    const result = await query(
+        'INSERT INTO users (username, email, google_id, rgpd) VALUES ($1, $2, $3, TRUE) RETURNING *',
+        [user.username, user.email, user.googleId]
+    );
+    return result.rows[0];
+}
+
+export async function isUsernameTaken(username) {
+    const result = await query(
+        'SELECT 1 FROM users WHERE username = $1',
+        [username]
+    );
+    return result.rows.length > 0;
+}
+
+export async function generateUniqueUsername(base) {
+    const slug = base.toLowerCase().replace(/[^a-z0-9]/g, '').slice(0, 40) || 'user';
+    let username = slug;
+    let suffix = 0;
+
+    while (await isUsernameTaken(username)) {
+        suffix++;
+        username = `${slug}${suffix}`;
+    }
+
+    return username;
+}
+
 export async function updateUser(id, updates) {
     const fields = [];
     const values = [];
