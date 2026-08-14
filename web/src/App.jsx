@@ -3,6 +3,7 @@ import {AuthProvider} from "./context/AuthContext.jsx";
 import Login from "./pages/Login.jsx";
 import ProtectedRoute from "./components/ProtectedRoutes.jsx";
 import Dashboard from "./pages/Dashboard.jsx";
+import Navbar from "./components/ui/Navbar.jsx";
 
 function App() {
 
@@ -13,7 +14,9 @@ function App() {
 
         <Route path={"/dashboard"} element={
           <ProtectedRoute>
-            <Dashboard></Dashboard>
+            <Navbar page={"dashboard"}>
+              <Dashboard></Dashboard>
+            </Navbar>
           </ProtectedRoute>
         } ></Route>
 

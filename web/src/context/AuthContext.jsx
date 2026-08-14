@@ -1,8 +1,6 @@
 // src/context/AuthContext.jsx
 import { createContext, useContext, useState, useEffect } from 'react'
 import { authApi } from '../api/auth'
-import {getUserFromToken} from '../utils/jwt.js'
-import { ApiError } from '../api/client'
 
 const AuthContext = createContext(null)
 
@@ -19,12 +17,7 @@ export function AuthProvider({ children }) {
             setLoading(false)
             return
         }
-        if (getUserFromToken(token)) {
-            setUser(JSON.parse(storedUser))
-        } else {
-            localStorage.removeItem('token')
-            localStorage.removeItem('user')
-        }
+        setUser(JSON.parse(storedUser))
         setLoading(false)
     }, [])
 

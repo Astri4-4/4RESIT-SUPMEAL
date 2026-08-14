@@ -87,7 +87,7 @@ export async function updateUser(id, updates) {
     values.push(id);
 
     const result = await query(
-        `UPDATE users SET ${fields.join(', ')} WHERE id = $${index} RETURNING id, username, email, rgpd, image_url`,
+        `UPDATE users SET ${fields.join(', ')} WHERE id = $${index} RETURNING id, username, email, rgpd`,
         values
     );
     return result.rows[0];
@@ -102,7 +102,7 @@ export async function getUserById(id, returnPasswordHash = false) {
         );
     } else {
         result = await query(
-            'SELECT id, username, email, rgpd, image_url FROM users WHERE id = $1',
+            'SELECT id, username, email, rgpd FROM users WHERE id = $1',
             [id]
         )
     }
@@ -111,7 +111,7 @@ export async function getUserById(id, returnPasswordHash = false) {
 
 export async function deleteUserById(id) {
     const result = await query(
-        'DELETE FROM users WHERE id = $1 RETURNING id, username, email, rgpd, image_url',
+        'DELETE FROM users WHERE id = $1 RETURNING id, username, email, rgpd',
         [id]
     );
     return result.rows[0];
