@@ -3,7 +3,8 @@ import passport from "../config/passport.js";
 import * as authController from "../controllers/auth.controller.js";
 import * as authMiddleware from "../middlewares/auth.middleware.js";
 import {validate} from "../middlewares/validate.js";
-import {rateLimitLogin, rateLimitRegister} from "../middlewares/rateLimit.middleware.js";
+import {rateLimitGeneral, rateLimitLogin, rateLimitRegister} from "../middlewares/rateLimit.middleware.js";
+import {verifyToken} from "../middlewares/jwt.middleware.js";
 
 const router = Router();
 
@@ -153,12 +154,17 @@ router.get("/google/callback",
         const user = req.user;
         user.token = authController.generateToken(user);
         user.password_hash = undefined;
-        res.status(200).json({ message: "Login successful", user });
+        res.redirect(process.env.GOOGLE_REDIRECT_URI + "?token=" + user.token);
     }
 );
 
 router.get("/google/failure", (req, res) => {
     res.status(401).json({ message: "Google authentication failed" });
 });
+
+router.get("/me", [rateLimitGeneral, verifyToken], (req, res) => {
+    const user = req.user;
+    res.status(200).json({ message: "User info retrieved successfully", user });
+})
 
 export default router;

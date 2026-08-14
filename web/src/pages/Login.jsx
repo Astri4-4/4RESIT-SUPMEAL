@@ -1,44 +1,89 @@
-import {useState} from "react";
-import {useAuth} from "../context/AuthContext.jsx";
-import {useLocation, useNavigate} from "react-router-dom";
-
+import Input from "../components/ui/Input.jsx";
+import Button from "../components/ui/Button.jsx";
+import {Google} from "@boxicons/react";
+import {useEffect, useState} from "react";
+import { useAuth } from "../context/AuthContext.jsx";
+import {useNavigate, useSearchParams} from "react-router-dom";
+import {authApi} from "../api/auth.js";
+import {BASE_URL} from "../api/client.js";
 
 export default function Login() {
-    const [username, setUsername] = useState("");
-    const [password, setPassword] = useState("");
-    const [error, setError] = useState(null);
-    const [submitting, setSubmitting] = useState(false);
 
-    const { login } = useAuth()
+    const [email, setEmail] = useState("");
+    const [password, setPassword] = useState("");
+
+    const {login, user, setSession} = useAuth();
     const navigate = useNavigate();
-    const location = useLocation();
+    const [searchParams] = useSearchParams();
+
+    useEffect(() => {
+        if (user) {
+            navigate("/dashboard");
+        }
+    }, [user]);
+
+    useEffect(() => {
+        const token = searchParams.get("token");
+        if (!token) return;
+
+        (async () => {
+            try {
+                localStorage.setItem("token", token);
+                const me = await authApi.me();
+                setSession(token, me);
+            } catch (error) {
+                console.log(error);
+                localStorage.removeItem("token");
+            }
+        })();
+    }, [searchParams]);
 
     const handleSubmit = async (e) => {
-        e.preventDefault()
-        setError(null)
-        setSubmitting(true)
+        e.preventDefault();
         try {
-            await login(username, password)
-            const redirectTo = location.state?.from?.pathname || "/dashboard"
-            navigate(redirectTo, { replace: true })
+            await login(email, password);
+            setEmail("");
+            setPassword("");
+            navigate("/dashboard");
         } catch (error) {
-            setError(error.data?.message || error.message || "Connexion impossible")
-        } finally {
-            setSubmitting(false)
+            console.log(error);
         }
     }
 
+    const handleOAuth = async (e) => {
+        e.preventDefault();
+
+        try {
+            window.location.replace(`${BASE_URL}/auth/google`);
+        } catch (error) {
+            console.log(error);
+        }
+
+    }
+
     return (
-        <>
-            <h1>Login</h1>
-            <form onSubmit={handleSubmit}>
-                <input type="text" placeholder="Username" onChange={e => setUsername(e.target.value)} value={username} />
-                <input type="password" placeholder="Password" onChange={e => setPassword(e.target.value)} value={password} />
-                <button type="submit" disabled={submitting}>
-                    {submitting ? "Connexion..." : "Submit"}
-                </button>
-            </form>
-            {error && <p role="alert">{error}</p>}
-        </>
+
+        <div className={"bg-primary w-screen h-screen flex justify-center items-center"} >
+
+            <div className={"bg-white rounded-[20px] p-16 shadow-[0px_0px_20px_0px_rgba(0,0,0,0.10)]"} >
+
+                <h1 className={"text-center text-[32px] font-bold"} >De retour aux fourneaux !</h1>
+
+                <div className={"flex flex-col gap-6 mt-8.75"} >
+
+                    <Input placeholder="Nom d'utilisateur" onChange={(e) => setEmail(e.target.value)} value={email} ></Input>
+                    <Input placeholder="Mot de passe" type="password" onChange={(e) => setPassword(e.target.value)} value={password} ></Input>
+
+                    <Button text="Se connecter" onClick={handleSubmit} ></Button>
+                    <Button icon={<Google width={30} height={30} />} variant={"blue"} text="Se connecter avec Google" onClick={handleOAuth}></Button>
+
+                    <p className={"text-center"} >Tu n'as pas de compte ? <a href="/register" className="text-[#6EA8FE] underline font-[700]">Créé-le ici</a></p>
+
+                </div>
+
+            </div>
+
+        </div>
+
     )
 }
