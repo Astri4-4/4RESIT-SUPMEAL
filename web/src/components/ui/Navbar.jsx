@@ -1,7 +1,8 @@
 import {HomeAlt2, BowlHot, BookLibrary, UserCircle} from "@boxicons/react";
 
 const variants = {
-    "dashboard": "bg-green"
+    "dashboard": "bg-green",
+    "recipes": "bg-[#FFE7C5]"
 }
 
 export default function Navbar({page, children, ...props}) {
@@ -17,15 +18,15 @@ export default function Navbar({page, children, ...props}) {
 
                     <div className={"w-full flex flex-col gap- justify-center px-5"} >
 
-                        <div className={`${(page === "dashboard") ? "bg-white  shadow-[0px_0px_20px_0px_rgba(0,0,0,0.10)] text-[#B7E4AA]" : "text-[#9C9C9C]" } aspect-square w-full rounded-[25px] flex flex-col items-center justify-center gap-3.25`} >
+                        <a href={"/dashboard"} className={`${(page === "dashboard") ? "bg-white  shadow-[0px_0px_20px_0px_rgba(0,0,0,0.10)] text-[#B7E4AA]" : "text-[#9C9C9C]" } aspect-square w-full rounded-[25px] flex flex-col items-center justify-center gap-3.25`} >
                             <HomeAlt2 width={48} height={48} />
                             <p className={`${(page === "dashboard") ? "font-bold" : ""} text-[16px]`} >Accueil</p>
-                        </div>
+                        </a>
 
-                        <div className={`${(page === "recipes") ? "bg-white  shadow-[0px_0px_20px_0px_rgba(0,0,0,0.10)] text-[#B7E4AA]" : " text-[#9C9C9C]" } aspect-square w-full rounded-[25px] flex flex-col items-center justify-center gap-3.25`} >
+                        <a href={"/recipes"} className={`${(page === "recipes") ? "bg-white  shadow-[0px_0px_20px_0px_rgba(0,0,0,0.10)] text-[#FFB857]" : " text-[#9C9C9C]" } aspect-square w-full rounded-[25px] flex flex-col items-center justify-center gap-3.25`} >
                             <BowlHot width={48} height={48}/>
                             <p className={`${(page === "recipes") ? "font-bold" : ""} text-[16px]`} >Recettes</p>
-                        </div>
+                        </a>
 
                         <div className={`${(page === "cookbooks") ? "bg-white  shadow-[0px_0px_20px_0px_rgba(0,0,0,0.10)] text-[#B7E4AA]" : " text-[#9C9C9C]" } aspect-square w-full rounded-[25px] flex flex-col items-center justify-center gap-3.25`} >
                             <BookLibrary width={48} height={48}/>

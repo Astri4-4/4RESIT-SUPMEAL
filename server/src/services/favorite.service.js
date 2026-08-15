@@ -17,6 +17,14 @@ export async function getFavorites(userId) {
     )
 }
 
+export async function getFavoritesByUser(userId) {
+    const result = await query(
+        `SELECT id, recipe_id FROM favorites WHERE user_id = $1`,
+        [userId]
+    );
+    return result.rows;
+}
+
 export async function getFavoriteById(id) {
     const result = await query(
         `SELECT * FROM favorites WHERE id = $1`, [id]

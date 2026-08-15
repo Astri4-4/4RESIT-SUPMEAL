@@ -4,6 +4,7 @@ import Login from "./pages/Login.jsx";
 import ProtectedRoute from "./components/ProtectedRoutes.jsx";
 import Dashboard from "./pages/Dashboard.jsx";
 import Navbar from "./components/ui/Navbar.jsx";
+import Recipes from "./pages/Recipes.jsx";
 
 function App() {
 
@@ -16,6 +17,14 @@ function App() {
           <ProtectedRoute>
             <Navbar page={"dashboard"}>
               <Dashboard></Dashboard>
+            </Navbar>
+          </ProtectedRoute>
+        } ></Route>
+
+        <Route path={"/recipes"} element={
+          <ProtectedRoute>
+            <Navbar page={"recipes"}>
+              <Recipes></Recipes>
             </Navbar>
           </ProtectedRoute>
         } ></Route>

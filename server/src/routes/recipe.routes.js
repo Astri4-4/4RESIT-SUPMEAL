@@ -336,7 +336,7 @@ router.get("/:recipeId", [rateLimitGeneral, verifyToken, getRecipeByIdValidator,
     const id = req.params.recipeId;
 
     try {
-        const recipe = await getRecipeById(id);
+        const recipe = await getRecipeById(id, req.user.id);
         res.status(200).json(recipe);
     } catch (error) {
         console.error(error);
@@ -399,7 +399,7 @@ router.get("/:recipeId", [rateLimitGeneral, verifyToken, getRecipeByIdValidator,
 router.get("/", [rateLimitGeneral, verifyToken, searchRecipesValidator, validate], async (req, res) => {
     const queries = req.query;
     try {
-        const result = await searchRecipes(queries);
+        const result = await searchRecipes(queries, req.user.id);
         res.status(200).json(result);
     } catch (error) {
         console.error(error);

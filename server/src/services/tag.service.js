@@ -32,3 +32,16 @@ export async function clearRecipeTags(recipeId) {
         throw error;
     }
 }
+
+export async function getAll() {
+    try {
+        const tags = await query(
+            `SELECT * FROM tags;`,
+            []
+        );
+        return tags.rows;
+    } catch (error) {
+        console.error(error);
+        throw error;
+    }
+}
