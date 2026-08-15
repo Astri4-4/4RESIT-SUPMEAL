@@ -4,6 +4,17 @@ import {addTagToRecipe, clearRecipeTags, findOrCreateTag} from "../services/tag.
 import {deleteRecipeImage} from "../middlewares/asset.middleware.js";
 import * as recipeService from "../services/recipe.service.js";
 import * as shoppingListService from "../services/shoppingList.service.js";
+import {getFavoritesByUser} from "../services/favorite.service.js";
+
+async function withFavoriteFlag(recipes, userId) {
+    const favorites = await getFavoritesByUser(userId);
+    const favoriteByRecipeId = new Map(favorites.map((f) => [f.recipe_id, f.id]));
+    return recipes.map((recipe) => ({
+        ...recipe,
+        favorite: favoriteByRecipeId.has(recipe.id),
+        favoriteId: favoriteByRecipeId.get(recipe.id) ?? null,
+    }));
+}
 
 export async function createRecipe(recipe) {
 
@@ -43,10 +54,11 @@ export async function updateImage(imageUrl, recipeId) {
     }
 }
 
-export async function getRecipeById(id) {
+export async function getRecipeById(id, userId) {
     try {
         const recipe = await recipeService.getRecipeById(id);
-        return recipe[0];
+        const [withFavorite] = await withFavoriteFlag(recipe, userId);
+        return withFavorite;
     } catch (error) {
         console.error(error);
         throw error;
@@ -103,7 +115,8 @@ export async function deleteRecipe(recipeId) {
 
 export async function getMyRecipes(userId) {
     try {
-        return await recipeService.getRecipesByOwner(userId);
+        const recipes = await recipeService.getRecipesByOwner(userId);
+        return await withFavoriteFlag(recipes, userId);
     } catch (error) {
         console.error(error);
         throw error;
@@ -137,17 +150,18 @@ export async function deleteShoppingListItem(userId, itemId) {
     }
 }
 
-export async function searchRecipes(queries) {
+export async function searchRecipes(queries, userId) {
     const {name, tag, servings, prepTime, page} = queries;
 
     try {
-        return await recipeService.searchRecipes({
+        const recipes = await recipeService.searchRecipes({
             name,
             tag,
             servings: servings !== undefined ? parseInt(servings, 10) : undefined,
             prepTime: prepTime !== undefined ? parseInt(prepTime, 10) : undefined,
             page: page !== undefined ? parseInt(page, 10) : 1,
         });
+        return await withFavoriteFlag(recipes, userId);
     } catch (error) {
         console.error(error);
         throw error;
@@ -155,17 +169,18 @@ export async function searchRecipes(queries) {
 
 }
 
-export async function searchRecipesInCookbook(cookbookId, queries) {
+export async function searchRecipesInCookbook(cookbookId, queries, userId) {
     const {name, tag, servings, prepTime, page} = queries;
 
     try {
-        return await recipeService.searchRecipesInCookbook(cookbookId, {
+        const recipes = await recipeService.searchRecipesInCookbook(cookbookId, {
             name,
             tag,
             servings: servings !== undefined ? parseInt(servings, 10) : undefined,
             prepTime: prepTime !== undefined ? parseInt(prepTime, 10) : undefined,
             page: page !== undefined ? parseInt(page, 10) : 1,
         });
+        return await withFavoriteFlag(recipes, userId);
     } catch (error) {
         console.error(error);
         throw error;

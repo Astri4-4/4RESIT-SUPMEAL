@@ -7,11 +7,12 @@ import Button from "../components/ui/Button.jsx";
 import LongRecipeCard from "../components/ui/LongRecipeCard.jsx";
 import recipeApi from "../api/recipe.js";
 import {useEffect, useState} from "react";
-import recipe from "../api/recipe.js";
+import {useNavigate} from "react-router-dom";
 
 
 export default function Dashboard() {
     const { user } = useAuth()
+    const navigate = useNavigate()
 
     const [recipes, setRecipes] = useState([]);
 
@@ -46,12 +47,12 @@ export default function Dashboard() {
                     <div className={"mt-8.75"} >
                         <div className={"flex items-center justify-between"} >
                             <h2 className={"font-primary text-[28px] font-bold py-6"} >Les dernières recettes ajoutées</h2>
-                            <Button variant={"blue"} text={"Voir toutes les recettes"} trailing={<ChevronRight />} ></Button>
+                            <Button variant={"blue"} text={"Voir toutes les recettes"} trailing={<ChevronRight />} onClick={() => navigate("/recipes")} ></Button>
                         </div>
 
                         {
-                            recipes.map((recipe, index) => (
-                                <div key={index} className={"mt-6"}>
+                            recipes.slice(-4).reverse().map((recipe) => (
+                                <div key={recipe.id} className={"mt-6"}>
                                     <LongRecipeCard recipe={recipe}></LongRecipeCard>
                                 </div>
                             ))

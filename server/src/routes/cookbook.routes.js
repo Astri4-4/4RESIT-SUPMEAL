@@ -501,7 +501,7 @@ router.get("/:cookbookId/recipes", [rateLimitGeneral, verifyToken, getCookbookVa
     const queries = req.query;
 
     try {
-        const result = await searchRecipesInCookbook(cookbookId, queries);
+        const result = await searchRecipesInCookbook(cookbookId, queries, req.user.id);
         res.status(200).json(result);
     } catch (error) {
         console.error(error);
