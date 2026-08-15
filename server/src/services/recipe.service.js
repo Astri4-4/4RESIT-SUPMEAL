@@ -15,7 +15,34 @@ export async function createRecipe(recipe) {
 export async function getRecipeById(id) {
     try {
         const result = await query(
-            `SELECT * FROM recipes WHERE id = $1`,
+            `SELECT recipes.*, users.username AS owner_username,
+                COALESCE(
+                    (SELECT json_agg(json_build_object(
+                            'id', ri.id,
+                            'ingredient_id', i.id,
+                            'name', i.name,
+                            'unit', i.unit,
+                            'type', i.type,
+                            'quantity', ri.quantity
+                        ) ORDER BY ri.id)
+                     FROM recipe_ingredients ri
+                     JOIN ingredients i ON i.id = ri.ingredient_id
+                     WHERE ri.recipe_id = recipes.id),
+                    '[]'
+                ) AS ingredients,
+                COALESCE(
+                    (SELECT json_agg(json_build_object(
+                            'id', rs.id,
+                            'step_number', rs.step_number,
+                            'description', rs.description
+                        ) ORDER BY rs.step_number)
+                     FROM recipe_steps rs
+                     WHERE rs.recipe_id = recipes.id),
+                    '[]'
+                ) AS steps
+             FROM recipes
+             JOIN users ON users.id = recipes.owner
+             WHERE recipes.id = $1`,
             [id]
         );
         return result.rows;
@@ -119,7 +146,11 @@ export async function updateImage(imageUrl, recipeId) {
 export async function getRecipesByOwner(ownerId) {
     try {
         const result = await query(
-            `SELECT * FROM recipes WHERE owner = $1 ORDER BY id`,
+            `SELECT recipes.*, users.username AS owner_username
+             FROM recipes
+             JOIN users ON users.id = recipes.owner
+             WHERE recipes.owner = $1
+             ORDER BY recipes.id`,
             [ownerId]
         );
         return result.rows;
@@ -166,7 +197,10 @@ export async function searchRecipes({name, tag, servings, prepTime, page = 1} = 
 
     try {
         const result = await query(
-            `SELECT * FROM recipes ${whereClause} ORDER BY recipes.id LIMIT $${limitIndex} OFFSET $${offsetIndex}`,
+            `SELECT recipes.*, users.username AS owner_username
+             FROM recipes
+             JOIN users ON users.id = recipes.owner
+             ${whereClause} ORDER BY recipes.id LIMIT $${limitIndex} OFFSET $${offsetIndex}`,
             params
         );
         return result.rows;
@@ -213,7 +247,10 @@ export async function searchRecipesInCookbook(cookbookId, {name, tag, servings, 
 
     try {
         const result = await query(
-            `SELECT * FROM recipes ${whereClause} ORDER BY recipes.id LIMIT $${limitIndex} OFFSET $${offsetIndex}`,
+            `SELECT recipes.*, users.username AS owner_username
+             FROM recipes
+             JOIN users ON users.id = recipes.owner
+             ${whereClause} ORDER BY recipes.id LIMIT $${limitIndex} OFFSET $${offsetIndex}`,
             params
         );
         return result.rows;

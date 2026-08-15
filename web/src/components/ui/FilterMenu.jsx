@@ -19,7 +19,7 @@ export default function FilterMenu({filters, ...props}) {
             {isOpen && (
                 <div className={"absolute top-16 left-0 bg-white w-60 rounded-[20px] shadow-[0px_0px_20px_0px_rgba(0,0,0,0.10)] z-10"} >
                     <div className={" py-4 px-3"} >
-                        <p className={"text-[#9C9C9C]"}>Filter par</p>
+                        <p className={"text-[#9C9C9C]"}>Filtrer par</p>
                         <div className={"ml-2 mt-3 flex flex-col gap-[12px]"}>
                             <Bullet text={"Date d'ajout"} active={sortBy === "date"} onClick={() => setSortBy("date")} />
                             <Bullet text={"Temps de préparation"} active={sortBy === "temps"} onClick={() => setSortBy("temps")} />

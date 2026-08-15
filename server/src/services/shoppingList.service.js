@@ -16,10 +16,29 @@ export async function addRecipeIngredientsToShoppingList(userId, recipeId) {
     const result = await query(
         `INSERT INTO shopping_list_items (user_id, ingredient_id, quantity)
          SELECT $1, ingredient_id, quantity FROM recipe_ingredients WHERE recipe_id = $2
+         ON CONFLICT (user_id, ingredient_id)
+         DO UPDATE SET quantity = shopping_list_items.quantity + EXCLUDED.quantity, updated_at = CURRENT_TIMESTAMP
          RETURNING *`,
         [userId, recipeId]
     );
     return result.rows;
+}
+
+export async function getRecipeIdsInShoppingList(userId, recipeIds) {
+    if (recipeIds.length === 0) return [];
+    const result = await query(
+        `SELECT ri.recipe_id
+         FROM recipe_ingredients ri
+         WHERE ri.recipe_id = ANY($1::int[])
+         GROUP BY ri.recipe_id
+         HAVING COUNT(*) FILTER (
+             WHERE ri.ingredient_id NOT IN (
+                 SELECT ingredient_id FROM shopping_list_items WHERE user_id = $2
+             )
+         ) = 0`,
+        [recipeIds, userId]
+    );
+    return result.rows.map((row) => row.recipe_id);
 }
 
 export async function getShoppingListItemById(id) {

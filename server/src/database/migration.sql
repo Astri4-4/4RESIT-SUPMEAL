@@ -147,7 +147,8 @@ CREATE TABLE shopping_list_items (
     ingredient_id INT NOT NULL REFERENCES ingredients(id) ON DELETE CASCADE,
     quantity DECIMAL(10, 2) NOT NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    UNIQUE (user_id, ingredient_id)
 );
 
 

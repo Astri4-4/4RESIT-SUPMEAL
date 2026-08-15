@@ -78,6 +78,18 @@ export async function getPlanByUserId(userId) {
     return result.rows[0]
 }
 
+export async function getPlannedRecipeIds(userId, recipeIds) {
+    if (recipeIds.length === 0) return [];
+    const result = await query(
+        `SELECT DISTINCT meal_plan_items.recipe_id
+         FROM meal_plan_items
+         JOIN meal_plans ON meal_plans.id = meal_plan_items.meal_plan_id
+         WHERE meal_plans.user_id = $1 AND meal_plan_items.recipe_id = ANY($2::int[])`,
+        [userId, recipeIds]
+    )
+    return result.rows.map((row) => row.recipe_id)
+}
+
 export async function addItemToPlan(planId, date, recipeId) {
     const result = await query(
         `INSERT INTO meal_plan_items (meal_plan_id, recipe_id, date) VALUES ($1, $2, $3) RETURNING *`,

@@ -33,6 +33,23 @@ export async function clearRecipeTags(recipeId) {
     }
 }
 
+export async function getTagsByRecipeIds(recipeIds) {
+    if (recipeIds.length === 0) return [];
+    try {
+        const result = await query(
+            `SELECT recipe_tags.recipe_id, tags.id, tags.name
+             FROM recipe_tags
+             JOIN tags ON tags.id = recipe_tags.tag_id
+             WHERE recipe_tags.recipe_id = ANY($1::int[])`,
+            [recipeIds]
+        );
+        return result.rows;
+    } catch (error) {
+        console.error(error);
+        throw error;
+    }
+}
+
 export async function getAll() {
     try {
         const tags = await query(

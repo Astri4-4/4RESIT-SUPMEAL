@@ -5,14 +5,39 @@ import {deleteRecipeImage} from "../middlewares/asset.middleware.js";
 import * as recipeService from "../services/recipe.service.js";
 import * as shoppingListService from "../services/shoppingList.service.js";
 import {getFavoritesByUser} from "../services/favorite.service.js";
+import {getTagsByRecipeIds} from "../services/tag.service.js";
+import {getPlannedRecipeIds} from "../services/plan.service.js";
+import {getRecipeIdsInShoppingList} from "../services/shoppingList.service.js";
 
-async function withFavoriteFlag(recipes, userId) {
-    const favorites = await getFavoritesByUser(userId);
+async function withRecipeExtras(recipes, userId) {
+    const recipeIds = recipes.map((recipe) => recipe.id);
+
+    const [favorites, tagRows, plannedIds, shoppingListIds] = await Promise.all([
+        getFavoritesByUser(userId),
+        getTagsByRecipeIds(recipeIds),
+        getPlannedRecipeIds(userId, recipeIds),
+        getRecipeIdsInShoppingList(userId, recipeIds),
+    ]);
+
     const favoriteByRecipeId = new Map(favorites.map((f) => [f.recipe_id, f.id]));
+    const plannedRecipeIds = new Set(plannedIds);
+    const shoppingListRecipeIds = new Set(shoppingListIds);
+
+    const tagsByRecipeId = new Map();
+    for (const row of tagRows) {
+        if (!tagsByRecipeId.has(row.recipe_id)) {
+            tagsByRecipeId.set(row.recipe_id, []);
+        }
+        tagsByRecipeId.get(row.recipe_id).push({id: row.id, name: row.name});
+    }
+
     return recipes.map((recipe) => ({
         ...recipe,
         favorite: favoriteByRecipeId.has(recipe.id),
         favoriteId: favoriteByRecipeId.get(recipe.id) ?? null,
+        tags: tagsByRecipeId.get(recipe.id) ?? [],
+        inMealPlan: plannedRecipeIds.has(recipe.id),
+        inShoppingList: shoppingListRecipeIds.has(recipe.id),
     }));
 }
 
@@ -57,8 +82,8 @@ export async function updateImage(imageUrl, recipeId) {
 export async function getRecipeById(id, userId) {
     try {
         const recipe = await recipeService.getRecipeById(id);
-        const [withFavorite] = await withFavoriteFlag(recipe, userId);
-        return withFavorite;
+        const [withExtras] = await withRecipeExtras(recipe, userId);
+        return withExtras;
     } catch (error) {
         console.error(error);
         throw error;
@@ -116,7 +141,7 @@ export async function deleteRecipe(recipeId) {
 export async function getMyRecipes(userId) {
     try {
         const recipes = await recipeService.getRecipesByOwner(userId);
-        return await withFavoriteFlag(recipes, userId);
+        return await withRecipeExtras(recipes, userId);
     } catch (error) {
         console.error(error);
         throw error;
@@ -161,7 +186,7 @@ export async function searchRecipes(queries, userId) {
             prepTime: prepTime !== undefined ? parseInt(prepTime, 10) : undefined,
             page: page !== undefined ? parseInt(page, 10) : 1,
         });
-        return await withFavoriteFlag(recipes, userId);
+        return await withRecipeExtras(recipes, userId);
     } catch (error) {
         console.error(error);
         throw error;
@@ -180,7 +205,7 @@ export async function searchRecipesInCookbook(cookbookId, queries, userId) {
             prepTime: prepTime !== undefined ? parseInt(prepTime, 10) : undefined,
             page: page !== undefined ? parseInt(page, 10) : 1,
         });
-        return await withFavoriteFlag(recipes, userId);
+        return await withRecipeExtras(recipes, userId);
     } catch (error) {
         console.error(error);
         throw error;
