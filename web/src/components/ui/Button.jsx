@@ -2,6 +2,7 @@
 const variants = {
     "primary": "hover:bg-primary hover:border-transparent",
     "blue": "hover:bg-[#6EA8FE] hover:border-transparent",
+    "ghost": "hover:bg-black hover:border-transparent hover:text-white",
 }
 
 export default function Button({icon=null, text, textSize="20", weight="700", variant="primary", trailing, onClick=() => {},  ...props}) {

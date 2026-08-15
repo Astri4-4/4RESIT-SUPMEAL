@@ -105,7 +105,7 @@ export default function RecipeDetail() {
                 <div className={"w-[54%]"} >
 
                     <div className={"px-[42px] py-[18px]  bg-white rounded-[20px] shadow-[0px_0px_20px_0px_rgba(0,0,0,0.10)]"} >
-                        <h1 className={"text-black text-3xl font-bold font-primary"} >{recipe?.title}</h1>
+                        <h1 className={"text-black text-3xl font-bold font-primary text-center"} >{recipe?.title}</h1>
 
                         <div className={"flex items-center justify-center gap-4 h-11 mt-[15px]"}>
                             <ChefHat color={"#FFB857"} width={24} height={24} />
@@ -118,6 +118,8 @@ export default function RecipeDetail() {
                             <p>{recipe?.servings} personne{(recipe?.servings > 1) ? 's' : ''}</p>
 
                         </div>
+
+                        <p className={"text-[#9C9C9C] text-center text-base font-normal mt-[15px]"} >{recipe?.description}</p>
 
                     </div>
 
