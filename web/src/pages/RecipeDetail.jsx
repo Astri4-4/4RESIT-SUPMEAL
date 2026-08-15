@@ -1,0 +1,198 @@
+import {useParams} from "react-router-dom";
+import {useEffect, useRef, useState} from "react";
+import recipeApi from "../api/recipe.js";
+import Breadcrumb from "../components/ui/Breadcrumb.jsx";
+import {BASE_URL} from "../api/client.js";
+import ToggleIconButton from "../components/ui/ToggleIconButton.jsx";
+import {Heart, CalendarPlus, CalendarCheck, CartPlus, CartCheck, ChefHat, Oven, ForkKnife} from "@boxicons/react";
+import favoriteApi from "../api/favorite.js";
+import Tag from "../components/ui/Tag.jsx";
+
+export default function RecipeDetail() {
+
+    const params = useParams();
+
+    const [recipe, setRecipe] = useState(null);
+    const [multilineSteps, setMultilineSteps] = useState({});
+    const stepTextRefs = useRef({});
+
+    const [isFavoriteHovered, setIsFavoriteHovered] = useState(false);
+    const [isMealPlanHovered, setIsMealPlanHovered] = useState(false);
+    const [isShoppingListHovered, setIsShoppingListHovered] = useState(false);
+
+    const showAsFavorite = isFavoriteHovered ? !recipe?.favorite : recipe?.favorite;
+    const showAsInMealPlan = isMealPlanHovered ? !recipe?.inMealPlan : recipe?.inMealPlan;
+    const showAsInShoppingList = isShoppingListHovered ? !recipe?.inShoppingList : recipe?.inShoppingList;
+
+    useEffect(() => {
+        (async () => {
+            const response = await recipeApi.getRecipe(params.id);
+            setRecipe(response);
+        })()
+    }, [])
+
+    useEffect(() => {
+        if (!recipe?.steps) return;
+
+        const checkMultiline = (index, el) => {
+            const range = document.createRange();
+            range.selectNodeContents(el);
+            const isMultiline = range.getClientRects().length > 1;
+            setMultilineSteps((prev) => (prev[index] === isMultiline ? prev : {...prev, [index]: isMultiline}));
+        };
+
+        const observers = recipe.steps.map((_, index) => {
+            const el = stepTextRefs.current[index];
+            if (!el) return null;
+
+            checkMultiline(index, el);
+
+            const observer = new ResizeObserver(() => checkMultiline(index, el));
+            observer.observe(el);
+            return observer;
+        });
+
+        return () => observers.forEach((observer) => observer?.disconnect());
+    }, [recipe?.steps]);
+
+    const handleToggleFavorite = async () => {
+        try {
+            if (recipe.favorite) {
+                await favoriteApi.remove(recipe.favoriteId);
+                setRecipe({...recipe, favorite: false, favoriteId: null});
+            } else {
+                const created = await favoriteApi.add(recipe.id);
+                setRecipe({...recipe, favorite: true, favoriteId: created.id});
+            }
+        } catch (error) {
+            console.log(error);
+        }
+    }
+
+    const handleAddToCalendar = async () => {
+        alert("WIP");
+    }
+
+    const handleAddToShoppingList = async () => {
+        try {
+            await recipeApi.addIngredientsToShoppingList(recipe.id);
+            setRecipe({...recipe, inShoppingList: true});
+        } catch (error) {
+            console.log(error);
+        }
+    }
+
+    const convertToHoursAndMinutes = (minutes) => {
+        const hours = Math.floor(minutes / 60);
+        const remainingMinutes = minutes % 60;
+        return `${(hours > 0) ? `${hours} heures ` : ''}${(remainingMinutes > 0) ? `${remainingMinutes} minutes` : ''}`;
+    };
+
+    return (
+        <div>
+            <div className={"w-full flex items-center justify-between mb-[55px]"}>
+                <Breadcrumb path={[
+                    {label: "Accueil", link: "/dashboard"},
+                    {label: "Mes recettes", link: "/recipes"},
+                    {label: recipe?.title || "Recipe"}
+                ]} />
+
+                <p className={"text-sm text-neutral-400 font-normal"}>Recette ajoutée par {recipe?.owner_username}</p>
+
+            </div>
+
+            <div className="flex gap-15" >
+                <div className={"w-[54%]"} >
+
+                    <div className={"px-[42px] py-[18px]  bg-white rounded-[20px] shadow-[0px_0px_20px_0px_rgba(0,0,0,0.10)]"} >
+                        <h1 className={"text-black text-3xl font-bold font-primary"} >{recipe?.title}</h1>
+
+                        <div className={"flex items-center justify-center gap-4 h-11 mt-[15px]"}>
+                            <ChefHat color={"#FFB857"} width={24} height={24} />
+                            <p>Temps de préparation: {convertToHoursAndMinutes(recipe?.preptime)}</p>
+                            <div className={"border-r border-black h-full w-4"} ></div>
+                            <Oven color={"#FFB857"}/>
+                            <p>Temps de cuisson: {convertToHoursAndMinutes(recipe?.cooktime)}</p>
+                            <div className={"border-r border-black h-full w-4"} ></div>
+                            <ForkKnife color={"#FFB857"}/>
+                            <p>{recipe?.servings} personne{(recipe?.servings > 1) ? 's' : ''}</p>
+
+                        </div>
+
+                    </div>
+
+                    <div className={"px-[42px] py-[18px]  bg-white rounded-[20px] shadow-[0px_0px_20px_0px_rgba(0,0,0,0.10)] mt-[38px]"} >
+                        <h2 className={"text-black text-2xl font-bold font-primary"} >Étapes de la préparation</h2>
+
+                        <ol className={"list-none"} >
+                            {
+                                recipe?.steps.map((step, index) => (
+                                    <li key={index} className={`flex gap-4 mt-6 ${multilineSteps[index] ? "items-start" : "items-center"}`} >
+                                        <p className={"text-amber-300 text-2xl font-bold font-primary text-right shrink-0 w-[2ch]"} >{index + 1}</p>
+                                        <p ref={(el) => (stepTextRefs.current[index] = el)} className={"text-black text-base font-normal"} >{step.description}</p>
+                                    </li>
+                                ))
+                            }
+                        </ol>
+
+                    </div>
+
+                </div>
+                <div className={"flex-1"} >
+
+                    <div className={"relative w-full rounded-[20px] overflow-hidden shadow-[0px_0px_20px_0px_rgba(0,0,0,0.10)]"} >
+                        <img src={BASE_URL + recipe?.image_url} className={"w-full aspect-650/340 object-cover"} alt=""/>
+
+                        <div className={"absolute top-4.5 right-3.5 flex flex-col gap-2.5"} >
+                            <ToggleIconButton
+                                icon={<Heart color={showAsFavorite ? "#FF5757" : "#9C9C9C"} />}
+                                className={` ${showAsFavorite ? "border-[#FF5757] border-2" : ""}`}
+                                onClick={handleToggleFavorite}
+                                onMouseEnter={() => setIsFavoriteHovered(true)}
+                                onMouseLeave={() => setIsFavoriteHovered(false)}
+                            />
+                            <ToggleIconButton
+                                icon={showAsInMealPlan ? <CalendarCheck color={"#6EA8FE"} /> : <CalendarPlus color={"#9C9C9C"} />}
+                                className={` ${showAsInMealPlan ? "border-[#6EA8FE] border-2" : ""}`}
+                                onClick={handleAddToCalendar}
+                                onMouseEnter={() => setIsMealPlanHovered(true)}
+                                onMouseLeave={() => setIsMealPlanHovered(false)}
+                            />
+                            <ToggleIconButton
+                                icon={showAsInShoppingList ? <CartCheck color={"#FFB857"} /> : <CartPlus color={"#9C9C9C"} />}
+                                className={` ${showAsInShoppingList ? "border-[#FFB857] border-2" : ""}`}
+                                onClick={handleAddToShoppingList}
+                                onMouseEnter={() => setIsShoppingListHovered(true)}
+                                onMouseLeave={() => setIsShoppingListHovered(false)}
+                            />
+                        </div>
+
+                    </div>
+
+                    <div className={"flex flex-wrap gap-2.5 mt-[37px]"}>
+                        {recipe?.tags.map((tag, index) => (
+                            <Tag key={tag.id} text={tag.name} colorIndex={index} />
+                        ))}
+                    </div>
+
+                    <div className={"px-[42px] py-[18px]  bg-white rounded-[20px] shadow-[0px_0px_20px_0px_rgba(0,0,0,0.10)] mt-[37px]"} >
+                        <h2 className={"text-black text-2xl font-bold font-primary"} >Ingrédients</h2>
+
+                        <ul className={"columns-2 gap-x-[54px] mt-4"}>
+                            {
+                                recipe?.ingredients.map((ingredient) => (
+                                    <li key={ingredient.id} className={"flex items-center gap-3 py-2 break-inside-avoid"} >
+                                        <div className={"h-5 aspect-square rounded-full bg-[#FFB857AA] shrink-0"} ></div>
+                                        <p className={"text-black text-base font-normal"} >{Math.trunc(ingredient.quantity)}{(ingredient.unit === "unité") ? "" : ingredient.unit}  {ingredient.name}</p>
+                                    </li>
+                                ))
+                            }
+                        </ul>
+                    </div>
+
+                </div>
+            </div>
+
+        </div>
+    )
+}
