@@ -11,9 +11,19 @@ import {
     doesPlanItemExist
 } from "../middlewares/plan.middleware.js";
 import {validate} from "../middlewares/validate.js";
-import {createPlanItem, getPlanById, updatePlanItem, deletePlanItem} from "../controllers/plan.controller.js";
+import {createPlanItem, getPlanById, getMyPlan, updatePlanItem, deletePlanItem} from "../controllers/plan.controller.js";
 
 const router = Router();
+
+router.get("/mine", [rateLimitGeneral, verifyToken], async (req, res) => {
+    try {
+        const result = await getMyPlan(req.user.id);
+        res.status(200).json(result);
+    } catch (e) {
+        res.status(500).json({ error: e.message });
+    }
+
+})
 
 router.post("/:planId", [rateLimitGeneral, verifyToken, createPlanItemValidator, validate, hasRightToWrite], async (req, res) => {
     const planId = req.params.planId;

@@ -47,6 +47,37 @@ export async function getPlanById(id) {
     return result.rows[0]
 }
 
+export async function getPlanByUserId(userId) {
+    const result = await query(
+        `
+            SELECT
+                meal_plans.*,
+                COALESCE(
+                                json_agg(
+                                json_build_object(
+                                        'id', meal_plan_items.id,
+                                        'meal_plan_id', meal_plan_items.meal_plan_id,
+                                        'recipe_id', meal_plan_items.recipe_id,
+                                        'date', meal_plan_items.date,
+                                        'created_at', meal_plan_items.created_at,
+                                        'updated_at', meal_plan_items.updated_at
+                                ) ORDER BY meal_plan_items.date
+                                        ) FILTER (WHERE meal_plan_items.id IS NOT NULL),
+                                '[]'
+                ) AS items
+            FROM
+                meal_plans
+                    LEFT JOIN
+                meal_plan_items ON meal_plan_items.meal_plan_id = meal_plans.id
+            WHERE
+                meal_plans.user_id = $1
+            GROUP BY
+                meal_plans.id;`,
+        [userId]
+    )
+    return result.rows[0]
+}
+
 export async function addItemToPlan(planId, date, recipeId) {
     const result = await query(
         `INSERT INTO meal_plan_items (meal_plan_id, recipe_id, date) VALUES ($1, $2, $3) RETURNING *`,

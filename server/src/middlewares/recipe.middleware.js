@@ -176,6 +176,14 @@ export const getRecipeByIdValidator = [
         .withMessage("Recipe id must be a valid integer"),
 ];
 
+export const addIngredientsToShoppingListValidator = [
+    query("recipeId")
+        .notEmpty()
+        .withMessage("Recipe id is required")
+        .isInt({ min: 1 })
+        .withMessage("Recipe id must be a valid integer"),
+];
+
 export const searchRecipesValidator = [
     query("name")
         .optional()
@@ -200,7 +208,7 @@ export const searchRecipesValidator = [
 ];
 
 export async function doRecipeExistsParam(req, res, next) {
-    const recipeId = req.params.recipeId;
+    const recipeId = req.params.recipeId || req.query.recipeId;
 
     try {
         const recipe = await getRecipeById(recipeId);
@@ -276,7 +284,7 @@ export async function doUserHasWritePermission(req, res, next) {
 
 export async function doUserHasViewPermission(req, res, next) {
     const userId = req.user.id;
-    const recipeId = req.params.recipeId;
+    const recipeId = req.params.recipeId || req.query.recipeId;
 
     try {
         const isRequestedRecipeInCookbook = await isRecipeInCookbook(recipeId);

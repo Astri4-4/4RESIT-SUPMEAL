@@ -5,7 +5,7 @@ import redis from '../database/redis.js';
 const loginLimiter = new RateLimiterRedis({
     storeClient: redis,
     keyPrefix: 'ratelimit:login',
-    points: 5,        // 5 tentatives
+    points: 500,        // 5 tentatives
     duration: 60,      // par fenêtre de 60 secondes
     blockDuration: 300, // bloque 5 minutes si dépassé
 });
@@ -21,7 +21,7 @@ const registerLimiter = new RateLimiterRedis({
 const limiter = new RateLimiterRedis({
     storeClient: redis,
     keyPrefix: 'ratelimit:general',
-    points: 10,
+    points: 500,
     duration: 60,
     blockDuration: 300,
 });

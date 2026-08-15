@@ -3,6 +3,7 @@ import {clearRecipeSteps, createStep} from "../services/step.service.js";
 import {addTagToRecipe, clearRecipeTags, findOrCreateTag} from "../services/tag.service.js";
 import {deleteRecipeImage} from "../middlewares/asset.middleware.js";
 import * as recipeService from "../services/recipe.service.js";
+import * as shoppingListService from "../services/shoppingList.service.js";
 
 export async function createRecipe(recipe) {
 
@@ -94,6 +95,42 @@ export async function deleteRecipe(recipeId) {
             await deleteRecipeImage(deleted.image_url);
         }
         return deleted;
+    } catch (error) {
+        console.error(error);
+        throw error;
+    }
+}
+
+export async function getMyRecipes(userId) {
+    try {
+        return await recipeService.getRecipesByOwner(userId);
+    } catch (error) {
+        console.error(error);
+        throw error;
+    }
+}
+
+export async function getShoppingList(userId) {
+    try {
+        return await shoppingListService.getShoppingList(userId);
+    } catch (error) {
+        console.error(error);
+        throw error;
+    }
+}
+
+export async function addRecipeIngredientsToShoppingList(userId, recipeId) {
+    try {
+        return await shoppingListService.addRecipeIngredientsToShoppingList(userId, recipeId);
+    } catch (error) {
+        console.error(error);
+        throw error;
+    }
+}
+
+export async function deleteShoppingListItem(userId, itemId) {
+    try {
+        return await shoppingListService.deleteShoppingListItem(userId, itemId);
     } catch (error) {
         console.error(error);
         throw error;
