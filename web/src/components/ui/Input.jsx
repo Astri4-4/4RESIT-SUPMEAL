@@ -1,7 +1,7 @@
 import {Eye, EyeClosed} from "@boxicons/react"
 import {useState} from "react";
 
-export default function Input({icon=null, type="text", ...props}) {
+export default function Input({icon=null, trailing=null, type="text", ...props}) {
 
     const [isSeen, setIsSeen] = useState(false);
 
@@ -9,7 +9,7 @@ export default function Input({icon=null, type="text", ...props}) {
         <div className={"border border-[#9C9C9C] bg-[#F2F2F2] py-[7px] px-[16px] rounded-[10px] flex"} >
             {
                 icon && (
-                    <span className={"mr-[10px]"}>
+                    <span className={"mr-2.5"}>
                         {icon}
                     </span>
                 )
@@ -26,6 +26,14 @@ export default function Input({icon=null, type="text", ...props}) {
             {
                 type === "password" && isSeen && (
                     <EyeClosed color={"#9C9C9C"} onClick={() => setIsSeen(false)} />
+                )
+            }
+
+            {
+                trailing && (
+                    <span className={"ml-2.5"}>
+                        {trailing}
+                    </span>
                 )
             }
 

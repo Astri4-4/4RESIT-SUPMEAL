@@ -12,6 +12,8 @@ import favoriteRouter from "./routes/favorite.routes.js";
 
 const app = express();
 
+app.set('etag', false);
+
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cors());

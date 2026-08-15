@@ -116,6 +116,19 @@ export async function updateImage(imageUrl, recipeId) {
     }
 }
 
+export async function getRecipesByOwner(ownerId) {
+    try {
+        const result = await query(
+            `SELECT * FROM recipes WHERE owner = $1 ORDER BY id`,
+            [ownerId]
+        );
+        return result.rows;
+    } catch (error) {
+        console.error(error);
+        throw error;
+    }
+}
+
 export async function searchRecipes({name, tag, servings, prepTime, page = 1} = {}) {
     const limit = 10;
     const offset = (page - 1) * limit;

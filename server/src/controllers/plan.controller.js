@@ -17,6 +17,14 @@ export async function getPlanById(planId) {
         return result;
 }
 
+export async function getMyPlan(userId) {
+        const result = await planService.getPlanByUserId(userId);
+        if (!result) {
+            throw new Error("Plan not found");
+        }
+        return result;
+}
+
 const UPDATABLE_PLAN_ITEM_FIELDS = { date: "date", recipeId: "recipe_id" };
 
 export async function updatePlanItem(itemId, updatedItem) {

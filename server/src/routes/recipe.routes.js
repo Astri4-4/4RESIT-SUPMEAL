@@ -4,12 +4,18 @@ import {rateLimitGeneral} from "../middlewares/rateLimit.middleware.js";
 import {verifyToken} from "../middlewares/jwt.middleware.js";
 import {validate} from "../middlewares/validate.js";
 import {
+    addIngredientsToShoppingListValidator,
     createRecipeValidator,
     doRecipeExistsParam, doUserHasViewPermission, doUserHasWritePermission, getRecipeByIdValidator,
     searchRecipesValidator, updateRecipeValidator,
     uploadRecipeImageValidator
 } from "../middlewares/recipe.middleware.js";
-import {createRecipe, deleteRecipe, getRecipeById, searchRecipes, updateImage, updateRecipe} from "../controllers/recipe.controller.js";
+import {
+    deleteShoppingListItemValidator,
+    doShoppingListItemExists,
+    isOwnerOfShoppingListItem
+} from "../middlewares/shoppingList.middleware.js";
+import {addRecipeIngredientsToShoppingList, createRecipe, deleteRecipe, deleteShoppingListItem, getMyRecipes, getRecipeById, getShoppingList, searchRecipes, updateImage, updateRecipe} from "../controllers/recipe.controller.js";
 
 const router = Router();
 
@@ -139,6 +145,158 @@ router.post("/:recipeId/image", [rateLimitGeneral, verifyToken, uploadRecipeImag
         })
     }
 });
+
+/**
+ * @openapi
+ * /recipes/mine:
+ *   get:
+ *     summary: Get all recipes owned by the authenticated user
+ *     tags: [Recipes]
+ *     responses:
+ *       200:
+ *         description: The user's recipes
+ *       500:
+ *         description: Error retrieving recipes
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
+ */
+router.get("/mine", [rateLimitGeneral, verifyToken], async (req, res) => {
+    try {
+        const recipes = await getMyRecipes(req.user.id);
+        res.status(200).json(recipes);
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({
+            error: error.message
+        })
+    }
+})
+
+/**
+ * @openapi
+ * /recipes/shopping-list:
+ *   get:
+ *     summary: Get all items in the authenticated user's shopping list
+ *     tags: [Recipes]
+ *     responses:
+ *       200:
+ *         description: The user's shopping list items
+ *       500:
+ *         description: Error retrieving shopping list
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
+ */
+router.get("/shopping-list", [rateLimitGeneral, verifyToken], async (req, res) => {
+    try {
+        const items = await getShoppingList(req.user.id);
+        res.status(200).json(items);
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({
+            error: error.message
+        })
+    }
+})
+
+/**
+ * @openapi
+ * /recipes/shopping-list:
+ *   post:
+ *     summary: Add all ingredients of a recipe to the authenticated user's shopping list
+ *     tags: [Recipes]
+ *     parameters:
+ *       - in: query
+ *         name: recipeId
+ *         required: true
+ *         schema:
+ *           type: integer
+ *     responses:
+ *       201:
+ *         description: The created shopping list items
+ *       403:
+ *         description: You do not have permission to view this recipe
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
+ *       404:
+ *         description: Recipe not found
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
+ *       500:
+ *         description: Error adding ingredients to shopping list
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
+ */
+router.post("/shopping-list", [rateLimitGeneral, verifyToken, addIngredientsToShoppingListValidator, validate, doRecipeExistsParam, doUserHasViewPermission], async (req, res) => {
+    const recipeId = req.query.recipeId;
+
+    try {
+        const items = await addRecipeIngredientsToShoppingList(req.user.id, recipeId);
+        res.status(201).json(items);
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({
+            error: error.message
+        })
+    }
+})
+
+/**
+ * @openapi
+ * /recipes/shopping-list/{itemId}:
+ *   delete:
+ *     summary: Delete one item from the authenticated user's shopping list
+ *     tags: [Recipes]
+ *     parameters:
+ *       - in: path
+ *         name: itemId
+ *         required: true
+ *         schema:
+ *           type: integer
+ *     responses:
+ *       200:
+ *         description: Shopping list item deleted successfully
+ *       403:
+ *         description: You are not the owner of this shopping list item
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
+ *       404:
+ *         description: Shopping list item not found
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
+ *       500:
+ *         description: Error deleting shopping list item
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
+ */
+router.delete("/shopping-list/:itemId", [rateLimitGeneral, verifyToken, deleteShoppingListItemValidator, validate, doShoppingListItemExists, isOwnerOfShoppingListItem], async (req, res) => {
+    const itemId = req.params.itemId;
+
+    try {
+        const item = await deleteShoppingListItem(req.user.id, itemId);
+        res.status(200).json(item);
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({
+            error: error.message
+        })
+    }
+})
 
 /**
  * @openapi
