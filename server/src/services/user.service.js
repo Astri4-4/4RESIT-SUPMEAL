@@ -102,7 +102,7 @@ export async function getUserById(id, returnPasswordHash = false) {
         );
     } else {
         result = await query(
-            'SELECT id, username, email, rgpd FROM users WHERE id = $1',
+            'SELECT id, username, email, rgpd, google_id FROM users WHERE id = $1',
             [id]
         )
     }

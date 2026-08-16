@@ -1,10 +1,15 @@
 import { Router } from "express";
+import jwt from "jsonwebtoken";
 import passport from "../config/passport.js";
 import * as authController from "../controllers/auth.controller.js";
 import * as authMiddleware from "../middlewares/auth.middleware.js";
 import {validate} from "../middlewares/validate.js";
 import {rateLimitGeneral, rateLimitLogin, rateLimitRegister} from "../middlewares/rateLimit.middleware.js";
 import {verifyToken} from "../middlewares/jwt.middleware.js";
+
+function getFrontendBase() {
+    return process.env.GOOGLE_REDIRECT_URI.replace(/\/login\/?$/, "");
+}
 
 const router = Router();
 
@@ -148,15 +153,54 @@ router.get("/google", passport.authenticate("google", { scope: ["profile", "emai
  *             schema:
  *               $ref: '#/components/schemas/Error'
  */
-router.get("/google/callback",
-    passport.authenticate("google", { session: false, failureRedirect: "/auth/google/failure" }),
-    (req, res) => {
-        const user = req.user;
+/**
+ * @openapi
+ * /auth/google/link:
+ *   get:
+ *     summary: Link the authenticated user's account to a Google identity
+ *     tags: [Auth]
+ *     security: []
+ *     parameters:
+ *       - in: query
+ *         name: token
+ *         required: true
+ *         schema:
+ *           type: string
+ *     responses:
+ *       302:
+ *         description: Redirect to Google's consent screen
+ *       401:
+ *         description: Invalid or missing token
+ */
+router.get("/google/link", (req, res, next) => {
+    const token = req.query.token;
+    try {
+        jwt.verify(token, process.env.JWT_SECRET);
+    } catch (error) {
+        return res.status(401).json({ message: "Invalid or missing token" });
+    }
+
+    passport.authenticate("google", { scope: ["profile", "email"], session: false, state: token })(req, res, next);
+});
+
+router.get("/google/callback", (req, res, next) => {
+    passport.authenticate("google", { session: false }, (error, user, info) => {
+        const isLinkFlow = !!req.query.state;
+        const frontendBase = getFrontendBase();
+
+        if (error || !user) {
+            const redirectTo = isLinkFlow ? `${frontendBase}/account` : `${frontendBase}/login`;
+            const message = info?.message || "Google authentication failed";
+            return res.redirect(`${redirectTo}?error=${encodeURIComponent(message)}`);
+        }
+
         user.token = authController.generateToken(user);
         user.password_hash = undefined;
-        res.redirect(process.env.GOOGLE_REDIRECT_URI + "?token=" + user.token);
-    }
-);
+
+        const redirectTo = isLinkFlow ? `${frontendBase}/account` : process.env.GOOGLE_REDIRECT_URI;
+        res.redirect(`${redirectTo}?token=${user.token}`);
+    })(req, res, next);
+});
 
 router.get("/google/failure", (req, res) => {
     res.status(401).json({ message: "Google authentication failed" });

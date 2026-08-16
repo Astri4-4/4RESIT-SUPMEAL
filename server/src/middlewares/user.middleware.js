@@ -12,6 +12,16 @@ export const updateUserValidator = [
     body("image_url").optional().isString().withMessage("Image URL must be a string")
 ]
 
+export const updatePreferencesValidator = [
+    body("tagIds").isArray().withMessage("tagIds must be an array"),
+    body("tagIds.*").isInt().withMessage("Each tagId must be an integer"),
+]
+
+export const importUserDataValidator = [
+    body("recipes").optional().isArray().withMessage("recipes must be an array"),
+    body("cookbooks").optional().isArray().withMessage("cookbooks must be an array"),
+]
+
 export async function doTokenUserExistsById(req, res, next) {
     const id = req.user.id;
     try {

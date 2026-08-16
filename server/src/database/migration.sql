@@ -1,3 +1,4 @@
+DROP TABLE IF EXISTS user_tags;
 DROP TABLE IF EXISTS shopping_list_items;
 DROP TABLE IF EXISTS favorites;
 DROP TABLE IF EXISTS meal_plan_items;
@@ -139,6 +140,14 @@ CREATE TABLE favorites (
     recipe_id INT NOT NULL REFERENCES recipes(id) ON DELETE CASCADE,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE user_tags (
+    id SERIAL PRIMARY KEY,
+    user_id INT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+    tag_id INT NOT NULL REFERENCES tags(id) ON DELETE CASCADE,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    UNIQUE (user_id, tag_id)
 );
 
 CREATE TABLE shopping_list_items (
