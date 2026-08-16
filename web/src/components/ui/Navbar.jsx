@@ -46,7 +46,7 @@ export default function Navbar({page, children, ...props}) {
 
             </div>
 
-            <div className={"flex-1 min-h-screen bg-white shadow-[0px_8px_22px_0px_rgba(0,0,0,0.10)] py-8.75 px-16 overflow-y-auto"} >
+            <div className={"flex-1 relative min-h-screen bg-white shadow-[0px_8px_22px_0px_rgba(0,0,0,0.10)] py-8.75 px-16 overflow-y-auto"} >
                 {children}
             </div>
         </div>
