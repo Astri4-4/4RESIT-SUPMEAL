@@ -105,3 +105,26 @@ export async function deleteRecipeImage(imageUrl) {
     const filePath = path.join(RECIPE_IMAGE_DIR, path.basename(imageUrl));
     await fs.promises.unlink(filePath).catch(() => {});
 }
+
+export async function saveRecipeImageFromUrl(imageUrl) {
+    const response = await fetch(imageUrl);
+    if (!response.ok) {
+        throw new Error(`Failed to download image: ${response.status}`);
+    }
+
+    const contentType = response.headers.get('content-type')?.split(';')[0].trim();
+    const extension = ALLOWED_MIME_TYPES[contentType];
+    if (!extension) {
+        throw new Error(`Unsupported image type: ${contentType}`);
+    }
+
+    const buffer = Buffer.from(await response.arrayBuffer());
+    if (buffer.byteLength > MAX_FILE_SIZE_BYTES) {
+        throw new Error('Image exceeds maximum allowed size');
+    }
+
+    const filename = `${randomUUID()}${extension}`;
+    await fs.promises.writeFile(path.join(RECIPE_IMAGE_DIR, filename), buffer);
+
+    return `/public/recipe_image/${filename}`;
+}

@@ -185,7 +185,7 @@ export default function RecipeDetail() {
                                 recipe?.ingredients.map((ingredient) => (
                                     <li key={ingredient.id} className={"flex items-center gap-3 py-2 break-inside-avoid"} >
                                         <div className={"h-5 aspect-square rounded-full bg-[#FFB857AA] shrink-0"} ></div>
-                                        <p className={"text-black text-base font-normal"} >{Math.trunc(ingredient.quantity)}{(ingredient.unit === "unité") ? "" : ingredient.unit}  {ingredient.name}</p>
+                                        <p className={"text-black text-base font-normal"} >{Number(ingredient.quantity) > 0 && <>{Number(ingredient.quantity)}{(ingredient.unit === "unité") ? "" : ingredient.unit}  </>}{ingredient.name}</p>
                                     </li>
                                 ))
                             }

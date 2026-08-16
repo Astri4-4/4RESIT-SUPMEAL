@@ -76,6 +76,14 @@ export const createRecipeValidator = [
         .withMessage("Step description must be a valid string"),
 ];
 
+export const importRecipeValidator = [
+    body("url")
+        .notEmpty()
+        .withMessage("URL is required")
+        .isURL()
+        .withMessage("URL must be valid"),
+];
+
 export const updateRecipeValidator = [
     body("title")
         .optional()

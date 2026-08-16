@@ -7,6 +7,7 @@ import Navbar from "./components/ui/Navbar.jsx";
 import Recipes from "./pages/Recipes.jsx";
 import RecipeDetail from "./pages/RecipeDetail.jsx";
 import Account from "./pages/Account.jsx";
+import CreateRecipe from "./pages/CreateRecipe.jsx";
 
 function App() {
 
@@ -43,6 +44,14 @@ function App() {
           <ProtectedRoute>
             <Navbar page={"account"}>
               <Account></Account>
+            </Navbar>
+          </ProtectedRoute>
+        } ></Route>
+
+        <Route path={"/create-recipe"} element={
+          <ProtectedRoute>
+            <Navbar page={"recipes"}>
+              <CreateRecipe></CreateRecipe>
             </Navbar>
           </ProtectedRoute>
         } ></Route>

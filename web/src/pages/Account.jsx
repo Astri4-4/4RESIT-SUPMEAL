@@ -204,7 +204,7 @@ export default function Account() {
                         <h2 className={"text-black text-2xl font-bold font-primary"} >Compte lié</h2>
 
                         <div className={"flex items-center justify-between"}>
-                            <div className={"flex items-center gap-3"}>
+                            <div className={"flex items-center gap-8"}>
                                 <img src={googleLogo} alt="Google" className={"w-12 h-12"} />
                                 <p className={"text-[#9C9C9C] text-2xl font-bold"} >Google</p>
                             </div>
