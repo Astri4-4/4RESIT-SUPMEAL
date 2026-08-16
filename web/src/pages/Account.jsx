@@ -9,6 +9,7 @@ import DisabledButton from "../components/ui/DisabledButton.jsx";
 import googleLogo from "../assets/account/google.png";
 import userApi from "../api/user.js";
 import tagApi from "../api/tag.js";
+import Popup from "../components/Popup.jsx";
 
 export default function Account() {
 
@@ -30,6 +31,8 @@ export default function Account() {
     const [isSavingPreferences, setIsSavingPreferences] = useState(false);
 
     const [isDraggingFile, setIsDraggingFile] = useState(false);
+
+    const [isDeleteAccountPopupOpen, setIsDeleteAccountPopupOpen] = useState(false);
 
     const linkError = searchParams.get("error");
 
@@ -291,15 +294,36 @@ export default function Account() {
                         </div>
                     </div>
 
-                    <button
-                        onClick={handleDeleteAccount}
-                        className={"self-end rounded-[10px] px-6 py-3.5 text-[20px] font-bold text-white bg-[#FF5757] cursor-pointer"}
-                    >
-                        Supprimer le compte
-                    </button>
+                    <div className={"text-neutral-400 text-sm flex gap-16"} >
+                        <p className={"italic"}>Tu as le droit de demander la suppression de tes données personnelles à tout moment. Clique sur « Supprimer le compte » pour supprimer ton compte et les données qui y sont associées.
+                            Une confirmation te sera demandée avant de poursuivre cette action.</p>
+                        <button
+                            onClick={() => setIsDeleteAccountPopupOpen(true)}
+                            className={"self-end rounded-[10px] min-w-fit px-6 py-3.5 text-[20px] font-bold text-white bg-[#FF5757] cursor-pointer"}
+                        >
+                            Supprimer le compte
+                        </button>
+                    </div>
                 </div>
 
             </div>
+
+            <Popup isOpen={isDeleteAccountPopupOpen} onClose={() => setIsDeleteAccountPopupOpen(false)}>
+                <h2 className="text-xl font-bold mb-4 text-center">Supprimer mon compte ?</h2>
+                <p className={"text-neutral-400 text-base font-normal"}>
+                    Es-tu sûr(e) de toi ? <br/>
+                    La suppression de ton compte est définitive. <br/>
+                    Tes données personnelles, recettes, cookbooks et informations associées seront définitivement supprimées et ne pourront pas être récupérées. <br/> <br/>
+
+                    Clique sur « Supprimer mon compte » pour confirmer.
+                </p>
+                <div className={"flex justify-center gap-8 mt-8"}>
+                    <Button text={"Annuler"} variant={"blue"} onClick={() => setIsDeleteAccountPopupOpen(false)} />
+                    <button className={"bg-[#FF5757] rounded-[10px] px-4 py-[7px] flex items-center justify-center gap-2 text-center text-[20px] font-[700] text-white cursor-pointer disabled:opacity-60 disabled:cursor-not-allowed"} onClick={handleDeleteAccount} disabled={false} >
+                        {"Supprimer mon compte"}
+                    </button>
+                </div>
+            </Popup>
 
         </div>
     )
