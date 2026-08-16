@@ -8,6 +8,7 @@ export const recipeApi = {
     "createRecipe": (recipe) => client.post("/recipes", recipe),
     "importFromUrl": (url) => client.post("/recipes/import", {url}),
     "updateRecipe": (id, updates) => client.patch(`/recipes/${id}`, updates),
+    "deleteRecipe": (id) => client.delete(`/recipes/${id}`),
     "uploadImage": async (id, file) => {
         const formData = new FormData();
         formData.append("image", file);

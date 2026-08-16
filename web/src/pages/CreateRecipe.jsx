@@ -1,15 +1,20 @@
-import {useRef, useState} from "react";
-import {useNavigate} from "react-router-dom";
+import {useEffect, useRef, useState} from "react";
+import {useNavigate, useParams} from "react-router-dom";
 import Breadcrumb from "../components/ui/Breadcrumb.jsx";
 import Tag from "../components/ui/Tag.jsx";
 import DisabledButton from "../components/ui/DisabledButton.jsx";
 import {ChefHat, Oven, ForkKnife, ImagePlus, X} from "@boxicons/react";
 import recipeApi from "../api/recipe.js";
+import {BASE_URL} from "../api/client.js";
 
 export default function CreateRecipe() {
 
     const navigate = useNavigate();
+    const {id} = useParams();
+    const isEditMode = !!id;
     const fileInputRef = useRef(null);
+
+    const [isLoaded, setIsLoaded] = useState(!isEditMode);
 
     const [title, setTitle] = useState("");
     const [description, setDescription] = useState("");
@@ -30,6 +35,36 @@ export default function CreateRecipe() {
     const [isSubmitting, setIsSubmitting] = useState(false);
 
     const isValid = title.trim() !== "" && prepTime !== "" && servings !== "";
+
+    useEffect(() => {
+        if (!isEditMode) return;
+
+        (async () => {
+            try {
+                const recipe = await recipeApi.getRecipe(id);
+                setTitle(recipe.title || "");
+                setDescription(recipe.description || "");
+                setPrepTime(String(recipe.preptime ?? ""));
+                setCookTime(String(recipe.cooktime ?? ""));
+                setServings(String(recipe.servings ?? ""));
+                setSteps([...(recipe.steps || []).map((step) => step.description), ""]);
+                setIngredients([
+                    ...(recipe.ingredients || []).map((ingredient) => ({
+                        quantity: Number(ingredient.quantity) > 0 ? String(ingredient.quantity) : "",
+                        unit: ingredient.unit || "",
+                        name: ingredient.name,
+                    })),
+                    {quantity: "", unit: "", name: ""},
+                ]);
+                setTags((recipe.tags || []).map((tag) => tag.name));
+                if (recipe.image_url) setImagePreview(BASE_URL + recipe.image_url);
+            } catch (error) {
+                console.log(error);
+            } finally {
+                setIsLoaded(true);
+            }
+        })();
+    }, [id]);
 
     const handleStepChange = (index, value) => {
         setSteps((prev) => {
@@ -105,7 +140,7 @@ export default function CreateRecipe() {
                     return payload;
                 });
 
-            const created = await recipeApi.createRecipe({
+            const payload = {
                 title: title.trim(),
                 description: description.trim(),
                 prepTime: parseInt(prepTime, 10),
@@ -113,17 +148,26 @@ export default function CreateRecipe() {
                 servings: parseInt(servings, 10),
                 ingredients: cleanedIngredients,
                 steps: cleanedSteps.map((stepDescription, index) => ({step_number: index + 1, description: stepDescription})),
-            });
+            };
 
-            if (tags.length > 0) {
-                await recipeApi.updateRecipe(created.id, {tags});
+            let recipeId;
+            if (isEditMode) {
+                payload.tags = tags;
+                await recipeApi.updateRecipe(id, payload);
+                recipeId = id;
+            } else {
+                const created = await recipeApi.createRecipe(payload);
+                recipeId = created.id;
+                if (tags.length > 0) {
+                    await recipeApi.updateRecipe(recipeId, {tags});
+                }
             }
 
             if (imageFile) {
-                await recipeApi.uploadImage(created.id, imageFile);
+                await recipeApi.uploadImage(recipeId, imageFile);
             }
 
-            navigate(`/recipe/${created.id}`);
+            navigate(`/recipe/${recipeId}`);
         } catch (error) {
             console.log(error);
         } finally {
@@ -131,9 +175,13 @@ export default function CreateRecipe() {
         }
     };
 
+    if (isEditMode && !isLoaded) {
+        return <div>Chargement...</div>;
+    }
+
     return (
         <div>
-            <Breadcrumb path={[{ label: "Accueil", link: "/dashboard" }, { label: "Recettes", link: "/recipes" }, { label: "Créer une recette", link: "/create-recipe" }]} />
+            <Breadcrumb path={[{ label: "Accueil", link: "/dashboard" }, { label: "Recettes", link: "/recipes" }, { label: isEditMode ? "Modifier la recette" : "Créer une recette", link: "/create-recipe" }]} />
 
             <div className={"flex gap-15 mt-[38px]"} >
 
@@ -280,7 +328,7 @@ export default function CreateRecipe() {
                     </div>
 
                     <div className={"flex justify-end mt-[37px]"}>
-                        <DisabledButton disabled={!isValid || isSubmitting} text={"Créer la recette"} variant={"primary"} onClick={handleSubmit} />
+                        <DisabledButton disabled={!isValid || isSubmitting} text={isEditMode ? "Enregistrer les modifications" : "Créer la recette"} variant={"primary"} onClick={handleSubmit} />
                     </div>
 
                 </div>

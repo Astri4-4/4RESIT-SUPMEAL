@@ -59,6 +59,14 @@ function App() {
           </ProtectedRoute>
         } ></Route>
 
+        <Route path={"/recipe/:id/edit"} element={
+          <ProtectedRoute>
+            <Navbar page={"recipes"}>
+              <CreateRecipe></CreateRecipe>
+            </Navbar>
+          </ProtectedRoute>
+        } ></Route>
+
         <Route path={"*"} element={<Login />} ></Route>
       </Routes>
     </AuthProvider>
