@@ -222,7 +222,7 @@ export default function RecipeDetail() {
                 </div>
             </div>
             <div className={"flex justify-end gap-4 mt-[37px]"}>
-                <Button variant={"primary"} text={"Modifier la recette"} className={"w-fit"} />
+                <Button variant={"primary"} text={"Modifier la recette"} className={"w-fit"} onClick={() => navigate(`/recipe/${recipe.id}/edit`)} />
                 <button className={"bg-[#FF5757] rounded-[10px] px-4 py-[7px] flex items-center justify-center gap-2 text-center text-[20px] font-[700] text-white cursor-pointer"} onClick={() => setIsDeletePopupOpen(true)} >
                     Supprimer la recette
                 </button>
