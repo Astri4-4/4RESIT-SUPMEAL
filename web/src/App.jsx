@@ -1,6 +1,7 @@
 import { Routes, Route } from "react-router-dom";
 import {AuthProvider} from "./context/AuthContext.jsx";
 import Login from "./pages/Login.jsx";
+import Register from "./pages/Register.jsx";
 import ProtectedRoute from "./components/ProtectedRoutes.jsx";
 import Dashboard from "./pages/Dashboard.jsx";
 import Navbar from "./components/ui/Navbar.jsx";
@@ -15,6 +16,8 @@ function App() {
     <AuthProvider>
       <Routes>
         <Route path={"/login"} element={<Login />} ></Route>
+
+        <Route path={"/register"} element={<Register />} ></Route>
 
         <Route path={"/dashboard"} element={
           <ProtectedRoute>
