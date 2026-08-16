@@ -7,6 +7,7 @@ import {
     addIngredientsToShoppingListValidator,
     createRecipeValidator,
     doRecipeExistsParam, doUserHasViewPermission, doUserHasWritePermission, getRecipeByIdValidator,
+    importRecipeValidator,
     searchRecipesValidator, updateRecipeValidator,
     uploadRecipeImageValidator
 } from "../middlewares/recipe.middleware.js";
@@ -15,7 +16,7 @@ import {
     doShoppingListItemExists,
     isOwnerOfShoppingListItem
 } from "../middlewares/shoppingList.middleware.js";
-import {addRecipeIngredientsToShoppingList, createRecipe, deleteRecipe, deleteShoppingListItem, getMyRecipes, getRecipeById, getShoppingList, searchRecipes, updateImage, updateRecipe} from "../controllers/recipe.controller.js";
+import {addRecipeIngredientsToShoppingList, createRecipe, deleteRecipe, deleteShoppingListItem, getMyRecipes, getRecipeById, getShoppingList, importRecipeFromUrl, searchRecipes, updateImage, updateRecipe} from "../controllers/recipe.controller.js";
 
 const router = Router();
 
@@ -86,6 +87,50 @@ router.post("/", [rateLimitGeneral, verifyToken, createRecipeValidator, validate
     } catch (error) {
         res.status(500).json({
             error: error.message
+        })
+    }
+});
+
+/**
+ * @openapi
+ * /recipes/import:
+ *   post:
+ *     summary: Import a recipe from a Marmiton recipe page URL
+ *     tags: [Recipes]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required: [url]
+ *             properties:
+ *               url:
+ *                 type: string
+ *     responses:
+ *       201:
+ *         description: The imported recipe
+ *       400:
+ *         description: Unsupported URL or no recipe found on the page
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
+ *       500:
+ *         description: Error importing recipe
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
+ */
+router.post("/import", [rateLimitGeneral, verifyToken, importRecipeValidator, validate], async (req, res) => {
+    try {
+        const result = await importRecipeFromUrl(req.body.url, req.user.id);
+        res.status(201).json(result);
+    } catch (error) {
+        res.status(400).json({
+            error: error.message,
+            message: error.message,
         })
     }
 });

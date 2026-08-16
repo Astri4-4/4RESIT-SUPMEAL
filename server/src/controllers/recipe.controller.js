@@ -1,9 +1,10 @@
 import {addIngredientToRecipe, clearRecipeIngredients, createIngredient} from "../services/ingredient.service.js";
 import {clearRecipeSteps, createStep} from "../services/step.service.js";
 import {addTagToRecipe, clearRecipeTags, findOrCreateTag} from "../services/tag.service.js";
-import {deleteRecipeImage} from "../middlewares/asset.middleware.js";
+import {deleteRecipeImage, saveRecipeImageFromUrl} from "../middlewares/asset.middleware.js";
 import * as recipeService from "../services/recipe.service.js";
 import * as shoppingListService from "../services/shoppingList.service.js";
+import * as recipeImportService from "../services/recipeImport.service.js";
 import {getFavoritesByUser} from "../services/favorite.service.js";
 import {getTagsByRecipeIds} from "../services/tag.service.js";
 import {getPlannedRecipeIds} from "../services/plan.service.js";
@@ -68,6 +69,41 @@ export async function createRecipe(recipe) {
     }
 
     return result.rows[0];
+}
+
+export async function importRecipeFromUrl(url, ownerId) {
+    const parsed = await recipeImportService.fetchMarmitonRecipe(url);
+
+    const created = await createRecipe({
+        title: parsed.title,
+        description: parsed.description,
+        prepTime: parsed.prepTime,
+        cookTime: parsed.cookTime,
+        servings: parsed.servings,
+        ingredients: parsed.ingredients,
+        steps: parsed.steps,
+        owner: ownerId,
+    });
+
+    for (const tagName of parsed.tags) {
+        try {
+            const tag = await findOrCreateTag(tagName);
+            await addTagToRecipe(created.id, tag.id);
+        } catch (error) {
+            console.error("Failed to attach imported tag:", error);
+        }
+    }
+
+    if (parsed.imageUrl) {
+        try {
+            const imagePath = await saveRecipeImageFromUrl(parsed.imageUrl);
+            await recipeService.updateImage(imagePath, created.id);
+        } catch (error) {
+            console.error("Failed to import recipe image:", error);
+        }
+    }
+
+    return await getRecipeById(created.id, ownerId);
 }
 
 export async function updateImage(imageUrl, recipeId) {
