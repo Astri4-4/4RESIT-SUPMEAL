@@ -13,7 +13,7 @@ const loginLimiter = new RateLimiterRedis({
 const registerLimiter = new RateLimiterRedis({
     storeClient: redis,
     keyPrefix: 'ratelimit:register',
-    points: 3,
+    points: 300,
     duration: 60,
     blockDuration: 600,
 });

@@ -91,7 +91,7 @@ export default function Recipes() {
                     <h2 className="text-xl font-bold mb-4 text-center">Une nouvelle recette à ajouter ? C'est par ici !</h2>
                     <div className={"flex gap-9.5"}>
                         <Input
-                            placeholder="Colle le lien de la recette Marmiton ici..."
+                            placeholder="Lien marmiton..."
                             value={url}
                             onChange={(e) => {
                                 setUrl(e.target.value)

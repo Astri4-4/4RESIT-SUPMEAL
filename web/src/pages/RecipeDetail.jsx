@@ -1,4 +1,4 @@
-import {useParams} from "react-router-dom";
+import {useNavigate, useParams} from "react-router-dom";
 import {useEffect, useRef, useState} from "react";
 import recipeApi from "../api/recipe.js";
 import Breadcrumb from "../components/ui/Breadcrumb.jsx";
@@ -7,10 +7,13 @@ import ToggleIconButton from "../components/ui/ToggleIconButton.jsx";
 import {Heart, CalendarPlus, CalendarCheck, CartPlus, CartCheck, ChefHat, Oven, ForkKnife} from "@boxicons/react";
 import favoriteApi from "../api/favorite.js";
 import Tag from "../components/ui/Tag.jsx";
+import Button from "../components/ui/Button.jsx";
+import Popup from "../components/Popup.jsx";
 
 export default function RecipeDetail() {
 
     const params = useParams();
+    const navigate = useNavigate();
 
     const [recipe, setRecipe] = useState(null);
     const [multilineSteps, setMultilineSteps] = useState({});
@@ -19,6 +22,8 @@ export default function RecipeDetail() {
     const [isFavoriteHovered, setIsFavoriteHovered] = useState(false);
     const [isMealPlanHovered, setIsMealPlanHovered] = useState(false);
     const [isShoppingListHovered, setIsShoppingListHovered] = useState(false);
+    const [isDeletePopupOpen, setIsDeletePopupOpen] = useState(false);
+    const [isDeleting, setIsDeleting] = useState(false);
 
     const showAsFavorite = isFavoriteHovered ? !recipe?.favorite : recipe?.favorite;
     const showAsInMealPlan = isMealPlanHovered ? !recipe?.inMealPlan : recipe?.inMealPlan;
@@ -79,6 +84,19 @@ export default function RecipeDetail() {
             setRecipe({...recipe, inShoppingList: true});
         } catch (error) {
             console.log(error);
+        }
+    }
+
+    const handleDeleteRecipe = async () => {
+        if (isDeleting) return;
+        setIsDeleting(true);
+        try {
+            await recipeApi.deleteRecipe(recipe.id);
+            navigate("/recipes");
+        } catch (error) {
+            console.log(error);
+        } finally {
+            setIsDeleting(false);
         }
     }
 
@@ -152,6 +170,9 @@ export default function RecipeDetail() {
                                 onClick={handleToggleFavorite}
                                 onMouseEnter={() => setIsFavoriteHovered(true)}
                                 onMouseLeave={() => setIsFavoriteHovered(false)}
+                                hasTooltip={true}
+                                tooltip={"Ajouter au favori"}
+                                tooltipColor={"border-[#FF5757] text-[#FF5757]"}
                             />
                             <ToggleIconButton
                                 icon={showAsInMealPlan ? <CalendarCheck color={"#6EA8FE"} /> : <CalendarPlus color={"#9C9C9C"} />}
@@ -159,6 +180,9 @@ export default function RecipeDetail() {
                                 onClick={handleAddToCalendar}
                                 onMouseEnter={() => setIsMealPlanHovered(true)}
                                 onMouseLeave={() => setIsMealPlanHovered(false)}
+                                hasTooltip={true}
+                                tooltip={"Planifier ma recette"}
+                                tooltipColor={"border-[#6EA8FE] text-[#6EA8FE]"}
                             />
                             <ToggleIconButton
                                 icon={showAsInShoppingList ? <CartCheck color={"#FFB857"} /> : <CartPlus color={"#9C9C9C"} />}
@@ -166,6 +190,9 @@ export default function RecipeDetail() {
                                 onClick={handleAddToShoppingList}
                                 onMouseEnter={() => setIsShoppingListHovered(true)}
                                 onMouseLeave={() => setIsShoppingListHovered(false)}
+                                hasTooltip={true}
+                                tooltip={"Ajouter à la liste de courses"}
+                                tooltipColor={"border-[#FFB857] text-[#FFB857]"}
                             />
                         </div>
 
@@ -194,7 +221,27 @@ export default function RecipeDetail() {
 
                 </div>
             </div>
+            <div className={"flex justify-end gap-4 mt-[37px]"}>
+                <Button variant={"primary"} text={"Modifier la recette"} className={"w-fit"} />
+                <button className={"bg-[#FF5757] rounded-[10px] px-4 py-[7px] flex items-center justify-center gap-2 text-center text-[20px] font-[700] text-white cursor-pointer"} onClick={() => setIsDeletePopupOpen(true)} >
+                    Supprimer la recette
+                </button>
+            </div>
+            <Popup isOpen={isDeletePopupOpen} onClose={() => setIsDeletePopupOpen(false)}>
+                <h2 className="text-xl font-bold mb-4 text-center">Adieu, petite recette !</h2>
+                <p className={"text-neutral-400 text-base font-normal"}>
+                    Es-tu sûr(e) de vouloir supprimer cette recette ?<br/>
+                    Cette action est définitive et ta recette ne pourra pas être récupérée. <br/><br/>
 
+                    Clique sur « Supprimer la recette » pour confirmer.
+                </p>
+                <div className={"flex justify-center gap-8 mt-8"}>
+                    <Button text={"Annuler"} variant={"blue"} onClick={() => setIsDeletePopupOpen(false)} />
+                    <button className={"bg-[#FF5757] rounded-[10px] px-4 py-[7px] flex items-center justify-center gap-2 text-center text-[20px] font-[700] text-white cursor-pointer disabled:opacity-60 disabled:cursor-not-allowed"} onClick={handleDeleteRecipe} disabled={isDeleting} >
+                        {isDeleting ? "Suppression..." : "Supprimer la recette"}
+                    </button>
+                </div>
+            </Popup>
         </div>
     )
 }
