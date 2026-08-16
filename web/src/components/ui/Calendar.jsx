@@ -1,4 +1,5 @@
 import {useEffect, useState} from "react";
+import {useNavigate} from "react-router-dom";
 import {ChevronLeft, ChevronRight} from "@boxicons/react"
 import ButtonCircleIcon from "./ButtonCircleIcon.jsx";
 import planApi from "../../api/plan.js";
@@ -29,13 +30,18 @@ function toDateKey(date) {
 export default function Calendar({...props}) {
 
     const [date, setDate] = useState(new Date());
-    const [plannedDates, setPlannedDates] = useState(new Set());
+    const [plannedDates, setPlannedDates] = useState(new Map());
     const today = new Date();
+    const navigate = useNavigate();
 
     useEffect(() => {
         async function load() {
             const plan = await planApi.getMyPlan();
-            setPlannedDates(new Set((plan.items || []).map(item => item.date.slice(0, 10))));
+            const map = new Map();
+            for (const item of plan.items || []) {
+                map.set(item.date.slice(0, 10), item.recipe_id);
+            }
+            setPlannedDates(map);
         }
         load()
     }, [])
@@ -73,11 +79,13 @@ export default function Calendar({...props}) {
                     {days.map(day => {
                         const isCurrentMonth = day.getMonth() === date.getMonth();
                         const isToday = day.toDateString() === today.toDateString();
-                        const hasPlan = plannedDates.has(toDateKey(day));
+                        const recipeId = plannedDates.get(toDateKey(day));
+                        const hasPlan = recipeId !== undefined;
 
                         return (
                             <div key={day.toISOString()} className={"h-14 flex flex-col items-center justify-center gap-0.5"} >
                                 <span
+                                    onClick={hasPlan ? () => navigate(`/recipe/${recipeId}`) : undefined}
                                     className={`w-10.5 h-10.5 rounded-full flex items-center justify-center text-[20px] transition ${
                                         isCurrentMonth ? "text-black hover:bg-purple cursor-pointer" : "text-[#9C9C9C]"
                                     } ${isToday ? "border border-black font-bold" : "font-normal"}`}
