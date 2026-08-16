@@ -2,7 +2,8 @@ import {HomeAlt2, BowlHot, BookLibrary, UserCircle} from "@boxicons/react";
 
 const variants = {
     "dashboard": "bg-green",
-    "recipes": "bg-[#FFE7C5]"
+    "recipes": "bg-[#FFE7C5]",
+    "account": "bg-[#F6EBFF]"
 }
 
 export default function Navbar({page, children, ...props}) {
@@ -28,17 +29,19 @@ export default function Navbar({page, children, ...props}) {
                             <p className={`${(page === "recipes") ? "font-bold" : ""} text-[16px]`} >Recettes</p>
                         </a>
 
-                        <div className={`${(page === "cookbooks") ? "bg-white  shadow-[0px_0px_20px_0px_rgba(0,0,0,0.10)] text-[#B7E4AA]" : " text-[#9C9C9C]" } aspect-square w-full rounded-[25px] flex flex-col items-center justify-center gap-3.25`} >
+                        <a href={"/cookbooks"} className={`${(page === "cookbooks") ? "bg-white  shadow-[0px_0px_20px_0px_rgba(0,0,0,0.10)] text-[#B7E4AA]" : " text-[#9C9C9C]" } aspect-square w-full rounded-[25px] flex flex-col items-center justify-center gap-3.25`} >
                             <BookLibrary width={48} height={48}/>
                             <p className={`${(page === "cookbooks") ? "font-bold" : ""} text-[16px]`} >Cookbooks</p>
-                        </div>
+                        </a>
 
                     </div>
                 </div>
 
-                <div className={`${(page === "profile") ? "bg-white  shadow-[0px_0px_20px_0px_rgba(0,0,0,0.10)] text-[#B7E4AA]" : "text-[#9C9C9C]" } aspect-square w-full rounded-[25px] flex flex-col items-center justify-center gap-3.25`} >
-                    <UserCircle width={48} height={48} />
-                    <p className={`${(page === "profile") ? "font-bold" : ""} text-[16px]`} >Mon compte</p>
+                <div className={"px-5"}>
+                    <a href={"/account"} className={`${(page === "account") ? "bg-white  shadow-[0px_0px_20px_0px_rgba(0,0,0,0.10)] text-purple" : "text-[#9C9C9C]" } aspect-square w-full rounded-[25px] flex flex-col items-center justify-center gap-3.25`} >
+                        <UserCircle width={48} height={48} />
+                        <p className={`${(page === "account") ? "font-bold" : ""} text-[16px]`} >Mon compte</p>
+                    </a>
                 </div>
 
             </div>
