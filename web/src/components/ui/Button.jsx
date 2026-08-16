@@ -5,10 +5,10 @@ const variants = {
     "ghost": "hover:bg-black hover:border-transparent hover:text-white",
 }
 
-export default function Button({icon=null, text, textSize="20", weight="700", variant="primary", trailing, onClick=() => {},  ...props}) {
+export default function Button({icon=null, text, textSize="20", weight="700", variant="primary", trailing, onClick=() => {}, active=true,  ...props}) {
 
     return (
-        <div className={variants[variant] + " transition border border-black rounded-[10px] px-4 py-[7px] flex items-center justify-center gap-2 group cursor-pointer" + " " + props.className} onClick={onClick}>
+        <div className={` ${(active) ? variants[variant] : ""} ${active ? "cursor-pointer" : ""} transition border border-black rounded-[10px] px-4 py-[7px] flex items-center justify-center gap-2 group ` + " " + props.className} onClick={(active ? onClick : null)}>
             {
                 icon && (
                     <span className={variant === "primary" ? "group-hover:text-black" : "group-hover:text-white"}>
@@ -16,7 +16,7 @@ export default function Button({icon=null, text, textSize="20", weight="700", va
                     </span>
                 )
             }
-            <p className={`text-center text-[${textSize}px] font-[${weight}] ${variant === "primary" ? "group-hover:text-black" : "group-hover:text-white"}`} >{
+            <p className={`text-center text-[${textSize}px] font-[${weight}] ${(variant === "primary" && active)  ? "group-hover:text-black" : (active) ? "group-hover:text-white" : ""}`} >{
                 text
             }</p>
 
