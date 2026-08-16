@@ -206,9 +206,15 @@ export default function RecipeDetail() {
                             <ChefHat color={"#FFB857"} width={24} height={24} />
                             <p>Temps de préparation: {convertToHoursAndMinutes(recipe?.preptime)}</p>
                             <div className={"border-r border-black h-full w-4"} ></div>
-                            <Oven color={"#FFB857"}/>
-                            <p>Temps de cuisson: {convertToHoursAndMinutes(recipe?.cooktime)}</p>
-                            <div className={"border-r border-black h-full w-4"} ></div>
+                            {
+                                recipe?.cooktime !== undefined && recipe?.cooktime > 0 && (
+                             <>
+                                 <Oven color={"#FFB857"}/>
+                                 <p>Temps de cuisson: {convertToHoursAndMinutes(recipe?.cooktime)}</p>
+                                 <div className={"border-r border-black h-full w-4"} ></div>
+                             </>
+                                )
+                            }
                             <ForkKnife color={"#FFB857"}/>
                             <p>{recipe?.servings} personne{(recipe?.servings > 1) ? 's' : ''}</p>
 
