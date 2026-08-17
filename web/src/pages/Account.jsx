@@ -1,7 +1,7 @@
 import Button from "../components/ui/Button.jsx";
 import {Power, Cloud} from "@boxicons/react"
 import Input from "../components/ui/Input.jsx";
-import Tag from "../components/ui/Tag.jsx";
+import TagCategoryList from "../components/ui/TagCategoryList.jsx";
 import {useAuth} from "../context/AuthContext.jsx";
 import {useEffect, useRef, useState} from "react";
 import {useSearchParams} from "react-router-dom";
@@ -229,17 +229,11 @@ export default function Account() {
                     <div className={"shadow-[0px_0px_20px_0px_rgba(0,0,0,0.10)] w-full p-[42px] rounded-[20px] flex flex-col gap-6"} >
                         <h2 className={"text-black text-2xl font-bold font-primary"} >Mes préférences culinaires</h2>
 
-                        <div className={"flex flex-wrap gap-2.5"}>
-                            {allTags.map((tag, index) => (
-                                <Tag
-                                    key={tag.id}
-                                    text={tag.name}
-                                    colorIndex={index}
-                                    selected={preferenceIds.includes(tag.id)}
-                                    onClick={() => handleTogglePreference(tag.id)}
-                                />
-                            ))}
-                        </div>
+                        <TagCategoryList
+                            tags={allTags}
+                            isSelected={(tag) => preferenceIds.includes(tag.id)}
+                            onToggle={(tag) => handleTogglePreference(tag.id)}
+                        />
 
                         <div className={"flex justify-end"}>
                             <DisabledButton
