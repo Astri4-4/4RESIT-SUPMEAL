@@ -1,11 +1,19 @@
 import {useState} from "react";
 import Bullet from "./Bullet.jsx";
 
-export default function FilterMenu({filters, ...props}) {
+export const SORT_OPTIONS = [
+    {key: "date", label: "Date d'ajout"},
+    {key: "preptime", label: "Temps de préparation"},
+    {key: "cooktime", label: "Temps de cuisson"},
+    {key: "favorite", label: "Favoris"},
+];
+
+const ORDER_OPTIONS = [
+];
+
+export default function FilterMenu({sortBy, order, onSortByChange, onOrderChange}) {
 
     const [isOpen, setIsOpen] = useState(false);
-    const [sortBy, setSortBy] = useState(null);
-    const [order, setOrder] = useState(null);
 
     return (
         <div className={"relative"}>
@@ -18,23 +26,19 @@ export default function FilterMenu({filters, ...props}) {
 
             {isOpen && (
                 <div className={"absolute top-16 left-0 bg-white w-60 rounded-[20px] shadow-[0px_0px_20px_0px_rgba(0,0,0,0.10)] z-10"} >
-                    <div className={" py-4 px-3"} >
-                        <p className={"text-[#9C9C9C]"}>Filtrer par</p>
+                    <div className={"py-4 px-3"} >
+                        <p className={"text-[#9C9C9C]"}>Trier par</p>
                         <div className={"ml-2 mt-3 flex flex-col gap-[12px]"}>
-                            <Bullet text={"Date d'ajout"} active={sortBy === "date"} onClick={() => setSortBy("date")} />
-                            <Bullet text={"Temps de préparation"} active={sortBy === "temps"} onClick={() => setSortBy("temps")} />
-                            <Bullet text={"Temps de cuisson"} active={sortBy === "nom"} onClick={() => setSortBy("nom")} />
-                            <Bullet text={"Favoris"} active={sortBy === "favoris"} onClick={() => setSortBy("favoris")} />
+                            {SORT_OPTIONS.map((option) => (
+                                <Bullet
+                                    key={option.key}
+                                    text={option.label}
+                                    active={sortBy === option.key}
+                                    onClick={() => onSortByChange(sortBy === option.key ? null : option.key)}
+                                />
+                            ))}
                         </div>
                     </div>
-
-                    <div className={"border-t border-[#9C9C9C] py-4 px-3"} >
-                        <div className={"ml-2 flex flex-col gap-[12px]"}>
-                            <Bullet text={"Croissant"} active={order === "asc"} onClick={() => setOrder("asc")} />
-                            <Bullet text={"Décroissant"} active={order === "desc"} onClick={() => setOrder("desc")} />
-                        </div>
-                    </div>
-
                 </div>
             )}
 

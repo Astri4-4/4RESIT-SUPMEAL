@@ -77,7 +77,7 @@ export default function Login() {
                     <Button text="Se connecter" onClick={handleSubmit} ></Button>
                     <Button icon={<Google width={30} height={30} />} variant={"blue"} text="Se connecter avec Google" onClick={handleOAuth}></Button>
 
-                    <p className={"text-center"} >Tu n'as pas de compte ? <a href="/register" className="text-[#6EA8FE] underline font-[700]">Créé-le ici</a></p>
+                    <p className={"text-center"} >Tu n'as pas de compte ? <span onClick={() => navigate("/register")} className="text-[#6EA8FE] underline font-[700] cursor-pointer">Créé-le ici</span></p>
 
                 </div>
 

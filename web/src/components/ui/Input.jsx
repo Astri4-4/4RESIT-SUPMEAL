@@ -6,7 +6,7 @@ export default function Input({icon=null, trailing=null, type="text", ...props})
     const [isSeen, setIsSeen] = useState(false);
 
     return (
-        <div className={"border border-[#9C9C9C] bg-[#F2F2F2] py-[7px] px-[16px] rounded-[10px] flex " + props.className}>
+        <div className={"border border-[#9C9C9C] bg-[#F2F2F2] py-[7px] px-[16px] rounded-[10px] flex items-center " + props.className}>
             {
                 icon && (
                     <span className={"mr-2.5"}>

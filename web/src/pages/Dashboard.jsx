@@ -15,6 +15,7 @@ export default function Dashboard() {
     const navigate = useNavigate()
 
     const [recipes, setRecipes] = useState([]);
+    const [search, setSearch] = useState("");
 
     useEffect(() => {
         async function load() {
@@ -22,6 +23,11 @@ export default function Dashboard() {
         }
         load()
     }, [])
+
+    const handleSearchKeyDown = (e) => {
+        if (e.key !== "Enter" || !search.trim()) return;
+        navigate(`/recipes?search=${encodeURIComponent(search.trim())}`);
+    };
 
     return (
         <div className={"flex-1"}>
@@ -37,7 +43,13 @@ export default function Dashboard() {
 
                 </div>
                 <div className={"flex-1"}>
-                    <Input placeholder={"Que veux-tu cuisiner aujourd'hui ?"} trailing={<Search color={"#9C9C9C"} />} />
+                    <Input
+                        placeholder={"Que veux-tu cuisiner aujourd'hui ?"}
+                        value={search}
+                        onChange={(e) => setSearch(e.target.value)}
+                        onKeyDown={handleSearchKeyDown}
+                        trailing={<Search color={"#9C9C9C"} className={"cursor-pointer"} onClick={() => search.trim() && navigate(`/recipes?search=${encodeURIComponent(search.trim())}`)} />}
+                    />
 
                     <div className={"py-10 px-9.5 bg-[#E8F1FF] rounded-[20px] mt-12 shadow-[0px_0px_20px_0px_rgba(0,0,0,0.10)]"} >
                         <h1 className={"font-primary text-[32px] font-bold"}>Ajouter vos propres recettes !</h1>
