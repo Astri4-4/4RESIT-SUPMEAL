@@ -17,7 +17,7 @@ export default function ShoppingList({...props}) {
         <div className={props.className} >
             <h2 className={"font-primary text-[28px] font-bold py-6"} >Liste de courses</h2>
 
-            <div className={"py-9 px-9 bg-[#FFF3E3] rounded-[20px] h-100 flex flex-wrap gap-x-[47px] items-start gap-y-3 overflow-y-auto shadow-[0px_0px_20px_0px_rgba(0,0,0,0.10)]"} >
+            <div className={"py-9 px-9 bg-[#FFF3E3] rounded-[20px] h-100 grid grid-cols-[repeat(auto-fill,minmax(140px,1fr))] gap-x-[24px] gap-y-3 content-start overflow-y-auto shadow-[0px_0px_20px_0px_rgba(0,0,0,0.10)]"} >
                 {list.map((item, index) => (
                     <ShoppingListItem key={index} item={item} ></ShoppingListItem>
                 ))}

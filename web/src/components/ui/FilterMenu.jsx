@@ -34,7 +34,10 @@ export default function FilterMenu({sortBy, order, onSortByChange, onOrderChange
                                     key={option.key}
                                     text={option.label}
                                     active={sortBy === option.key}
-                                    onClick={() => onSortByChange(sortBy === option.key ? null : option.key)}
+                                    onClick={() => {
+                                        onSortByChange(sortBy === option.key ? null : option.key)
+                                        setIsOpen(false)
+                                    }}
                                 />
                             ))}
                         </div>
