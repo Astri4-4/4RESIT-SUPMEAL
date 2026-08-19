@@ -9,6 +9,7 @@ import Recipes from "./pages/Recipes.jsx";
 import RecipeDetail from "./pages/RecipeDetail.jsx";
 import Account from "./pages/Account.jsx";
 import CreateRecipe from "./pages/CreateRecipe.jsx";
+import CookbookDashboard from "./pages/CookbookDashboard.jsx";
 
 function App() {
 
@@ -66,6 +67,16 @@ function App() {
             </Navbar>
           </ProtectedRoute>
         } ></Route>
+
+        <Route path={"/cookbooks"} element={
+          <ProtectedRoute>
+            <Navbar page={"cookbooks"}>
+              <CookbookDashboard></CookbookDashboard>
+            </Navbar>
+          </ProtectedRoute>
+        }>
+
+        </Route>
 
         <Route path={"*"} element={<Login />} ></Route>
       </Routes>

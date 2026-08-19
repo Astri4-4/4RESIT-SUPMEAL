@@ -172,6 +172,18 @@ export async function isRecipeInCookbook(cookbookId, recipeId) {
     }
 }
 
+export async function getCookbooksByRecipeId(recipeId) {
+    try {
+        const result = await query(
+            'SELECT cookbook_id FROM cookbook_recipes WHERE recipe_id = $1',
+            [recipeId]
+        );
+        return result.rows.map((row) => row.cookbook_id);
+    } catch (error) {
+        throw new Error('Error retrieving cookbooks for recipe: ' + error.message, { cause: error });
+    }
+}
+
 export async function getCookbookRecipeId(cookbookId, recipeId) {
     try {
         const result = await query(

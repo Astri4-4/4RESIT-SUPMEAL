@@ -9,6 +9,8 @@ import {getFavoritesByUser} from "../services/favorite.service.js";
 import {getTagsByRecipeIds} from "../services/tag.service.js";
 import {getPlannedRecipeIds} from "../services/plan.service.js";
 import {getRecipeIdsInShoppingList} from "../services/shoppingList.service.js";
+import {getCookbooksByRecipeId} from "../services/cookbook.service.js";
+import {createActivity} from "../services/activity.service.js";
 
 async function withRecipeExtras(recipes, userId) {
     const recipeIds = recipes.map((recipe) => recipe.id);
@@ -146,7 +148,7 @@ export async function getRecipeById(id, userId) {
     }
 }
 
-export async function updateRecipe(recipeId, updates) {
+export async function updateRecipe(recipeId, updates, userId) {
     const {title, description, prepTime, cookTime, servings, ingredients, steps, tags} = updates;
 
     try {
@@ -174,6 +176,14 @@ export async function updateRecipe(recipeId, updates) {
         }
 
         const result = await recipeService.updateRecipe(recipeId, {title, description, prepTime, cookTime, servings});
+
+        if (userId) {
+            const cookbookIds = await getCookbooksByRecipeId(recipeId);
+            for (const cookbookId of cookbookIds) {
+                await createActivity({cookbookId, userId, type: 'recipe_updated', recipeId});
+            }
+        }
+
         return result[0];
     } catch (error) {
         console.error(error);

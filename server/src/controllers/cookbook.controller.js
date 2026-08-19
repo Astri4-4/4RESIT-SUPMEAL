@@ -2,6 +2,7 @@ import * as cookbookService from '../services/cookbook.service.js';
 import {deleteCookbookImage} from '../middlewares/asset.middleware.js';
 import {createComment} from "../services/cookbook.service.js";
 import * as planService from "../services/plan.service.js";
+import {createActivity} from "../services/activity.service.js";
 
 export async function createCookbook(user, cookbook) {
     cookbook.ownerId = user.id;
@@ -68,7 +69,9 @@ export async function updateCookbook(cookbookId, updatedCookbook) {
 
 export async function addUserToCookbook(cookbookId, userId, role) {
     try {
-        return await cookbookService.addUserToCookbook(cookbookId, userId, role);
+        const membership = await cookbookService.addUserToCookbook(cookbookId, userId, role);
+        await createActivity({cookbookId, userId, type: 'join'});
+        return membership;
     } catch (error) {
         throw new Error('Error adding user to cookbook: ' + error.message, { cause: error });
     }
@@ -102,9 +105,11 @@ export async function quitOrKickMember(cookbookId, userId) {
     }
 }
 
-export async function addRecipeToCookbook(cookbookId, recipeId) {
+export async function addRecipeToCookbook(cookbookId, recipeId, userId) {
     try {
-        return await cookbookService.addRecipeToCookbook(cookbookId, recipeId);
+        const result = await cookbookService.addRecipeToCookbook(cookbookId, recipeId);
+        await createActivity({cookbookId, userId, type: 'recipe_added', recipeId});
+        return result;
     } catch (error) {
         throw new Error('Error adding recipe to cookbook: ' + error.message, { cause: error });
     }
@@ -121,7 +126,9 @@ export async function deleteRecipeFromCookbook(cookbookId, recipeId) {
 export async function postComment(cookbookId, recipeId, userId, comment) {
     try {
         const cookbookRecipeId = await cookbookService.getCookbookRecipeId(cookbookId, recipeId);
-        return await createComment(cookbookRecipeId, userId, comment);
+        const created = await createComment(cookbookRecipeId, userId, comment);
+        await createActivity({cookbookId, userId, type: 'comment', recipeId, commentId: created.id, excerpt: comment});
+        return created;
     } catch (error) {
         throw new Error('Error creating comment: ' + error.message, { cause: error });
     }

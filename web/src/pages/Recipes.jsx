@@ -122,6 +122,7 @@ export default function Recipes() {
                         className={"flex-1"}
                         value={search}
                         onChange={(e) => setSearch(e.target.value)}
+                        onKeyDown={(e) => e.key === "Enter" && e.target.blur()}
                         trailing={<Search color="#9C9C9C" width={24} height={24} />}
                     ></Input>
                     <FilterMenu sortBy={sortBy} order={order} onSortByChange={setSortBy} onOrderChange={setOrder} />

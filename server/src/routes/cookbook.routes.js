@@ -566,7 +566,7 @@ router.post("/:cookbookId/recipes/", [rateLimitGeneral, verifyToken, doCookbookE
     const recipeId = req.body.recipeId;
 
     try {
-        const result = await addRecipeToCookbook(cookbookId, recipeId);
+        const result = await addRecipeToCookbook(cookbookId, recipeId, req.user.id);
         res.status(201).json(result);
     } catch (error) {
         res.status(500).json({ message: error.message });

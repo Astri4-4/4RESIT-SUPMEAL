@@ -11,6 +11,7 @@ import {rateLimitGeneral} from "../middlewares/rateLimit.middleware.js";
 import {
     deleteUser,
     exportUserData,
+    getRecentActivities,
     getUserById,
     getUserPreferences,
     importUserData,
@@ -174,6 +175,34 @@ router.put("/me/preferences", [rateLimitGeneral, verifyToken, doTokenUserExistsB
     try {
         const tags = await updateUserPreferences(req.user.id, req.body.tagIds);
         res.status(200).json(tags);
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+})
+
+/**
+ * @openapi
+ * /users/me/activities:
+ *   get:
+ *     summary: Get the authenticated user's recent activity feed across their cookbooks
+ *     tags: [Users]
+ *     parameters:
+ *       - in: query
+ *         name: limit
+ *         schema:
+ *           type: integer
+ *           default: 10
+ *     responses:
+ *       200:
+ *         description: The recent activities
+ *       500:
+ *         description: Error retrieving activities
+ */
+router.get("/me/activities", [rateLimitGeneral, verifyToken, doTokenUserExistsById], async (req, res) => {
+    try {
+        const limit = parseInt(req.query.limit) || 10;
+        const activities = await getRecentActivities(req.user.id, limit);
+        res.status(200).json(activities);
     } catch (error) {
         res.status(500).json({ message: error.message });
     }
