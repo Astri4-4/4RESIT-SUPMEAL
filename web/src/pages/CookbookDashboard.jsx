@@ -42,7 +42,7 @@ function getActivityContent(activity) {
                 tags: [cookbookTag],
                 buttonText: "Voir le cookbook",
                 image,
-                to: "/cookbooks",
+                to: `/cookbooks/${activity.cookbook_id}`,
                 height: "h-[130px]"
             };
         case "recipe_added":
@@ -127,7 +127,7 @@ export default function CookbookDashboard() {
     useEffect(() => {
         (async () => {
             const userCookbooks = await cookbookApi.getUserCookbook();
-            setCookbooks(userCookbooks);
+            setCookbooks((userCookbooks || []).slice().reverse());
         })()
     }, []);
 

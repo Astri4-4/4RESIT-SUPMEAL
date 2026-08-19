@@ -196,11 +196,11 @@ export async function getCookbookRecipeId(cookbookId, recipeId) {
     }
 }
 
-export async function deleteRecipeFromCookbook(cookbookId) {
+export async function deleteRecipeFromCookbook(cookbookId, recipeId) {
     try {
         const result = await query(
-            `DELETE FROM cookbook_recipes WHERE cookbook_id = $1`,
-            [cookbookId]
+            `DELETE FROM cookbook_recipes WHERE cookbook_id = $1 AND recipe_id = $2 RETURNING *`,
+            [cookbookId, recipeId]
         );
         return result.rows[0];
     } catch (error) {

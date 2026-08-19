@@ -68,7 +68,7 @@ export default function Dashboard() {
                         </div>
 
                         {
-                            recipes.slice(-4).reverse().map((recipe) => (
+                            recipes.slice(-4).map((recipe) => (
                                 <div key={recipe.id} className={"mt-6"}>
                                     <LongRecipeCard recipe={recipe}></LongRecipeCard>
                                 </div>
