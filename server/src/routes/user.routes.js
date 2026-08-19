@@ -15,6 +15,7 @@ import {
     getUserById,
     getUserPreferences,
     importUserData,
+    lookupUserByEmail,
     updateUser,
     updateUserPreferences
 } from "../controllers/user.controller.js";
@@ -203,6 +204,45 @@ router.get("/me/activities", [rateLimitGeneral, verifyToken, doTokenUserExistsBy
         const limit = parseInt(req.query.limit) || 10;
         const activities = await getRecentActivities(req.user.id, limit);
         res.status(200).json(activities);
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+})
+
+/**
+ * @openapi
+ * /users/lookup:
+ *   get:
+ *     summary: Look up a user by exact email address (used to invite members to a cookbook)
+ *     tags: [Users]
+ *     parameters:
+ *       - in: query
+ *         name: email
+ *         required: true
+ *         schema:
+ *           type: string
+ *     responses:
+ *       200:
+ *         description: The matching user
+ *       400:
+ *         description: Missing email query parameter
+ *       404:
+ *         description: No user found with this email
+ *       500:
+ *         description: Error looking up user
+ */
+router.get("/lookup", [rateLimitGeneral, verifyToken, doTokenUserExistsById], async (req, res) => {
+    const email = req.query.email;
+    if (!email) {
+        return res.status(400).json({ message: "Email query parameter is required" });
+    }
+
+    try {
+        const user = await lookupUserByEmail(email);
+        if (!user) {
+            return res.status(404).json({ message: "No user found with this email" });
+        }
+        res.status(200).json(user);
     } catch (error) {
         res.status(500).json({ message: error.message });
     }

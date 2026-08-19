@@ -5,6 +5,7 @@ import ShoppingList from "../components/ui/ShoppingList.jsx";
 import {Search, ChevronRight} from "@boxicons/react"
 import Button from "../components/ui/Button.jsx";
 import LongRecipeCard from "../components/ui/LongRecipeCard.jsx";
+import AddRecipePopup from "../components/AddRecipePopup.jsx";
 import recipeApi from "../api/recipe.js";
 import {useEffect, useState} from "react";
 import {useNavigate} from "react-router-dom";
@@ -16,6 +17,7 @@ export default function Dashboard() {
 
     const [recipes, setRecipes] = useState([]);
     const [search, setSearch] = useState("");
+    const [isAddRecipePopupOpen, setIsAddRecipePopupOpen] = useState(false);
 
     useEffect(() => {
         async function load() {
@@ -51,7 +53,10 @@ export default function Dashboard() {
                         trailing={<Search color={"#9C9C9C"} className={"cursor-pointer"} onClick={() => search.trim() && navigate(`/recipes?search=${encodeURIComponent(search.trim())}`)} />}
                     />
 
-                    <div className={"py-10 px-9.5 bg-[#E8F1FF] rounded-[20px] mt-12 shadow-[0px_0px_20px_0px_rgba(0,0,0,0.10)]"} >
+                    <div
+                        className={"py-10 px-9.5 bg-[#E8F1FF] rounded-[20px] mt-12 shadow-[0px_0px_20px_0px_rgba(0,0,0,0.10)] cursor-pointer"}
+                        onClick={() => setIsAddRecipePopupOpen(true)}
+                    >
                         <h1 className={"font-primary text-[32px] font-bold"}>Ajouter vos propres recettes !</h1>
                         <p className={"text-[20px] mt-[38px]"} >Téléchargez vos recettes à partir d’un simple lien internet, et partagez-les avec vos amis dans des cookbooks à l’infini !</p>
                     </div>
@@ -74,6 +79,8 @@ export default function Dashboard() {
 
                 </div>
             </div>
+
+            <AddRecipePopup isOpen={isAddRecipePopupOpen} onClose={() => setIsAddRecipePopupOpen(false)} />
 
         </div>
     )

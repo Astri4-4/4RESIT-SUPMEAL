@@ -6,6 +6,7 @@ export const userApi = {
     remove: () => api.delete("/users"),
     getPreferences: () => api.get("/users/me/preferences"),
     getActivities: (limit = 10) => api.get(`/users/me/activities?limit=${limit}`),
+    lookupByEmail: (email) => api.get(`/users/lookup?email=${encodeURIComponent(email)}`),
     updatePreferences: (tagIds) => api.put("/users/me/preferences", {tagIds}),
     exportData: () => api.get("/users/me/export"),
     importData: (data) => api.post("/users/me/import", data),
