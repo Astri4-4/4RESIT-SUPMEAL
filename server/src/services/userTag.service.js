@@ -3,7 +3,7 @@ import {query} from "../database/db.js";
 export async function getTagsByUserId(userId) {
     try {
         const result = await query(
-            `SELECT tags.id, tags.name
+            `SELECT tags.id, tags.name, tags.category
              FROM user_tags
              JOIN tags ON tags.id = user_tags.tag_id
              WHERE user_tags.user_id = $1

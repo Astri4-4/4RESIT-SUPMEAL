@@ -20,3 +20,19 @@ export async function clearRecipeSteps(recipeId) {
         throw error;
     }
 }
+
+export async function getStepsByRecipeIds(recipeIds) {
+    if (recipeIds.length === 0) return [];
+    try {
+        const result = await query(
+            `SELECT recipe_id, description
+             FROM recipe_steps
+             WHERE recipe_id = ANY($1::int[])`,
+            [recipeIds]
+        );
+        return result.rows;
+    } catch (error) {
+        console.error(error);
+        throw error;
+    }
+}

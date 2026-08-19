@@ -1,5 +1,5 @@
-import {addIngredientToRecipe, clearRecipeIngredients, createIngredient} from "../services/ingredient.service.js";
-import {clearRecipeSteps, createStep} from "../services/step.service.js";
+import {addIngredientToRecipe, clearRecipeIngredients, createIngredient, getIngredientsByRecipeIds} from "../services/ingredient.service.js";
+import {clearRecipeSteps, createStep, getStepsByRecipeIds} from "../services/step.service.js";
 import {addTagToRecipe, clearRecipeTags, findOrCreateTag} from "../services/tag.service.js";
 import {deleteRecipeImage, saveRecipeImageFromUrl} from "../middlewares/asset.middleware.js";
 import * as recipeService from "../services/recipe.service.js";
@@ -13,9 +13,11 @@ import {getRecipeIdsInShoppingList} from "../services/shoppingList.service.js";
 async function withRecipeExtras(recipes, userId) {
     const recipeIds = recipes.map((recipe) => recipe.id);
 
-    const [favorites, tagRows, plannedIds, shoppingListIds] = await Promise.all([
+    const [favorites, tagRows, ingredientRows, stepRows, plannedIds, shoppingListIds] = await Promise.all([
         getFavoritesByUser(userId),
         getTagsByRecipeIds(recipeIds),
+        getIngredientsByRecipeIds(recipeIds),
+        getStepsByRecipeIds(recipeIds),
         getPlannedRecipeIds(userId, recipeIds),
         getRecipeIdsInShoppingList(userId, recipeIds),
     ]);
@@ -32,11 +34,29 @@ async function withRecipeExtras(recipes, userId) {
         tagsByRecipeId.get(row.recipe_id).push({id: row.id, name: row.name});
     }
 
+    const ingredientNamesByRecipeId = new Map();
+    for (const row of ingredientRows) {
+        if (!ingredientNamesByRecipeId.has(row.recipe_id)) {
+            ingredientNamesByRecipeId.set(row.recipe_id, []);
+        }
+        ingredientNamesByRecipeId.get(row.recipe_id).push(row.name);
+    }
+
+    const stepDescriptionsByRecipeId = new Map();
+    for (const row of stepRows) {
+        if (!stepDescriptionsByRecipeId.has(row.recipe_id)) {
+            stepDescriptionsByRecipeId.set(row.recipe_id, []);
+        }
+        stepDescriptionsByRecipeId.get(row.recipe_id).push(row.description);
+    }
+
     return recipes.map((recipe) => ({
         ...recipe,
         favorite: favoriteByRecipeId.has(recipe.id),
         favoriteId: favoriteByRecipeId.get(recipe.id) ?? null,
         tags: tagsByRecipeId.get(recipe.id) ?? [],
+        ingredientNames: ingredientNamesByRecipeId.get(recipe.id) ?? [],
+        stepDescriptions: stepDescriptionsByRecipeId.get(recipe.id) ?? [],
         inMealPlan: plannedRecipeIds.has(recipe.id),
         inShoppingList: shoppingListRecipeIds.has(recipe.id),
     }));

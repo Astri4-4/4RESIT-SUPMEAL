@@ -34,3 +34,20 @@ export async function clearRecipeIngredients(recipeId) {
         throw error;
     }
 }
+
+export async function getIngredientsByRecipeIds(recipeIds) {
+    if (recipeIds.length === 0) return [];
+    try {
+        const result = await query(
+            `SELECT recipe_ingredients.recipe_id, ingredients.name
+             FROM recipe_ingredients
+             JOIN ingredients ON ingredients.id = recipe_ingredients.ingredient_id
+             WHERE recipe_ingredients.recipe_id = ANY($1::int[])`,
+            [recipeIds]
+        );
+        return result.rows;
+    } catch (error) {
+        console.error(error);
+        throw error;
+    }
+}

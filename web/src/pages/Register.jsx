@@ -99,7 +99,7 @@ export default function Register() {
 
                     <Button icon={<Google width={30} height={30} />} variant={"blue"} text="Créer mon compte avec Google" onClick={handleOAuth}></Button>
 
-                    <p className={"text-center"} >Tu as déjà un compte ? <a href="/login" className="text-black underline font-[700]">Connecte-toi</a></p>
+                    <p className={"text-center"} >Tu as déjà un compte ? <span onClick={() => navigate("/login")} className="text-black underline font-[700] cursor-pointer">Connecte-toi</span></p>
 
                 </div>
 
