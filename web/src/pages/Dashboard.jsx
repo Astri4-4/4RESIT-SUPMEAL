@@ -26,7 +26,7 @@ export default function Dashboard() {
     return (
         <div className={"flex-1"}>
             <div>
-                <h1 className={"font-primary text-5xl font-bold"} >Bonjour {user?.username}</h1>
+                <h1 className={"font-primary text-5xl font-bold"} >Bonjour {user?.username} !</h1>
             </div>
 
             <div className={"flex gap-25 mt-3.25"} >

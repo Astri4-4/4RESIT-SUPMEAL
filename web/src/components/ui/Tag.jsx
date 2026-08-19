@@ -1,7 +1,10 @@
 const COLORS = [
     {bg: "#F3FFEB", border: "#B7E4AA"}, // vert
-    {bg: "#F6EBFF", border: "#E5C7FF"}, // violet
+    {bg: "#FFEBEB", border: "#FFB8B8"}, // rouge
+    {bg: "#FFF3E0", border: "#FFCC80"}, // orange
+    {bg: "#FFFBE5", border: "#FFE58A"}, // jaune
     {bg: "#E8F1FF", border: "#A2BADE"}, // bleu
+    {bg: "#F6EBFF", border: "#E5C7FF"}, // violet
 ];
 
 export default function Tag({text, colorIndex = 0, selected = true, ...props}) {

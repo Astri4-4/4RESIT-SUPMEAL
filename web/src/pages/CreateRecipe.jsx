@@ -1,10 +1,11 @@
 import {useEffect, useRef, useState} from "react";
 import {useNavigate, useParams} from "react-router-dom";
 import Breadcrumb from "../components/ui/Breadcrumb.jsx";
-import Tag from "../components/ui/Tag.jsx";
+import TagCategoryList from "../components/ui/TagCategoryList.jsx";
 import DisabledButton from "../components/ui/DisabledButton.jsx";
 import {ChefHat, Oven, ForkKnife, ImagePlus, X} from "@boxicons/react";
 import recipeApi from "../api/recipe.js";
+import tagApi from "../api/tag.js";
 import {BASE_URL} from "../api/client.js";
 
 export default function CreateRecipe() {
@@ -25,7 +26,7 @@ export default function CreateRecipe() {
     const [steps, setSteps] = useState([""]);
     const [ingredients, setIngredients] = useState([{quantity: "", unit: "", name: ""}]);
 
-    const [tagInput, setTagInput] = useState("");
+    const [allTags, setAllTags] = useState([]);
     const [tags, setTags] = useState([]);
 
     const [imageFile, setImageFile] = useState(null);
@@ -35,6 +36,16 @@ export default function CreateRecipe() {
     const [isSubmitting, setIsSubmitting] = useState(false);
 
     const isValid = title.trim() !== "" && prepTime !== "" && servings !== "";
+
+    useEffect(() => {
+        (async () => {
+            try {
+                setAllTags(await tagApi.getAll() || []);
+            } catch (error) {
+                console.log(error);
+            }
+        })();
+    }, []);
 
     useEffect(() => {
         if (!isEditMode) return;
@@ -96,22 +107,8 @@ export default function CreateRecipe() {
         setIngredients((prev) => prev.filter((_, i) => i !== index));
     };
 
-    const handleAddTag = () => {
-        const value = tagInput.trim();
-        setTagInput("");
-        if (!value || tags.includes(value)) return;
-        setTags((prev) => [...prev, value]);
-    };
-
-    const handleTagKeyDown = (e) => {
-        if (e.key === "Enter") {
-            e.preventDefault();
-            handleAddTag();
-        }
-    };
-
-    const handleRemoveTag = (value) => {
-        setTags((prev) => prev.filter((tag) => tag !== value));
+    const handleToggleTag = (tagName) => {
+        setTags((prev) => prev.includes(tagName) ? prev.filter((tag) => tag !== tagName) : [...prev, tagName]);
     };
 
     const handleSelectImage = (file) => {
@@ -287,17 +284,12 @@ export default function CreateRecipe() {
                         onChange={(e) => handleSelectImage(e.target.files?.[0])}
                     />
 
-                    <div className={"flex flex-wrap gap-2 items-center bg-[#F2F2F2] border border-[#9C9C9C] rounded-[10px] px-4 py-2.5 mt-[37px]"} >
-                        {tags.map((tag, index) => (
-                            <Tag key={tag} text={tag} colorIndex={index} onClick={() => handleRemoveTag(tag)} title={"Cliquer pour retirer"} />
-                        ))}
-                        <input
-                            value={tagInput}
-                            onChange={(e) => setTagInput(e.target.value)}
-                            onKeyDown={handleTagKeyDown}
-                            onBlur={handleAddTag}
-                            placeholder={"Ajouter des tags"}
-                            className={"flex-1 min-w-[120px] bg-transparent focus:outline-none placeholder:text-[#9C9C9C]"}
+                    <div className={"px-[42px] py-[42px] bg-white rounded-[20px] shadow-[0px_0px_20px_0px_rgba(0,0,0,0.10)] mt-[37px] flex flex-col gap-7"} >
+                        <h2 className={"text-black text-2xl font-bold font-primary"} >Ajouter des tags</h2>
+                        <TagCategoryList
+                            tags={allTags}
+                            isSelected={(tag) => tags.includes(tag.name)}
+                            onToggle={(tag) => handleToggleTag(tag.name)}
                         />
                     </div>
 
