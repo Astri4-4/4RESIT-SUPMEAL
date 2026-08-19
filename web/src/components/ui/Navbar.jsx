@@ -4,7 +4,8 @@ import {useNavigate} from "react-router-dom";
 const variants = {
     "dashboard": "bg-green",
     "recipes": "bg-[#FFE7C5]",
-    "account": "bg-[#F6EBFF]"
+    "account": "bg-[#F6EBFF]",
+    "cookbooks": "bg-[#E8F1FF]"
 }
 
 export default function Navbar({page, children, ...props}) {
@@ -32,7 +33,7 @@ export default function Navbar({page, children, ...props}) {
                             <p className={`${(page === "recipes") ? "font-bold" : ""} text-[16px]`} >Recettes</p>
                         </div>
 
-                        <div onClick={() => navigate("/cookbooks")} className={`${(page === "cookbooks") ? "bg-white  shadow-[0px_0px_20px_0px_rgba(0,0,0,0.10)] text-[#B7E4AA]" : " text-[#9C9C9C]" } aspect-square w-full rounded-[25px] flex flex-col items-center justify-center gap-3.25 cursor-pointer`} >
+                        <div onClick={() => navigate("/cookbooks")} className={`${(page === "cookbooks") ? "bg-white  shadow-[0px_0px_20px_0px_rgba(0,0,0,0.10)] text-[#A2BADE]" : " text-[#9C9C9C]" } aspect-square w-full rounded-[25px] flex flex-col items-center justify-center gap-3.25 cursor-pointer`} >
                             <BookLibrary width={48} height={48}/>
                             <p className={`${(page === "cookbooks") ? "font-bold" : ""} text-[16px]`} >Cookbooks</p>
                         </div>

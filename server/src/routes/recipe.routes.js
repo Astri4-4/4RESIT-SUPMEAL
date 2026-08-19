@@ -525,7 +525,7 @@ router.patch("/:recipeId", [rateLimitGeneral, verifyToken, getRecipeByIdValidato
     const recipeId = req.params.recipeId;
 
     try {
-        const result = await updateRecipe(recipeId, req.body);
+        const result = await updateRecipe(recipeId, req.body, req.user.id);
         res.status(200).json(result);
     } catch (error) {
         console.error(error);

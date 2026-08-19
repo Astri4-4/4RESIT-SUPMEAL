@@ -6,6 +6,7 @@ import * as stepService from '../services/step.service.js';
 import * as tagService from '../services/tag.service.js';
 import * as cookbookService from '../services/cookbook.service.js';
 import * as planService from '../services/plan.service.js';
+import * as activityService from '../services/activity.service.js';
 import bcrypt from 'bcrypt';
 
 const UPDATABLE_FIELDS = ['username', 'email', 'password', 'image_url'];
@@ -68,6 +69,14 @@ export async function updateUserPreferences(userId, tagIds) {
         return await userTagService.setUserTags(userId, tagIds);
     } catch (error) {
         throw new Error('Error updating user preferences');
+    }
+}
+
+export async function getRecentActivities(userId, limit) {
+    try {
+        return await activityService.getRecentActivitiesForUser(userId, limit);
+    } catch (error) {
+        throw new Error('Error retrieving activities');
     }
 }
 

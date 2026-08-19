@@ -51,6 +51,10 @@ export default function Register() {
         }
     }
 
+    const handleKeyDown = (e) => {
+        if (e.key === "Enter") handleSubmit(e);
+    }
+
     const handleOAuth = (e) => {
         e.preventDefault();
 
@@ -71,10 +75,10 @@ export default function Register() {
 
                 <div className={"flex flex-col gap-6 mt-8.75"} >
 
-                    <Input placeholder="pseudo" onChange={(e) => setUsername(e.target.value)} value={username} ></Input>
-                    <Input placeholder="adresse email" onChange={(e) => setEmail(e.target.value)} value={email} ></Input>
-                    <Input placeholder="mot de passe" type="password" onChange={(e) => setPassword(e.target.value)} value={password} ></Input>
-                    <Input placeholder="confirmer le mot de passe" type="password" onChange={(e) => setConfirmPassword(e.target.value)} value={confirmPassword} ></Input>
+                    <Input placeholder="pseudo" onChange={(e) => setUsername(e.target.value)} onKeyDown={handleKeyDown} value={username} ></Input>
+                    <Input placeholder="adresse email" onChange={(e) => setEmail(e.target.value)} onKeyDown={handleKeyDown} value={email} ></Input>
+                    <Input placeholder="mot de passe" type="password" onChange={(e) => setPassword(e.target.value)} onKeyDown={handleKeyDown} value={password} ></Input>
+                    <Input placeholder="confirmer le mot de passe" type="password" onChange={(e) => setConfirmPassword(e.target.value)} onKeyDown={handleKeyDown} value={confirmPassword} ></Input>
 
                     <Button text="Créer mon compte" onClick={handleSubmit} ></Button>
 

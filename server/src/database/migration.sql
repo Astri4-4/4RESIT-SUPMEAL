@@ -1,3 +1,4 @@
+DROP TABLE IF EXISTS activities;
 DROP TABLE IF EXISTS user_tags;
 DROP TABLE IF EXISTS shopping_list_items;
 DROP TABLE IF EXISTS favorites;
@@ -117,6 +118,17 @@ CREATE TABLE cookbook_recipe_comments (
     comment TEXT NOT NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE activities (
+    id SERIAL PRIMARY KEY,
+    cookbook_id INT NOT NULL REFERENCES cookbooks(id) ON DELETE CASCADE,
+    user_id INT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+    recipe_id INT REFERENCES recipes(id) ON DELETE CASCADE,
+    comment_id INT REFERENCES cookbook_recipe_comments(id) ON DELETE CASCADE,
+    type VARCHAR(30) NOT NULL,
+    excerpt TEXT,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
 CREATE TABLE meal_plans (

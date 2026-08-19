@@ -50,6 +50,10 @@ export default function Login() {
         }
     }
 
+    const handleKeyDown = (e) => {
+        if (e.key === "Enter") handleSubmit(e);
+    }
+
     const handleOAuth = async (e) => {
         e.preventDefault();
 
@@ -71,8 +75,8 @@ export default function Login() {
 
                 <div className={"flex flex-col gap-6 mt-8.75"} >
 
-                    <Input placeholder="Nom d'utilisateur" onChange={(e) => setEmail(e.target.value)} value={email} ></Input>
-                    <Input placeholder="Mot de passe" type="password" onChange={(e) => setPassword(e.target.value)} value={password} ></Input>
+                    <Input placeholder="Nom d'utilisateur" onChange={(e) => setEmail(e.target.value)} onKeyDown={handleKeyDown} value={email} ></Input>
+                    <Input placeholder="Mot de passe" type="password" onChange={(e) => setPassword(e.target.value)} onKeyDown={handleKeyDown} value={password} ></Input>
 
                     <Button text="Se connecter" onClick={handleSubmit} ></Button>
                     <Button icon={<Google width={30} height={30} />} variant={"blue"} text="Se connecter avec Google" onClick={handleOAuth}></Button>
