@@ -189,7 +189,7 @@ router.get("/:cookbookId", [rateLimitGeneral, verifyToken, getCookbookValidator,
 router.get("/:cookbookId/users", [rateLimitGeneral, verifyToken, getCookbookValidator, validate, doCookbookExistsById, isMemberOfCookbook, validate], async (req, res) => {
     const cookbookId = req.params.cookbookId;
     try {
-        const members = await getCookbookMembers(cookbookId);
+            const members = await getCookbookMembers(cookbookId);
         res.status(200).json(members);
     } catch (error) {
         res.status(500).json({ message: error.message });
@@ -296,7 +296,7 @@ router.patch("/:cookbookId", [rateLimitGeneral, verifyToken, uploadCookbookImage
  *             schema:
  *               $ref: '#/components/schemas/Error'
  */
-router.post("/:cookbookId/members", [rateLimitGeneral, verifyToken, addMemberToCookbookValidator, validate, doCookbookExistsById, isMemberOfCookbook, isEditorOrOwnerOfCookbook, isBodyUserNotMemberOfCookbook ], async (req, res) => {
+    router.post("/:cookbookId/members", [rateLimitGeneral, verifyToken, addMemberToCookbookValidator, validate, doCookbookExistsById, isMemberOfCookbook, isEditorOrOwnerOfCookbook, isBodyUserNotMemberOfCookbook ], async (req, res) => {
     const userId = req.body.userId;
     const role = req.body.role;
     const cookbookId = req.params.cookbookId;
