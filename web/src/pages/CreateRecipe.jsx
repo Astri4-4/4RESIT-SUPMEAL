@@ -7,10 +7,12 @@ import {ChefHat, Oven, ForkKnife, ImagePlus, X} from "@boxicons/react";
 import recipeApi from "../api/recipe.js";
 import tagApi from "../api/tag.js";
 import {BASE_URL} from "../api/client.js";
+import {useAlert} from "../context/AlertContext.jsx";
 
 export default function CreateRecipe() {
 
     const navigate = useNavigate();
+    const {showSuccess, showError} = useAlert();
     const {id} = useParams();
     const isEditMode = !!id;
     const fileInputRef = useRef(null);
@@ -164,9 +166,11 @@ export default function CreateRecipe() {
                 await recipeApi.uploadImage(recipeId, imageFile);
             }
 
+            showSuccess(isEditMode ? "Recette modifiée avec succès !" : "Recette créée avec succès !");
             navigate(`/recipe/${recipeId}`);
         } catch (error) {
             console.log(error);
+            showError(error.message || "Une erreur est survenue.");
         } finally {
             setIsSubmitting(false);
         }

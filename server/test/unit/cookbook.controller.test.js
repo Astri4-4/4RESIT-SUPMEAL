@@ -3,6 +3,9 @@ import {describe, it, expect, vi, beforeEach} from 'vitest';
 vi.mock('../../src/middlewares/asset.middleware.js', () => ({
     deleteCookbookImage: vi.fn(),
 }));
+vi.mock('../../src/services/activity.service.js', () => ({
+    createActivity: vi.fn(),
+}));
 vi.mock('../../src/services/cookbook.service.js', () => ({
     create: vi.fn(),
     addUserToCookbook: vi.fn(),
@@ -54,7 +57,7 @@ describe('createCookbook', () => {
     it('wraps errors with a descriptive message', async () => {
         cookbookService.create.mockRejectedValue(new Error('db down'));
 
-        await expect(createCookbook({id: 1}, {title: 'x'})).rejects.toThrow('Error creating cookbook: db down');
+        await expect(createCookbook({id: 1}, {title: 'x'})).rejects.toThrow('Erreur lors de la création du cookbook : db down');
     });
 });
 
@@ -78,7 +81,7 @@ describe('getCookbooksByUserId', () => {
     it('wraps errors with a descriptive message', async () => {
         cookbookService.getCookbooksByUserId.mockRejectedValue(new Error('db down'));
 
-        await expect(getCookbooksByUserId(3, 0, 10)).rejects.toThrow('Error retrieving cookbooks: db down');
+        await expect(getCookbooksByUserId(3, 0, 10)).rejects.toThrow('Erreur lors de la récupération des cookbooks : db down');
     });
 });
 
@@ -95,7 +98,7 @@ describe('getCookbookById', () => {
     it('wraps errors with a descriptive message', async () => {
         cookbookService.getCookbookById.mockRejectedValue(new Error('db down'));
 
-        await expect(getCookbookById(1)).rejects.toThrow('Error retrieving cookbook: db down');
+        await expect(getCookbookById(1)).rejects.toThrow('Erreur lors de la récupération du cookbook : db down');
     });
 });
 
@@ -109,7 +112,7 @@ describe('getCookbookMembers', () => {
     it('wraps errors with a descriptive message', async () => {
         cookbookService.getCookbookMembers.mockRejectedValue(new Error('db down'));
 
-        await expect(getCookbookMembers(1)).rejects.toThrow('Error retrieving cookbook members: db down');
+        await expect(getCookbookMembers(1)).rejects.toThrow('Erreur lors de la récupération des membres du cookbook : db down');
     });
 });
 
@@ -134,7 +137,7 @@ describe('updateCookbook', () => {
     it('wraps errors with a descriptive message', async () => {
         cookbookService.updateCookbook.mockRejectedValue(new Error('db down'));
 
-        await expect(updateCookbook(1, {title: 'x'})).rejects.toThrow('Error updating cookbook: db down');
+        await expect(updateCookbook(1, {title: 'x'})).rejects.toThrow('Erreur lors de la modification du cookbook : db down');
     });
 });
 
@@ -148,7 +151,7 @@ describe('addUserToCookbook', () => {
     it('wraps errors with a descriptive message', async () => {
         cookbookService.addUserToCookbook.mockRejectedValue(new Error('db down'));
 
-        await expect(addUserToCookbook(1, 2, 'viewer')).rejects.toThrow('Error adding user to cookbook: db down');
+        await expect(addUserToCookbook(1, 2, 'viewer')).rejects.toThrow('Erreur lors de l\'ajout du membre au cookbook : db down');
     });
 });
 
@@ -162,7 +165,7 @@ describe('changeRoleInCookbook', () => {
     it('wraps errors with a descriptive message', async () => {
         cookbookService.changeRoleInCookbook.mockRejectedValue(new Error('db down'));
 
-        await expect(changeRoleInCookbook(1, 2, 'editor')).rejects.toThrow('Error changing user role in cookbook: db down');
+        await expect(changeRoleInCookbook(1, 2, 'editor')).rejects.toThrow('Erreur lors du changement de rôle : db down');
     });
 });
 
@@ -187,7 +190,7 @@ describe('deleteCookbook', () => {
     it('wraps errors with a descriptive message', async () => {
         cookbookService.deleteCookbook.mockRejectedValue(new Error('db down'));
 
-        await expect(deleteCookbook(1)).rejects.toThrow('Error deleting cookbook: db down');
+        await expect(deleteCookbook(1)).rejects.toThrow('Erreur lors de la suppression du cookbook : db down');
     });
 });
 
@@ -202,7 +205,7 @@ describe('quitOrKickMember', () => {
     it('wraps errors with a descriptive message', async () => {
         cookbookService.removeMember.mockRejectedValue(new Error('db down'));
 
-        await expect(quitOrKickMember(1, 2)).rejects.toThrow('Error quitting or kicking member from cookbook: db down');
+        await expect(quitOrKickMember(1, 2)).rejects.toThrow('Erreur lors du retrait du membre : db down');
     });
 });
 
@@ -222,7 +225,7 @@ describe('postComment', () => {
         cookbookService.getCookbookRecipeId.mockResolvedValue(6);
         cookbookService.createComment.mockRejectedValue(new Error('db down'));
 
-        await expect(postComment(41, 60, 2, 'Nice!')).rejects.toThrow('Error creating comment: db down');
+        await expect(postComment(41, 60, 2, 'Nice!')).rejects.toThrow('Erreur lors de la création du commentaire : db down');
     });
 });
 
@@ -242,6 +245,6 @@ describe('getCommentsByRecipeId (controller)', () => {
         cookbookService.getCookbookRecipeId.mockResolvedValue(6);
         cookbookService.getCommentsByRecipeId.mockRejectedValue(new Error('db down'));
 
-        await expect(getCommentsByRecipeIdController(41, 60)).rejects.toThrow('Error retrieving comment: db down');
+        await expect(getCommentsByRecipeIdController(41, 60)).rejects.toThrow('Erreur lors de la récupération du commentaire : db down');
     });
 });

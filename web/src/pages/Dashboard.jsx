@@ -9,6 +9,7 @@ import AddRecipePopup from "../components/AddRecipePopup.jsx";
 import recipeApi from "../api/recipe.js";
 import {useEffect, useState} from "react";
 import {useNavigate} from "react-router-dom";
+import Alert from "../components/ui/Alert.jsx";
 
 
 export default function Dashboard() {
@@ -33,6 +34,7 @@ export default function Dashboard() {
 
     return (
         <div className={"flex-1"}>
+            <Alert type="error" message="Bienvenue sur votre tableau de bord !" />
             <div>
                 <h1 className={"font-primary text-5xl font-bold"} >Bonjour {user?.username} !</h1>
             </div>

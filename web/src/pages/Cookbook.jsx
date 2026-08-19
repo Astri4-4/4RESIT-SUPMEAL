@@ -10,6 +10,7 @@ import recipeApi from "../api/recipe.js";
 import userApi from "../api/user.js";
 import {BASE_URL} from "../api/client.js";
 import {useAuth} from "../context/AuthContext.jsx";
+import {useAlert} from "../context/AlertContext.jsx";
 
 const ROLE_LABELS = {
     owner: "Créateur",
@@ -28,6 +29,7 @@ export default function Cookbook() {
     const {id} = useParams();
     const navigate = useNavigate();
     const {user} = useAuth();
+    const {showSuccess, showError} = useAlert();
     const fileInputRef = useRef(null);
 
     const [cookbook, setCookbook] = useState(null);
@@ -81,27 +83,33 @@ export default function Cookbook() {
         try {
             await cookbookApi.addRecipe(id, recipeId);
             setRecipeSearch("");
+            showSuccess("Recette ajoutée au cookbook !");
             await loadCookbook();
         } catch (error) {
             console.log(error);
+            showError(error.message || "Impossible d'ajouter cette recette.");
         }
     };
 
     const handleRemoveRecipe = async (recipeId) => {
         try {
             await cookbookApi.removeRecipe(id, recipeId);
+            showSuccess("Recette retirée du cookbook.");
             await loadCookbook();
         } catch (error) {
             console.log(error);
+            showError(error.message || "Impossible de retirer cette recette.");
         }
     };
 
     const handleChangeRole = async (userId, role) => {
         try {
             await cookbookApi.changeRole(id, userId, role);
+            showSuccess("Rôle mis à jour !");
             await loadCookbook();
         } catch (error) {
             console.log(error);
+            showError(error.message || "Impossible de mettre à jour ce rôle.");
         }
     };
 
@@ -110,9 +118,11 @@ export default function Cookbook() {
 
         try {
             await cookbookApi.removeMember(id, userId);
+            showSuccess("Membre exclu du cookbook.");
             await loadCookbook();
         } catch (error) {
             console.log(error);
+            showError(error.message || "Impossible d'exclure ce membre.");
         }
     };
 
@@ -143,14 +153,18 @@ export default function Cookbook() {
             const foundUser = await userApi.lookupByEmail(email);
             if (members.some((member) => member.id === foundUser.id)) {
                 setInviteError("Ce membre fait déjà partie du cookbook.");
+                showError("Ce membre fait déjà partie du cookbook.");
                 return;
             }
             await cookbookApi.addMember(id, foundUser.id, inviteRole);
             setInviteEmail("");
+            showSuccess("Membre ajouté au cookbook !");
             await loadCookbook();
         } catch (error) {
             console.log(error);
-            setInviteError("Aucun utilisateur trouvé avec cette adresse e-mail.");
+            const message = "Aucun utilisateur trouvé avec cette adresse e-mail.";
+            setInviteError(message);
+            showError(message);
         } finally {
             setIsInviting(false);
         }
@@ -171,10 +185,12 @@ export default function Cookbook() {
         setIsSaving(true);
         try {
             await cookbookApi.update(id, {title: title.trim(), description: description.trim(), imageFile});
+            showSuccess("Cookbook modifié avec succès !");
             await loadCookbook();
             setIsEditing(false);
         } catch (error) {
             console.log(error);
+            showError(error.message || "Impossible de modifier ce cookbook.");
         } finally {
             setIsSaving(false);
         }
@@ -186,9 +202,11 @@ export default function Cookbook() {
         setIsDeleting(true);
         try {
             await cookbookApi.remove(id);
+            showSuccess("Cookbook supprimé.");
             navigate("/cookbooks");
         } catch (error) {
             console.log(error);
+            showError(error.message || "Impossible de supprimer ce cookbook.");
         } finally {
             setIsDeleting(false);
         }

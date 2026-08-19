@@ -23,7 +23,7 @@ export const recipeApi = {
 
         if (!res.ok) {
             const data = await res.json().catch(() => null);
-            throw new Error(data?.message || "Erreur lors de l'upload de l'image");
+            throw new Error(data?.message || data?.error || "Erreur lors de l'upload de l'image");
         }
 
         return res.json();

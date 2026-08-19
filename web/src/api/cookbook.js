@@ -27,7 +27,7 @@ const cookbookApi = {
 
         if (!res.ok) {
             const data = await res.json().catch(() => null);
-            throw new Error(data?.message || "Erreur lors de la modification du cookbook");
+            throw new Error(data?.message || data?.error || "Erreur lors de la modification du cookbook");
         }
 
         return res.json();
@@ -48,7 +48,7 @@ const cookbookApi = {
 
         if (!res.ok) {
             const data = await res.json().catch(() => null);
-            throw new Error(data?.message || "Erreur lors de la création du cookbook");
+            throw new Error(data?.message || data?.error || "Erreur lors de la création du cookbook");
         }
 
         return res.json();

@@ -6,6 +6,7 @@ import { useAuth } from "../context/AuthContext.jsx";
 import {useNavigate, useSearchParams} from "react-router-dom";
 import {authApi} from "../api/auth.js";
 import {BASE_URL} from "../api/client.js";
+import {useAlert} from "../context/AlertContext.jsx";
 
 export default function Login() {
 
@@ -13,6 +14,7 @@ export default function Login() {
     const [password, setPassword] = useState("");
 
     const {login, user, setSession} = useAuth();
+    const {showError} = useAlert();
     const navigate = useNavigate();
     const [searchParams] = useSearchParams();
 
@@ -47,6 +49,7 @@ export default function Login() {
             navigate("/dashboard");
         } catch (error) {
             console.log(error);
+            showError(error.message || "Identifiants incorrects.");
         }
     }
 

@@ -5,6 +5,7 @@ import Button from "./ui/Button.jsx";
 import {useState} from "react";
 import {useNavigate} from "react-router-dom";
 import recipeApi from "../api/recipe.js";
+import {useAlert} from "../context/AlertContext.jsx";
 
 export default function AddRecipePopup({isOpen, onClose}) {
 
@@ -14,6 +15,7 @@ export default function AddRecipePopup({isOpen, onClose}) {
     const [importError, setImportError] = useState(null);
 
     const navigate = useNavigate();
+    const {showSuccess, showError} = useAlert();
 
     const handleClose = () => {
         onClose();
@@ -29,10 +31,13 @@ export default function AddRecipePopup({isOpen, onClose}) {
         setImportError(null);
         try {
             const recipe = await recipeApi.importFromUrl(url);
+            showSuccess("Recette importée avec succès !");
             navigate(`/recipe/${recipe.id}`);
         } catch (error) {
             console.log(error);
-            setImportError(error.message || "Impossible d'importer cette recette.");
+            const message = error.message || "Impossible d'importer cette recette.";
+            setImportError(message);
+            showError(message);
         } finally {
             setIsImporting(false);
         }

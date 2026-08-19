@@ -56,9 +56,9 @@ router.post("/register", [rateLimitRegister, authMiddleware.registerValidation, 
     const user = req.body;
     try {
         await authController.register(user);
-        res.status(201).json({ message: "User registered successfully" });
+        res.status(201).json({ message: "Compte créé avec succès" });
     } catch (error) {
-        res.status(500).json({ message: "Error registering user", error: error.message });
+        res.status(500).json({ message: "Erreur lors de la création du compte", error: error.message });
     }
 });
 
@@ -108,9 +108,9 @@ router.post("/login", [rateLimitLogin, authMiddleware.loginValidation, validate]
     try {
         const user = await authController.login(userCreds);
         user.password_hash = undefined;
-        res.status(200).json({ message: "Login successful", user });
+        res.status(200).json({ message: "Connexion réussie", user });
     } catch (error) {
-        res.status(401).json({ message: "Invalid credentials", error: error.message });
+        res.status(401).json({ message: "Identifiants invalides", error: error.message });
     }
 })
 
@@ -177,7 +177,7 @@ router.get("/google/link", (req, res, next) => {
     try {
         jwt.verify(token, process.env.JWT_SECRET);
     } catch (error) {
-        return res.status(401).json({ message: "Invalid or missing token" });
+        return res.status(401).json({ message: "Jeton invalide ou manquant" });
     }
 
     passport.authenticate("google", { scope: ["profile", "email"], session: false, state: token })(req, res, next);
@@ -190,7 +190,7 @@ router.get("/google/callback", (req, res, next) => {
 
         if (error || !user) {
             const redirectTo = isLinkFlow ? `${frontendBase}/account` : `${frontendBase}/login`;
-            const message = info?.message || "Google authentication failed";
+            const message = info?.message || "Échec de l'authentification Google";
             return res.redirect(`${redirectTo}?error=${encodeURIComponent(message)}`);
         }
 
@@ -203,12 +203,12 @@ router.get("/google/callback", (req, res, next) => {
 });
 
 router.get("/google/failure", (req, res) => {
-    res.status(401).json({ message: "Google authentication failed" });
+    res.status(401).json({ message: "Échec de l'authentification Google" });
 });
 
 router.get("/me", [rateLimitGeneral, verifyToken], (req, res) => {
     const user = req.user;
-    res.status(200).json({ message: "User info retrieved successfully", user });
+    res.status(200).json({ message: "Informations utilisateur récupérées avec succès", user });
 })
 
 export default router;

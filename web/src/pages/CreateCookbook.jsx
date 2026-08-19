@@ -9,6 +9,7 @@ import cookbookApi from "../api/cookbook.js";
 import recipeApi from "../api/recipe.js";
 import userApi from "../api/user.js";
 import {BASE_URL} from "../api/client.js";
+import {useAlert} from "../context/AlertContext.jsx";
 
 const ROLE_LABELS = {
     viewer: "Lecteur",
@@ -18,6 +19,7 @@ const ROLE_LABELS = {
 export default function CreateCookbook() {
 
     const navigate = useNavigate();
+    const {showSuccess, showError} = useAlert();
     const fileInputRef = useRef(null);
 
     const [title, setTitle] = useState("");
@@ -120,9 +122,11 @@ export default function CreateCookbook() {
                 await cookbookApi.addMember(cookbook.id, member.userId, member.role);
             }
 
+            showSuccess("Cookbook créé avec succès !");
             navigate("/cookbooks");
         } catch (error) {
             console.log(error);
+            showError(error.message || "Une erreur est survenue.");
         } finally {
             setIsSubmitting(false);
         }

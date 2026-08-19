@@ -21,7 +21,7 @@ export async function getUserById(user) {
         const {google_id, ...rest} = stored;
         return {...rest, googleLinked: !!google_id};
     } catch (error) {
-        throw new Error('Error retrieving user information');
+        throw new Error('Erreur lors de la récupération des informations utilisateur');
     }
 
 }
@@ -44,7 +44,7 @@ export async function updateUser(user, updates) {
         return await userService.updateUser(user.id, fieldsToUpdate);
     } catch (error) {
         console.log(error)
-        throw new Error('Error updating user information');
+        throw new Error('Erreur lors de la modification des informations utilisateur');
     }
 }
 
@@ -52,7 +52,7 @@ export async function deleteUser(user) {
     try {
         return await userService.deleteUserById(user.id);
     } catch (error) {
-        throw new Error('Error deleting user');
+        throw new Error('Erreur lors de la suppression du compte');
     }
 }
 
@@ -60,7 +60,7 @@ export async function getUserPreferences(userId) {
     try {
         return await userTagService.getTagsByUserId(userId);
     } catch (error) {
-        throw new Error('Error retrieving user preferences');
+        throw new Error('Erreur lors de la récupération des préférences');
     }
 }
 
@@ -68,7 +68,7 @@ export async function updateUserPreferences(userId, tagIds) {
     try {
         return await userTagService.setUserTags(userId, tagIds);
     } catch (error) {
-        throw new Error('Error updating user preferences');
+        throw new Error('Erreur lors de la mise à jour des préférences');
     }
 }
 
@@ -76,7 +76,7 @@ export async function getRecentActivities(userId, limit) {
     try {
         return await activityService.getRecentActivitiesForUser(userId, limit);
     } catch (error) {
-        throw new Error('Error retrieving activities');
+        throw new Error('Erreur lors de la récupération des activités');
     }
 }
 
@@ -86,7 +86,7 @@ export async function lookupUserByEmail(email) {
         if (!user) return null;
         return {id: user.id, username: user.username, email: user.email};
     } catch (error) {
-        throw new Error('Error looking up user');
+        throw new Error('Erreur lors de la recherche de l\'utilisateur');
     }
 }
 
@@ -139,7 +139,7 @@ export async function exportUserData(userId) {
         };
     } catch (error) {
         console.error(error);
-        throw new Error('Error exporting user data');
+        throw new Error('Erreur lors de l\'export des données');
     }
 }
 
@@ -189,6 +189,6 @@ export async function importUserData(userId, data) {
         return result;
     } catch (error) {
         console.error(error);
-        throw new Error('Error importing user data');
+        throw new Error('Erreur lors de l\'import des données');
     }
 }

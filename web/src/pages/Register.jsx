@@ -6,6 +6,7 @@ import {useAuth} from "../context/AuthContext.jsx";
 import {useNavigate} from "react-router-dom";
 import {authApi} from "../api/auth.js";
 import {BASE_URL} from "../api/client.js";
+import {useAlert} from "../context/AlertContext.jsx";
 
 export default function Register() {
 
@@ -18,6 +19,7 @@ export default function Register() {
     const [isSubmitting, setIsSubmitting] = useState(false);
 
     const {user} = useAuth();
+    const {showSuccess, showError} = useAlert();
     const navigate = useNavigate();
 
     useEffect(() => {
@@ -43,9 +45,12 @@ export default function Register() {
         setError(null);
         try {
             await authApi.register({username, email, password, rgpd});
+            showSuccess("Compte créé avec succès !");
             navigate("/login");
         } catch (err) {
-            setError(err.message || "Erreur lors de la création du compte");
+            const message = err.message || "Erreur lors de la création du compte";
+            setError(message);
+            showError(message);
         } finally {
             setIsSubmitting(false);
         }

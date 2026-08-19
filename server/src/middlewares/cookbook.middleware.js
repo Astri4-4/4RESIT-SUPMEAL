@@ -4,203 +4,203 @@ import * as cookbookService from "../services/cookbook.service.js";
 export const createCookbookValidator = [
     body("title")
         .notEmpty()
-        .withMessage("Title is required")
+        .withMessage("Le titre est requis")
         .isString()
-        .withMessage("Title must be a valid string")
+        .withMessage("Le titre doit être une chaîne de caractères valide")
         .isLength({
             max: 100,
         })
-        .withMessage("Title must be less than 100 characters"),
+        .withMessage("Le titre doit contenir moins de 100 caractères"),
 
     body("description")
         .optional()
         .isString()
-        .withMessage("Description must be a valid string"),
+        .withMessage("La description doit être une chaîne de caractères valide"),
 ];
 
 export const updateCookbookValidator = [
     body("title")
         .optional()
         .isString()
-        .withMessage("Title must be a valid string")
+        .withMessage("Le titre doit être une chaîne de caractères valide")
         .isLength({
             max: 100,
         })
-        .withMessage("Title must be less than 100 characters"),
+        .withMessage("Le titre doit contenir moins de 100 caractères"),
 
     body("description")
         .optional()
         .isString()
-        .withMessage("Description must be a valid string"),
+        .withMessage("La description doit être une chaîne de caractères valide"),
     param("cookbookId")
         .notEmpty()
-        .withMessage("Cookbook ID is required")
+        .withMessage("L'identifiant du cookbook est requis")
         .isInt({ min: 1 })
-        .withMessage("Cookbook ID must be a positive integer"),
+        .withMessage("L'identifiant du cookbook doit être un entier positif"),
 ]
 
 export const getCookbookValidator = [
     param("cookbookId")
         .notEmpty()
-        .withMessage("Cookbook ID is required")
+        .withMessage("L'identifiant du cookbook est requis")
         .isInt({ min: 1 })
-        .withMessage("Cookbook ID must be a positive integer"),
+        .withMessage("L'identifiant du cookbook doit être un entier positif"),
 ];
 
 export const addMemberToCookbookValidator = [
     param("cookbookId")
         .notEmpty()
-        .withMessage("Cookbook ID is required")
+        .withMessage("L'identifiant du cookbook est requis")
         .isInt({ min: 1 })
-        .withMessage("Cookbook ID must be a positive integer"),
+        .withMessage("L'identifiant du cookbook doit être un entier positif"),
 
     body("userId")
         .notEmpty()
-        .withMessage("User ID is required")
+        .withMessage("L'identifiant de l'utilisateur est requis")
         .isInt({ min: 1 })
-        .withMessage("User ID must be a positive integer"),
+        .withMessage("L'identifiant de l'utilisateur doit être un entier positif"),
 
     body("role")
         .notEmpty()
-        .withMessage("Role is required")
+        .withMessage("Le rôle est requis")
         .isIn(["owner", "editor", "viewer"])
-        .withMessage("Role must be one of the following: owner, editor, viewer"),
+        .withMessage("Le rôle doit être l'un des suivants : owner, editor, viewer"),
 ];
 
 export const changeRoleInCookbookValidator = [
     param("cookbookId")
         .notEmpty()
-        .withMessage("Cookbook ID is required")
+        .withMessage("L'identifiant du cookbook est requis")
         .isInt({ min: 1 })
-        .withMessage("Cookbook ID must be a positive integer"),
+        .withMessage("L'identifiant du cookbook doit être un entier positif"),
 
     param("userId")
         .notEmpty()
-        .withMessage("User ID is required")
+        .withMessage("L'identifiant de l'utilisateur est requis")
         .isInt({ min: 1 })
-        .withMessage("User ID must be a positive integer"),
+        .withMessage("L'identifiant de l'utilisateur doit être un entier positif"),
 
     body("role")
         .notEmpty()
-        .withMessage("Role is required")
+        .withMessage("Le rôle est requis")
         .isIn(["owner", "editor", "viewer"])
-        .withMessage("Role must be one of the following: owner, editor, viewer"),
+        .withMessage("Le rôle doit être l'un des suivants : owner, editor, viewer"),
 ];
 
 export const deleteCookbookValidator = [
     param("cookbookId")
         .notEmpty()
-        .withMessage("Cookbook ID is required")
+        .withMessage("L'identifiant du cookbook est requis")
         .isInt({ min: 1 })
-        .withMessage("Cookbook ID must be a positive integer"),
+        .withMessage("L'identifiant du cookbook doit être un entier positif"),
 ];
 
 export const addRecipeValidator = [
     param("cookbookId")
         .notEmpty()
-        .withMessage("Cookbook ID is required")
+        .withMessage("L'identifiant du cookbook est requis")
         .isInt({ min: 1 })
-        .withMessage("Cookbook ID must be a positive integer"),
+        .withMessage("L'identifiant du cookbook doit être un entier positif"),
 
     body("recipeId")
         .notEmpty()
-        .withMessage("Recipe ID is required")
+        .withMessage("L'identifiant de la recette est requis")
         .isInt({ min: 1 })
-        .withMessage("Recipe ID must be a positive integer"),
+        .withMessage("L'identifiant de la recette doit être un entier positif"),
 ];
 
 export const deleteRecipeValidator = [
     param("cookbookId")
         .notEmpty()
-        .withMessage("Cookbook ID is required")
+        .withMessage("L'identifiant du cookbook est requis")
         .isInt({ min: 1 })
-        .withMessage("Cookbook ID must be a positive integer"),
+        .withMessage("L'identifiant du cookbook doit être un entier positif"),
 
     param("recipeId")
         .notEmpty()
-        .withMessage("Recipe ID is required")
+        .withMessage("L'identifiant de la recette est requis")
         .isInt({ min: 1 })
-        .withMessage("Recipe ID must be a positive integer"),
+        .withMessage("L'identifiant de la recette doit être un entier positif"),
 ];
 
 export const postCommentValidator = [
     param("cookbookId")
         .notEmpty()
-        .withMessage("Cookbook ID is required")
+        .withMessage("L'identifiant du cookbook est requis")
         .isInt({ min: 1 })
-        .withMessage("Cookbook ID must be a positive integer"),
+        .withMessage("L'identifiant du cookbook doit être un entier positif"),
 
     param("recipeId")
         .notEmpty()
-        .withMessage("Recipe ID is required")
+        .withMessage("L'identifiant de la recette est requis")
         .isInt({ min: 1 })
-        .withMessage("Recipe ID must be a positive integer"),
+        .withMessage("L'identifiant de la recette doit être un entier positif"),
 
     body("comment")
         .notEmpty()
-        .withMessage("Comment is required")
+        .withMessage("Le commentaire est requis")
         .isLength({ min: 2, max: 200 })
-        .withMessage("Comment must be between 2 and 200 characters"),
+        .withMessage("Le commentaire doit contenir entre 2 et 200 caractères"),
 ];
 
 export const getCommentValidator = [
     param("cookbookId")
         .notEmpty()
-        .withMessage("Cookbook ID is required")
+        .withMessage("L'identifiant du cookbook est requis")
         .isInt({ min: 1 })
-        .withMessage("Cookbook ID must be a positive integer"),
+        .withMessage("L'identifiant du cookbook doit être un entier positif"),
 
     param("recipeId")
         .notEmpty()
-        .withMessage("Recipe ID is required")
+        .withMessage("L'identifiant de la recette est requis")
         .isInt({ min: 1 })
-        .withMessage("Recipe ID must be a positive integer"),
+        .withMessage("L'identifiant de la recette doit être un entier positif"),
 ]
 
 export const patchCommentValidator = [
     param("cookbookId")
         .notEmpty()
-        .withMessage("Cookbook ID is required")
+        .withMessage("L'identifiant du cookbook est requis")
         .isInt({ min: 1 })
-        .withMessage("Cookbook ID must be a positive integer"),
+        .withMessage("L'identifiant du cookbook doit être un entier positif"),
 
     param("recipeId")
         .notEmpty()
-        .withMessage("Recipe ID is required")
+        .withMessage("L'identifiant de la recette est requis")
         .isInt({ min: 1 })
-        .withMessage("Recipe ID must be a positive integer"),
+        .withMessage("L'identifiant de la recette doit être un entier positif"),
 
     param("commentId")
         .notEmpty()
-        .withMessage("Comment ID is required")
+        .withMessage("L'identifiant du commentaire est requis")
         .isInt({ min: 1 })
-        .withMessage("Comment ID must be a positive integer"),
+        .withMessage("L'identifiant du commentaire doit être un entier positif"),
 
     body("comment")
         .notEmpty()
-        .withMessage("Comment is required")
+        .withMessage("Le commentaire est requis")
         .isLength({ min: 2, max: 200 })
-        .withMessage("Comment must be between 2 and 200 characters"),
+        .withMessage("Le commentaire doit contenir entre 2 et 200 caractères"),
 ]
 
 export const deleteCommentValidator = [
     param("cookbookId")
         .notEmpty()
-        .withMessage("Cookbook ID is required")
+        .withMessage("L'identifiant du cookbook est requis")
         .isInt({ min: 1 })
-        .withMessage("Cookbook ID must be a positive integer"),
+        .withMessage("L'identifiant du cookbook doit être un entier positif"),
 
     param("recipeId")
         .notEmpty()
-        .withMessage("Recipe ID is required")
+        .withMessage("L'identifiant de la recette est requis")
         .isInt({ min: 1 })
-        .withMessage("Recipe ID must be a positive integer"),
+        .withMessage("L'identifiant de la recette doit être un entier positif"),
 
     param("commentId")
         .notEmpty()
-        .withMessage("Comment ID is required")
+        .withMessage("L'identifiant du commentaire est requis")
         .isInt({ min: 1 })
-        .withMessage("Comment ID must be a positive integer"),
+        .withMessage("L'identifiant du commentaire doit être un entier positif"),
 ]
 
 export async function doCookbookExistsById(req, res, next) {
@@ -208,12 +208,12 @@ export async function doCookbookExistsById(req, res, next) {
     try {
         const cookbook = await cookbookService.getCookbookById(cookbookId);
         if (!cookbook) {
-            return res.status(404).json({ message: "Cookbook not found" });
+            return res.status(404).json({ message: "Cookbook introuvable" });
         }
         req.cookbook = cookbook;
         next();
     } catch (error) {
-        return res.status(500).json({ message: "Internal server error" });
+        return res.status(500).json({ message: "Erreur interne du serveur" });
     }
 }
 
@@ -224,11 +224,11 @@ export async function isMemberOfCookbook(req, res, next) {
     try {
         const isMember = await cookbookService.isInCookbook(cookbookId, userId);
         if (!isMember) {
-            return res.status(404).json({ message: "Cookbook not found" });
+            return res.status(404).json({ message: "Cookbook introuvable" });
         }
         next();
     } catch (error) {
-        return res.status(500).json({ message: "Internal server error" });
+        return res.status(500).json({ message: "Erreur interne du serveur" });
     }
 
 }
@@ -240,11 +240,11 @@ export async function isBodyUserNotMemberOfCookbook(req, res, next) {
     try {
         const isMember = await cookbookService.isInCookbook(cookbookId, userId);
         if (isMember) {
-            return res.status(400).json({ message: "Already a member of this cookbook" });
+            return res.status(400).json({ message: "Cet utilisateur fait déjà partie de ce cookbook" });
         }
         next();
     } catch (error) {
-        return res.status(500).json({ message: "Internal server error" });
+        return res.status(500).json({ message: "Erreur interne du serveur" });
     }
 }
 
@@ -254,11 +254,11 @@ export async function isOwnerOfCookbook(req, res, next) {
     try {
         const role = await cookbookService.getUserRoleInCookbook(cookbookId, userId);
         if (role !== "owner") {
-            return res.status(403).json({ message: "Forbidden: You are not the owner of this cookbook" });
+            return res.status(403).json({ message: "Accès refusé : tu n'es pas le créateur de ce cookbook" });
         }
         next();
     } catch (error) {
-        return res.status(500).json({ message: "Internal server error" });
+        return res.status(500).json({ message: "Erreur interne du serveur" });
     }
 }
 
@@ -268,11 +268,11 @@ export async function isEditorOrOwnerOfCookbook(req, res, next) {
     try {
         const role = await cookbookService.getUserRoleInCookbook(cookbookId, userId);
         if (role !== "owner" && role !== "editor") {
-            return res.status(403).json({ message: "Forbidden: You are not the owner or editor of this cookbook" });
+            return res.status(403).json({ message: "Accès refusé : tu n'es ni le créateur ni éditeur de ce cookbook" });
         }
         next();
     } catch (error) {
-        return res.status(500).json({ message: "Internal server error" });
+        return res.status(500).json({ message: "Erreur interne du serveur" });
     }
 }
 
@@ -286,7 +286,7 @@ export async function hasRightToKick(req, res, next) {
     if (!isOwner) {
         const isHimself = String(userId) === targetUserId;
         if (!isHimself) {
-            return res.status(403).json({ message: "Forbidden: You are not the owner of this cookbook and cannot kick other members" });
+            return res.status(403).json({ message: "Accès refusé : tu n'es pas le créateur de ce cookbook et ne peux pas exclure d'autres membres" });
         }
     }
 
@@ -301,11 +301,11 @@ export async function isRecipeInCookbook(req, res, next) {
     try {
         const isInCookbook = await cookbookService.isRecipeInCookbook(cookbookId, recipeId);
         if (!isInCookbook) {
-            return res.status(404).json({ message: "Recipe not found in cookbook" });
+            return res.status(404).json({ message: "Recette introuvable dans ce cookbook" });
         }
         next();
     } catch (error) {
-        return res.status(500).json({ message: "Internal server error" });
+        return res.status(500).json({ message: "Erreur interne du serveur" });
     }
 
 }
@@ -316,11 +316,11 @@ export async function doCommentExistOnRecipeId(req, res, next) {
     try {
         const comment = await cookbookService.getCommentById(commentId);
         if (!comment) {
-            return res.status(404).json({ message: "Comment not found" });
+            return res.status(404).json({ message: "Commentaire introuvable" });
         }
         next();
     } catch (error) {
-        return res.status(500).json({ message: "Internal server error" });
+        return res.status(500).json({ message: "Erreur interne du serveur" });
     }
 
 }
@@ -332,11 +332,11 @@ export async function isOwnerOfComment(req, res, next) {
     try {
         const comment = await cookbookService.getCommentById(commentId);
         if (comment.user_id !== userId) {
-            return res.status(403).json({ message: "Forbidden: You are not the owner of this comment" });
+            return res.status(403).json({ message: "Accès refusé : tu n'es pas l'auteur de ce commentaire" });
         }
         next();
     } catch (error) {
-        return res.status(500).json({ message: "Internal server error", error: error });
+        return res.status(500).json({ message: "Erreur interne du serveur", error: error });
     }
 
 }
@@ -348,11 +348,11 @@ export async function isUserMemberOfBodyCookbook(req, res, next) {
     try {
         const isMember = await cookbookService.isInCookbook(cookbookId, userId);
         if (!isMember) {
-            return res.status(404).json({ message: "Cookbook not found" });
+            return res.status(404).json({ message: "Cookbook introuvable" });
         }
         next();
     } catch (error) {
-        return res.status(500).json({ message: "Internal server error" });
+        return res.status(500).json({ message: "Erreur interne du serveur" });
     }
 }
 
@@ -362,10 +362,10 @@ export async function isUserOwnerOrEditorBody(req, res, next) {
     try {
         const role = await cookbookService.getUserRoleInCookbook(cookbookId, userId);
         if (role !== "owner" && role !== "editor") {
-            return res.status(403).json({ message: "Forbidden: You are not the owner or editor of this cookbook" });
+            return res.status(403).json({ message: "Accès refusé : tu n'es ni le créateur ni éditeur de ce cookbook" });
         }
         next();
     } catch (error) {
-        return res.status(500).json({ message: "Internal server error" });
+        return res.status(500).json({ message: "Erreur interne du serveur" });
     }
 }

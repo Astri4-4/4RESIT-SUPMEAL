@@ -5,214 +5,214 @@ import * as cookbookService from "../services/cookbook.service.js";
 export const createRecipeValidator = [
     body("title")
         .notEmpty()
-        .withMessage("Title is required")
+        .withMessage("Le titre est requis")
         .isString()
-        .withMessage("Title must be a valid string")
+        .withMessage("Le titre doit être une chaîne de caractères valide")
         .isLength({ max: 100 })
-        .withMessage("Title must be less than 100 characters"),
+        .withMessage("Le titre doit contenir moins de 100 caractères"),
 
     body("description")
         .optional()
         .isString()
-        .withMessage("Description must be a valid string"),
+        .withMessage("La description doit être une chaîne de caractères valide"),
 
     body("prepTime")
         .notEmpty()
-        .withMessage("Prep time is required")
+        .withMessage("Le temps de préparation est requis")
         .isInt({ min: 0 })
-        .withMessage("Prep time must be a positive integer"),
+        .withMessage("Le temps de préparation doit être un entier positif"),
 
     body("cookTime")
         .optional()
         .isInt({ min: 0 })
-        .withMessage("Cook time must be a positive integer"),
+        .withMessage("Le temps de cuisson doit être un entier positif"),
 
     body("servings")
         .notEmpty()
-        .withMessage("Servings is required")
+        .withMessage("Le nombre de portions est requis")
         .isInt({ min: 1 })
-        .withMessage("Servings must be a positive integer"),
+        .withMessage("Le nombre de portions doit être un entier positif"),
 
     body("ingredients")
         .isArray()
-        .withMessage("Ingredients must be an array"),
+        .withMessage("Les ingrédients doivent être un tableau"),
 
     body("ingredients.*.name")
         .notEmpty()
-        .withMessage("Ingredient name is required")
+        .withMessage("Le nom de l'ingrédient est requis")
         .isString()
-        .withMessage("Ingredient name must be a valid string"),
+        .withMessage("Le nom de l'ingrédient doit être une chaîne de caractères valide"),
 
     body("ingredients.*.unit")
         .optional()
         .isString()
-        .withMessage("Ingredient unit must be a valid string"),
+        .withMessage("L'unité de l'ingrédient doit être une chaîne de caractères valide"),
 
     body("ingredients.*.type")
         .optional()
         .isString()
-        .withMessage("Ingredient type must be a valid string"),
+        .withMessage("Le type de l'ingrédient doit être une chaîne de caractères valide"),
 
     body("ingredients.*.quantity")
         .notEmpty()
-        .withMessage("Ingredient quantity is required")
+        .withMessage("La quantité de l'ingrédient est requise")
         .isFloat({ min: 0 })
-        .withMessage("Ingredient quantity must be a positive number"),
+        .withMessage("La quantité de l'ingrédient doit être un nombre positif"),
 
     body("steps")
         .isArray()
-        .withMessage("Steps must be an array"),
+        .withMessage("Les étapes doivent être un tableau"),
 
     body("steps.*.step_number")
         .notEmpty()
-        .withMessage("Step number is required")
+        .withMessage("Le numéro de l'étape est requis")
         .isInt({ min: 1 })
-        .withMessage("Step number must be a positive integer"),
+        .withMessage("Le numéro de l'étape doit être un entier positif"),
 
     body("steps.*.description")
         .notEmpty()
-        .withMessage("Step description is required")
+        .withMessage("La description de l'étape est requise")
         .isString()
-        .withMessage("Step description must be a valid string"),
+        .withMessage("La description de l'étape doit être une chaîne de caractères valide"),
 ];
 
 export const importRecipeValidator = [
     body("url")
         .notEmpty()
-        .withMessage("URL is required")
+        .withMessage("L'URL est requise")
         .isURL()
-        .withMessage("URL must be valid"),
+        .withMessage("L'URL doit être valide"),
 ];
 
 export const updateRecipeValidator = [
     body("title")
         .optional()
         .isString()
-        .withMessage("Title must be a valid string")
+        .withMessage("Le titre doit être une chaîne de caractères valide")
         .isLength({ max: 100 })
-        .withMessage("Title must be less than 100 characters"),
+        .withMessage("Le titre doit contenir moins de 100 caractères"),
 
     body("description")
         .optional()
         .isString()
-        .withMessage("Description must be a valid string"),
+        .withMessage("La description doit être une chaîne de caractères valide"),
 
     body("prepTime")
         .optional()
         .isInt({ min: 0 })
-        .withMessage("Prep time must be a positive integer"),
+        .withMessage("Le temps de préparation doit être un entier positif"),
 
     body("cookTime")
         .optional()
         .isInt({ min: 0 })
-        .withMessage("Cook time must be a positive integer"),
+        .withMessage("Le temps de cuisson doit être un entier positif"),
 
     body("servings")
         .optional()
         .isInt({ min: 1 })
-        .withMessage("Servings must be a positive integer"),
+        .withMessage("Le nombre de portions doit être un entier positif"),
 
     body("ingredients")
         .optional()
         .isArray()
-        .withMessage("Ingredients must be an array"),
+        .withMessage("Les ingrédients doivent être un tableau"),
 
     body("ingredients.*.name")
         .notEmpty()
-        .withMessage("Ingredient name is required")
+        .withMessage("Le nom de l'ingrédient est requis")
         .isString()
-        .withMessage("Ingredient name must be a valid string"),
+        .withMessage("Le nom de l'ingrédient doit être une chaîne de caractères valide"),
 
     body("ingredients.*.unit")
         .optional()
         .isString()
-        .withMessage("Ingredient unit must be a valid string"),
+        .withMessage("L'unité de l'ingrédient doit être une chaîne de caractères valide"),
 
     body("ingredients.*.type")
         .optional()
         .isString()
-        .withMessage("Ingredient type must be a valid string"),
+        .withMessage("Le type de l'ingrédient doit être une chaîne de caractères valide"),
 
     body("ingredients.*.quantity")
         .notEmpty()
-        .withMessage("Ingredient quantity is required")
+        .withMessage("La quantité de l'ingrédient est requise")
         .isFloat({ min: 0 })
-        .withMessage("Ingredient quantity must be a positive number"),
+        .withMessage("La quantité de l'ingrédient doit être un nombre positif"),
 
     body("steps")
         .optional()
         .isArray()
-        .withMessage("Steps must be an array"),
+        .withMessage("Les étapes doivent être un tableau"),
 
     body("steps.*.step_number")
         .notEmpty()
-        .withMessage("Step number is required")
+        .withMessage("Le numéro de l'étape est requis")
         .isInt({ min: 1 })
-        .withMessage("Step number must be a positive integer"),
+        .withMessage("Le numéro de l'étape doit être un entier positif"),
 
     body("steps.*.description")
         .notEmpty()
-        .withMessage("Step description is required")
+        .withMessage("La description de l'étape est requise")
         .isString()
-        .withMessage("Step description must be a valid string"),
+        .withMessage("La description de l'étape doit être une chaîne de caractères valide"),
 
     body("tags")
         .optional()
         .isArray()
-        .withMessage("Tags must be an array"),
+        .withMessage("Les tags doivent être un tableau"),
 
     body("tags.*")
         .isString()
-        .withMessage("Each tag must be a string")
+        .withMessage("Chaque tag doit être une chaîne de caractères")
         .isLength({ min: 1, max: 50 })
-        .withMessage("Each tag must be between 1 and 50 characters"),
+        .withMessage("Chaque tag doit contenir entre 1 et 50 caractères"),
 ];
 
 export const uploadRecipeImageValidator = [
     param("recipeId")
         .notEmpty()
-        .withMessage("Recipe id is required")
+        .withMessage("L'identifiant de la recette est requis")
         .isInt({ min: 1 })
-        .withMessage("Recipe id must be a valid integer"),
+        .withMessage("L'identifiant de la recette doit être un entier valide"),
 ]
 
 export const getRecipeByIdValidator = [
     param("recipeId")
         .notEmpty()
-        .withMessage("Recipe id is required")
+        .withMessage("L'identifiant de la recette est requis")
         .isInt({ min: 1 })
-        .withMessage("Recipe id must be a valid integer"),
+        .withMessage("L'identifiant de la recette doit être un entier valide"),
 ];
 
 export const addIngredientsToShoppingListValidator = [
     query("recipeId")
         .notEmpty()
-        .withMessage("Recipe id is required")
+        .withMessage("L'identifiant de la recette est requis")
         .isInt({ min: 1 })
-        .withMessage("Recipe id must be a valid integer"),
+        .withMessage("L'identifiant de la recette doit être un entier valide"),
 ];
 
 export const searchRecipesValidator = [
     query("name")
         .optional()
         .isString()
-        .withMessage("Name must be a string"),
+        .withMessage("Le nom doit être une chaîne de caractères"),
     query("tag")
         .optional()
         .isString()
-        .withMessage("Tag must be a string"),
+        .withMessage("Le tag doit être une chaîne de caractères"),
     query("servings")
         .optional()
         .isInt({ min: 1 })
-        .withMessage("Servings must be a positive integer"),
+        .withMessage("Le nombre de portions doit être un entier positif"),
     query("prepTime")
         .optional()
         .isInt({ min: 0 })
-        .withMessage("Prep time must be a positive integer"),
+        .withMessage("Le temps de préparation doit être un entier positif"),
     query("page")
         .optional()
         .isInt({ min: 1 })
-        .withMessage("Page must be a positive integer"),
+        .withMessage("La page doit être un entier positif"),
 ];
 
 export async function doRecipeExistsParam(req, res, next) {
@@ -222,7 +222,7 @@ export async function doRecipeExistsParam(req, res, next) {
         const recipe = await getRecipeById(recipeId);
         if (recipe.length === 0) {
             return res.status(404).send({
-                message: "Recipe not found",
+                message: "Recette introuvable",
             })
         } else {
             next()
@@ -242,7 +242,7 @@ export async function doRecipeExistsBody(req, res, next) {
         const recipe = await getRecipeById(recipeId);
         if (recipe.length === 0) {
             return res.status(404).send({
-                message: "Recipe not found",
+                message: "Recette introuvable",
             })
         } else {
             next()
@@ -268,7 +268,7 @@ export async function doUserHasWritePermission(req, res, next) {
                 next()
             } else {
                 return res.status(403).send({
-                    message: "You do not have cookbook permission to use this action",
+                    message: "Tu n'as pas la permission d'effectuer cette action sur ce cookbook",
                 })
             }
         } else {
@@ -278,7 +278,7 @@ export async function doUserHasWritePermission(req, res, next) {
                 next()
             } else {
                 return res.status(403).send({
-                    message: "You do not have permission to use this action",
+                    message: "Tu n'as pas la permission d'effectuer cette action",
                 })
             }
         }
@@ -303,7 +303,7 @@ export async function doUserHasViewPermission(req, res, next) {
                 next()
             } else {
                 return res.status(403).send({
-                    message: "You do not have permission to use this action",
+                    message: "Tu n'as pas la permission d'effectuer cette action",
                 })
             }
         } else {
@@ -312,7 +312,7 @@ export async function doUserHasViewPermission(req, res, next) {
                 next()
             } else {
                 return res.status(403).send({
-                    message: "You do not have permission to use this action",
+                    message: "Tu n'as pas la permission d'effectuer cette action",
                 })
             }
         }

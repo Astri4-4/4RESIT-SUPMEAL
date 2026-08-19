@@ -50,7 +50,7 @@ describe('doRecipeExistsParam', () => {
         await doRecipeExistsParam(req, res, next);
 
         expect(res.status).toHaveBeenCalledWith(404);
-        expect(res.send).toHaveBeenCalledWith({message: 'Recipe not found'});
+        expect(res.send).toHaveBeenCalledWith({message: 'Recette introuvable'});
         expect(next).not.toHaveBeenCalled();
     });
 
