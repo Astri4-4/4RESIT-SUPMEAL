@@ -7,10 +7,8 @@ import {useEffect, useState} from "react";
 import userApi from "../api/user.js";
 import RecipeVerticalCard from "../components/ui/RecipeVerticalCard.jsx";
 import recipeApi from "../api/recipe.js";
-import Popup from "../components/Popup.jsx";
-import DisabledButton from "../components/ui/DisabledButton.jsx";
-import {useNavigate, useSearchParams} from "react-router-dom";
-import Button from "../components/ui/Button.jsx";
+import AddRecipePopup from "../components/AddRecipePopup.jsx";
+import {useSearchParams} from "react-router-dom";
 
 export default function Recipes() {
 
@@ -23,35 +21,6 @@ export default function Recipes() {
     const [order, setOrder] = useState("asc");
     const [search, setSearch] = useState(searchParams.get("search") || "");
     const [isUrlPopupOpen, setIsUrlPopupOpen] = useState(false);
-    const [isUrlEntered, setIsUrlEntered] = useState(false);
-    const [url, setUrl] = useState("");
-    const [isImporting, setIsImporting] = useState(false);
-    const [importError, setImportError] = useState(null);
-
-    const navigate = useNavigate();
-
-    const handleClosePopup = () => {
-        setIsUrlPopupOpen(false);
-        setUrl("");
-        setIsUrlEntered(false);
-        setImportError(null);
-    };
-
-    const handleImportRecipe = async () => {
-        if (!isUrlEntered || isImporting) return;
-
-        setIsImporting(true);
-        setImportError(null);
-        try {
-            const recipe = await recipeApi.importFromUrl(url);
-            navigate(`/recipe/${recipe.id}`);
-        } catch (error) {
-            console.log(error);
-            setImportError(error.message || "Impossible d'importer cette recette.");
-        } finally {
-            setIsImporting(false);
-        }
-    };
 
     useEffect(() => {
         (async () => {
@@ -154,38 +123,7 @@ export default function Recipes() {
                 ))}
             </div>
 
-            <Popup isOpen={isUrlPopupOpen} onClose={handleClosePopup}>
-                    <h2 className="text-xl font-bold mb-4 text-center">Une nouvelle recette à ajouter ? C'est par ici !</h2>
-                    <div className={"flex gap-9.5"}>
-                        <Input
-                            placeholder="Lien marmiton..."
-                            value={url}
-                            onChange={(e) => {
-                                setUrl(e.target.value)
-                                setImportError(null)
-                                if (e.target.value === "") {
-                                    setIsUrlEntered(false)
-                                } else {
-                                    setIsUrlEntered(true)
-                                }
-                            }}
-                        />
-                        <DisabledButton text={isImporting ? "Import..." : "Importer la recette"} disabled={!isUrlEntered || isImporting} onClick={handleImportRecipe}></DisabledButton>
-                    </div>
-
-                    {importError && <p className={"text-[#FF5757] text-sm mt-2"} >{importError}</p>}
-
-                    <div className={"flex items-center gap-9.5 mt-[26px]"} >
-                        <div  className={"flex-1 h-[1px] bg-[#9B9B9B]"}></div>
-                        <p className={"text-[#9B9B9B] text-2xl"} > OU </p>
-                        <div className={"flex-1 h-[1px] bg-[#9B9B9B]"}></div>
-                    </div>
-
-                    <div className={"mt-[26px]"}>
-                        <Button text={"Créer ma propre recette"} variant={"blue"} onClick={() => navigate("/create-recipe")} />
-                    </div>
-
-            </Popup>
+            <AddRecipePopup isOpen={isUrlPopupOpen} onClose={() => setIsUrlPopupOpen(false)} />
 
         </div>
 

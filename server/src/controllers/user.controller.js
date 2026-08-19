@@ -80,6 +80,16 @@ export async function getRecentActivities(userId, limit) {
     }
 }
 
+export async function lookupUserByEmail(email) {
+    try {
+        const user = await userService.getUserByEmail(email);
+        if (!user) return null;
+        return {id: user.id, username: user.username, email: user.email};
+    } catch (error) {
+        throw new Error('Error looking up user');
+    }
+}
+
 export async function exportUserData(userId) {
     try {
         const ownedRecipes = await recipeService.getRecipesByOwner(userId);
