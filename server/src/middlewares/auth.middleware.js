@@ -5,15 +5,15 @@ export const registerValidation = [
     body('username')
         .isString()
         .isLength({ min: 3 })
-        .withMessage('Username must be at least 3 characters long')
+        .withMessage('Le nom d\'utilisateur doit contenir au moins 3 caractères')
         .notEmpty()
-        .withMessage('Username is required'),
+        .withMessage('Le nom d\'utilisateur est requis'),
 
     body('email')
         .isEmail()
-        .withMessage('Invalid email address')
+        .withMessage('Adresse e-mail invalide')
         .notEmpty()
-        .withMessage('Email is required'),
+        .withMessage('L\'adresse e-mail est requise'),
 
     body('password')
         .isStrongPassword({
@@ -23,31 +23,31 @@ export const registerValidation = [
             "minNumbers": 1,
             "minSymbols": 1
         })
-        .withMessage('Password must be at least 6 characters long, contain at least one uppercase letter, one lowercase letter, one number and one symbol')
+        .withMessage('Le mot de passe doit contenir au moins 6 caractères, une majuscule, une minuscule, un chiffre et un symbole')
         .notEmpty()
-        .withMessage('Password is required'),
+        .withMessage('Le mot de passe est requis'),
 
     body('rgpd')
-        .isBoolean().withMessage('rgpd must be a boolean')
+        .isBoolean().withMessage('Le champ rgpd doit être un booléen')
         .custom((value) => value === true || value === 'true')
-        .withMessage('rgpd confirmation must be true')
+        .withMessage('Tu dois accepter la politique de confidentialité')
 ]
 export const loginValidation = [
     body('username')
         .isString()
-        .withMessage('Invalid username')
+        .withMessage('Nom d\'utilisateur invalide')
         .notEmpty()
-        .withMessage('Username is required'),
+        .withMessage('Le nom d\'utilisateur est requis'),
 
     body('password')
         .notEmpty()
-        .withMessage('Password is required')
+        .withMessage('Le mot de passe est requis')
 ]
 
 export async function isUsernameUsed(req, res, next) {
     const user = await pool.query('SELECT * FROM users WHERE username = $1', [req.body.username]);
     if (user.rows.length > 0) {
-        return res.status(400).json({ message: 'Username is already in use' });
+        return res.status(400).json({ message: 'Ce nom d\'utilisateur est déjà utilisé' });
     }
     next();
 }
@@ -55,7 +55,7 @@ export async function isUsernameUsed(req, res, next) {
 export async function isEmailUsed(req, res, next) {
     const user = await pool.query('SELECT * FROM users WHERE email = $1', [req.body.email]);
     if (user.rows.length > 0) {
-        return res.status(400).json({ message: 'Email is already in use' });
+        return res.status(400).json({ message: 'Cette adresse e-mail est déjà utilisée' });
     }
     next();
 }

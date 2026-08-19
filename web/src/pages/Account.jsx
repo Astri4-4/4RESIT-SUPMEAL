@@ -10,10 +10,12 @@ import googleLogo from "../assets/account/google.png";
 import userApi from "../api/user.js";
 import tagApi from "../api/tag.js";
 import Popup from "../components/Popup.jsx";
+import {useAlert} from "../context/AlertContext.jsx";
 
 export default function Account() {
 
     const {logout, setSession} = useAuth();
+    const {showSuccess, showError} = useAlert();
     const [searchParams] = useSearchParams();
     const fileInputRef = useRef(null);
 
@@ -113,8 +115,10 @@ export default function Account() {
             setPassword("");
             setConfirmPassword("");
             await loadUser();
+            showSuccess("Identifiants modifiés avec succès !");
         } catch (error) {
             console.log(error);
+            showError(error.message || "Impossible de modifier tes identifiants.");
         } finally {
             setIsSubmitting(false);
         }
@@ -127,8 +131,10 @@ export default function Account() {
         try {
             await userApi.updatePreferences(preferenceIds);
             setInitialPreferenceIds(preferenceIds);
+            showSuccess("Préférences enregistrées avec succès !");
         } catch (error) {
             console.log(error);
+            showError(error.message || "Impossible d'enregistrer tes préférences.");
         } finally {
             setIsSavingPreferences(false);
         }
@@ -153,6 +159,7 @@ export default function Account() {
             URL.revokeObjectURL(url);
         } catch (error) {
             console.log(error);
+            showError(error.message || "Impossible d'exporter tes données.");
         }
     }
 
@@ -162,10 +169,10 @@ export default function Account() {
             const text = await file.text();
             const data = JSON.parse(text);
             await userApi.importData(data);
-            alert("Import réussi !");
+            showSuccess("Import réussi !");
         } catch (error) {
             console.log(error);
-            alert("Le fichier importé est invalide.");
+            showError("Le fichier importé est invalide.");
         }
     }
 
@@ -176,6 +183,7 @@ export default function Account() {
             logout();
         } catch (error) {
             console.log(error);
+            showError(error.message || "Impossible de supprimer ton compte.");
         }
     }
 

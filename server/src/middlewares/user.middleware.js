@@ -2,24 +2,24 @@ import * as userService from "../services/user.service.js";
 import {body, param} from "express-validator";
 
 export const getUserByIdValidator = [
-    param('id').isInt().withMessage('User ID must be an integer')
+    param('id').isInt().withMessage('L\'identifiant utilisateur doit être un entier')
 ];
 
 export const updateUserValidator = [
-    body("username").optional().isString().withMessage("Username must be a string"),
-    body("email").optional().isEmail().withMessage("Email must be a valid email address"),
-    body("password").optional().isString().withMessage("Password must be a string").notEmpty().withMessage("Password cannot be empty"),
-    body("image_url").optional().isString().withMessage("Image URL must be a string")
+    body("username").optional().isString().withMessage("Le nom d'utilisateur doit être une chaîne de caractères"),
+    body("email").optional().isEmail().withMessage("L'adresse e-mail doit être valide"),
+    body("password").optional().isString().withMessage("Le mot de passe doit être une chaîne de caractères").notEmpty().withMessage("Le mot de passe ne peut pas être vide"),
+    body("image_url").optional().isString().withMessage("L'URL de l'image doit être une chaîne de caractères")
 ]
 
 export const updatePreferencesValidator = [
-    body("tagIds").isArray().withMessage("tagIds must be an array"),
-    body("tagIds.*").isInt().withMessage("Each tagId must be an integer"),
+    body("tagIds").isArray().withMessage("tagIds doit être un tableau"),
+    body("tagIds.*").isInt().withMessage("Chaque tagId doit être un entier"),
 ]
 
 export const importUserDataValidator = [
-    body("recipes").optional().isArray().withMessage("recipes must be an array"),
-    body("cookbooks").optional().isArray().withMessage("cookbooks must be an array"),
+    body("recipes").optional().isArray().withMessage("recipes doit être un tableau"),
+    body("cookbooks").optional().isArray().withMessage("cookbooks doit être un tableau"),
 ]
 
 export async function doTokenUserExistsById(req, res, next) {
@@ -27,12 +27,12 @@ export async function doTokenUserExistsById(req, res, next) {
     try {
         const user = await userService.getUserById(id);
         if (!user) {
-            return res.status(404).json({ message: 'User not found' });
+            return res.status(404).json({ message: 'Utilisateur introuvable' });
         }
         next();
     } catch (error) {
         console.error('Error checking user existence:', error);
-        res.status(500).json({ message: 'Internal server error' });
+        res.status(500).json({ message: 'Erreur interne du serveur' });
     }
 }
 
@@ -41,12 +41,12 @@ export async function doParamUserExistsById(req, res, next) {
     try {
         const user = await userService.getUserById(id);
         if (!user) {
-            return res.status(404).json({ message: 'User not found' });
+            return res.status(404).json({ message: 'Utilisateur introuvable' });
         }
         next();
     } catch (error) {
         console.error('Error checking user existence:', error);
-        res.status(500).json({ message: 'Internal server error' });
+        res.status(500).json({ message: 'Erreur interne du serveur' });
     }
 }
 
@@ -55,11 +55,11 @@ export async function doBodyUserExistsById(req, res, next) {
     try {
         const user = await userService.getUserById(id);
         if (!user) {
-            return res.status(404).json({ message: 'User not found' });
+            return res.status(404).json({ message: 'Utilisateur introuvable' });
         }
         next();
     } catch (error) {
         console.error('Error checking user existence:', error);
-        res.status(500).json({ message: 'Internal server error' });
+        res.status(500).json({ message: 'Erreur interne du serveur' });
     }
 }

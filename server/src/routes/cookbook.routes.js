@@ -389,7 +389,7 @@ router.delete("/:cookbookId", [rateLimitGeneral, verifyToken, doCookbookExistsBy
 
     try {
         await deleteCookbook(cookbookId, { is_deleted: true });
-        res.status(200).json({ message: "Cookbook deleted successfully" });
+        res.status(200).json({ message: "Cookbook supprimé avec succès" });
     } catch (error) {
         res.status(500).json({ message: error.message });
     }
@@ -429,7 +429,7 @@ router.delete("/:cookbookId/members/:userId", [rateLimitGeneral, verifyToken, do
 
     try {
         await quitOrKickMember(cookbookId, userId);
-        res.status(200).json({ message: "User removed from cookbook successfully" });
+        res.status(200).json({ message: "Membre retiré du cookbook avec succès" });
     } catch (error) {
         res.status(500).json({ message: error.message });
     }
@@ -506,7 +506,7 @@ router.get("/:cookbookId/recipes", [rateLimitGeneral, verifyToken, getCookbookVa
     } catch (error) {
         console.error(error);
         res.status(500).json({
-            error: error.message
+            message: error.message
         });
     }
 });
@@ -671,7 +671,7 @@ router.delete("/:cookbookId/recipes/:recipeId/comments/:commentId", [rateLimitGe
 
     try {
         await deleteComment(commentId);
-        res.status(200).json({ message: "Comment deleted successfully" });
+        res.status(200).json({ message: "Commentaire supprimé avec succès" });
     } catch (e) {
         res.status(500).json({ message: e.message });
     }

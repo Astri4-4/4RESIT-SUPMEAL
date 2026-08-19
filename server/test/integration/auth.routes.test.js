@@ -38,7 +38,7 @@ describe('POST /auth/register', () => {
             .send({username, email, password: validPassword, rgpd: true});
 
         expect(res.status).toBe(201);
-        expect(res.body.message).toBe('User registered successfully');
+        expect(res.body.message).toBe('Compte créé avec succès');
     });
 
     it('rejects a duplicate username', async () => {
@@ -50,7 +50,7 @@ describe('POST /auth/register', () => {
             .send({username, email: `other_${email}`, password: validPassword, rgpd: true});
 
         expect(res.status).toBe(400);
-        expect(res.body.message).toMatch(/username is already in use/i);
+        expect(res.body.message).toMatch(/nom d'utilisateur.*déjà utilisé/i);
     });
 
     it('rejects a duplicate email', async () => {
@@ -62,7 +62,7 @@ describe('POST /auth/register', () => {
             .send({username: `other_${username}`, email, password: validPassword, rgpd: true});
 
         expect(res.status).toBe(400);
-        expect(res.body.message).toMatch(/email is already in use/i);
+        expect(res.body.message).toMatch(/adresse e-mail.*déjà utilisée/i);
     });
 
     it('rejects a username shorter than 3 characters', async () => {

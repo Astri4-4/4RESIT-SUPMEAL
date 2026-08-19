@@ -120,10 +120,10 @@ router.delete("/", [rateLimitGeneral, verifyToken, doTokenUserExistsById], async
     const user = req.user;
     try {
         await deleteUser(user);
-        res.json({ message: 'User deleted successfully' });
+        res.json({ message: 'Compte supprimé avec succès' });
     } catch (error) {
         console.error(error);
-        res.status(500).json({ message: "Error during deletion", error: error.message });
+        res.status(500).json({ message: "Erreur lors de la suppression", error: error.message });
     }
 })
 
@@ -234,13 +234,13 @@ router.get("/me/activities", [rateLimitGeneral, verifyToken, doTokenUserExistsBy
 router.get("/lookup", [rateLimitGeneral, verifyToken, doTokenUserExistsById], async (req, res) => {
     const email = req.query.email;
     if (!email) {
-        return res.status(400).json({ message: "Email query parameter is required" });
+        return res.status(400).json({ message: "L'adresse e-mail est requise" });
     }
 
     try {
         const user = await lookupUserByEmail(email);
         if (!user) {
-            return res.status(404).json({ message: "No user found with this email" });
+            return res.status(404).json({ message: "Aucun utilisateur trouvé avec cette adresse e-mail" });
         }
         res.status(200).json(user);
     } catch (error) {

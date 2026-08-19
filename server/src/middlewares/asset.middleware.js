@@ -19,6 +19,11 @@ const ALLOWED_MIME_TYPES = {
 
 const MAX_FILE_SIZE_BYTES = 5 * 1024 * 1024;
 
+const MULTER_ERROR_MESSAGES = {
+    LIMIT_FILE_SIZE: "L'image dépasse la taille maximale autorisée (5 Mo)",
+    LIMIT_UNEXPECTED_FILE: "Format d'image non pris en charge (formats acceptés : .jpeg, .jpg, .png, .webp)",
+};
+
 const storage = multer.diskStorage({
     destination(req, file, cb) {
         cb(null, COOKBOOK_IMAGE_DIR);
@@ -67,7 +72,7 @@ const uploadRecipe = multer({
 export function uploadCookbookImage(req, res, next) {
     upload(req, res, (error) => {
         if (error instanceof multer.MulterError) {
-            return res.status(400).json({ message: `Upload error: ${error.message}` });
+            return res.status(400).json({ message: MULTER_ERROR_MESSAGES[error.code] || `Erreur lors de l'upload : ${error.message}` });
         }
         if (error) {
             return res.status(400).json({ message: error.message });
@@ -80,7 +85,7 @@ export function uploadCookbookImage(req, res, next) {
 export function uploadRecipeImage(req, res, next) {
     uploadRecipe(req, res, (error) => {
         if (error instanceof multer.MulterError) {
-            return res.status(400).json({ message: `Upload error: ${error.message}` });
+            return res.status(400).json({ message: MULTER_ERROR_MESSAGES[error.code] || `Erreur lors de l'upload : ${error.message}` });
         }
         if (error) {
             return res.status(400).json({ message: error.message });
@@ -109,18 +114,18 @@ export async function deleteRecipeImage(imageUrl) {
 export async function saveRecipeImageFromUrl(imageUrl) {
     const response = await fetch(imageUrl);
     if (!response.ok) {
-        throw new Error(`Failed to download image: ${response.status}`);
+        throw new Error(`Échec du téléchargement de l'image (${response.status})`);
     }
 
     const contentType = response.headers.get('content-type')?.split(';')[0].trim();
     const extension = ALLOWED_MIME_TYPES[contentType];
     if (!extension) {
-        throw new Error(`Unsupported image type: ${contentType}`);
+        throw new Error(`Type d'image non pris en charge : ${contentType}`);
     }
 
     const buffer = Buffer.from(await response.arrayBuffer());
     if (buffer.byteLength > MAX_FILE_SIZE_BYTES) {
-        throw new Error('Image exceeds maximum allowed size');
+        throw new Error('L\'image dépasse la taille maximale autorisée');
     }
 
     const filename = `${randomUUID()}${extension}`;

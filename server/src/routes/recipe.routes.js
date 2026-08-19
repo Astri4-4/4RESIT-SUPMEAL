@@ -177,7 +177,7 @@ router.post("/import", [rateLimitGeneral, verifyToken, importRecipeValidator, va
  */
 router.post("/:recipeId/image", [rateLimitGeneral, verifyToken, uploadRecipeImageValidator, validate, doRecipeExistsParam, doUserHasWritePermission, uploadRecipeImage], async (req, res) => {
     if (!req.file) {
-        return res.status(400).json({ message: "No image file provided" });
+        return res.status(400).json({ message: "Aucun fichier image fourni" });
     }
 
     const imageUrl = `/public/recipe_image/${req.file.filename}`;
@@ -574,7 +574,7 @@ router.delete("/:recipeId", [rateLimitGeneral, verifyToken, getRecipeByIdValidat
 
     try {
         await deleteRecipe(recipeId);
-        res.status(200).json({ message: "Recipe deleted successfully" });
+        res.status(200).json({ message: "Recette supprimée avec succès" });
     } catch (error) {
         console.error(error);
         res.status(500).json({

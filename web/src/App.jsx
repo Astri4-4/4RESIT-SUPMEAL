@@ -1,5 +1,6 @@
 import { Routes, Route } from "react-router-dom";
 import {AuthProvider} from "./context/AuthContext.jsx";
+import {AlertProvider} from "./context/AlertContext.jsx";
 import Login from "./pages/Login.jsx";
 import Register from "./pages/Register.jsx";
 import ProtectedRoute from "./components/ProtectedRoutes.jsx";
@@ -16,6 +17,7 @@ import Cookbook from "./pages/Cookbook.jsx";
 function App() {
 
   return (
+    <AlertProvider>
     <AuthProvider>
       <Routes>
         <Route path={"/login"} element={<Login />} ></Route>
@@ -97,6 +99,7 @@ function App() {
         <Route path={"*"} element={<Login />} ></Route>
       </Routes>
     </AuthProvider>
+    </AlertProvider>
   )
 }
 

@@ -38,7 +38,8 @@ async function request(endpoint, options = {}) {
     const data = await res.json().catch(() => null)
 
     if (!res.ok) {
-        throw new ApiError(data?.message || 'Erreur API', res.status, data)
+        const validationMessage = data?.errors?.[0]?.message
+        throw new ApiError(data?.message || data?.error || validationMessage || 'Une erreur est survenue.', res.status, data)
     }
 
     return data

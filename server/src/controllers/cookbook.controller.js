@@ -13,7 +13,7 @@ export async function createCookbook(user, cookbook) {
         await planService.createPlan(null, cookbookId);
         return storedCookbook;
     } catch (error) {
-        throw new Error('Error creating cookbook: ' + error.message, { cause: error });
+        throw new Error('Erreur lors de la création du cookbook : ' + error.message, { cause: error });
     }
 }
 
@@ -26,7 +26,7 @@ export async function getCookbooksByUserId(userId, offset, limit) {
         }
         return cookbooks;
     } catch (error) {
-        throw new Error('Error retrieving cookbooks: ' + error.message, { cause: error });
+        throw new Error('Erreur lors de la récupération des cookbooks : ' + error.message, { cause: error });
     }
 }
 
@@ -37,7 +37,7 @@ export async function getCookbookById(cookbookId) {
         return cookbook;
     } catch (error) {
         console.error(error);
-        throw new Error('Error retrieving cookbook: ' + error.message, { cause: error });
+        throw new Error('Erreur lors de la récupération du cookbook : ' + error.message, { cause: error });
     }
 }
 
@@ -45,7 +45,7 @@ export async function getCookbookMembers(cookbookId) {
     try {
         return await cookbookService.getCookbookMembers(cookbookId);
     } catch (error) {
-        throw new Error('Error retrieving cookbook members: ' + error.message, { cause: error });
+        throw new Error('Erreur lors de la récupération des membres du cookbook : ' + error.message, { cause: error });
     }
 }
 
@@ -63,7 +63,7 @@ export async function updateCookbook(cookbookId, updatedCookbook) {
     try {
         return await cookbookService.updateCookbook(cookbookId, fieldsToUpdate);
     } catch (error) {
-        throw new Error('Error updating cookbook: ' + error.message, { cause: error });
+        throw new Error('Erreur lors de la modification du cookbook : ' + error.message, { cause: error });
     }
 }
 
@@ -73,7 +73,7 @@ export async function addUserToCookbook(cookbookId, userId, role) {
         await createActivity({cookbookId, userId, type: 'join'});
         return membership;
     } catch (error) {
-        throw new Error('Error adding user to cookbook: ' + error.message, { cause: error });
+        throw new Error('Erreur lors de l\'ajout du membre au cookbook : ' + error.message, { cause: error });
     }
 }
 
@@ -81,7 +81,7 @@ export async function changeRoleInCookbook(cookbookId, userId, newRole) {
     try {
         return await cookbookService.changeRoleInCookbook(cookbookId, userId, newRole);
     } catch (error) {
-        throw new Error('Error changing user role in cookbook: ' + error.message, { cause: error });
+        throw new Error('Erreur lors du changement de rôle : ' + error.message, { cause: error });
     }
 }
 
@@ -93,7 +93,7 @@ export async function deleteCookbook(cookbookId) {
         }
         return deleted;
     } catch (error) {
-        throw new Error('Error deleting cookbook: ' + error.message, { cause: error });
+        throw new Error('Erreur lors de la suppression du cookbook : ' + error.message, { cause: error });
     }
 }
 
@@ -101,7 +101,7 @@ export async function quitOrKickMember(cookbookId, userId) {
     try {
         return await cookbookService.removeMember(cookbookId, userId);
     } catch (error) {
-        throw new Error('Error quitting or kicking member from cookbook: ' + error.message, { cause: error });
+        throw new Error('Erreur lors du retrait du membre : ' + error.message, { cause: error });
     }
 }
 
@@ -111,7 +111,7 @@ export async function addRecipeToCookbook(cookbookId, recipeId, userId) {
         await createActivity({cookbookId, userId, type: 'recipe_added', recipeId});
         return result;
     } catch (error) {
-        throw new Error('Error adding recipe to cookbook: ' + error.message, { cause: error });
+        throw new Error('Erreur lors de l\'ajout de la recette au cookbook : ' + error.message, { cause: error });
     }
 }
 
@@ -119,7 +119,7 @@ export async function deleteRecipeFromCookbook(cookbookId, recipeId) {
     try {
         return await cookbookService.deleteRecipeFromCookbook(cookbookId, recipeId);
     } catch (error) {
-        throw new Error('Error deleting recipe from cookbook: ' + error.message, { cause: error });
+        throw new Error('Erreur lors de la suppression de la recette du cookbook : ' + error.message, { cause: error });
     }
 }
 
@@ -130,7 +130,7 @@ export async function postComment(cookbookId, recipeId, userId, comment) {
         await createActivity({cookbookId, userId, type: 'comment', recipeId, commentId: created.id, excerpt: comment});
         return created;
     } catch (error) {
-        throw new Error('Error creating comment: ' + error.message, { cause: error });
+        throw new Error('Erreur lors de la création du commentaire : ' + error.message, { cause: error });
     }
 }
 
@@ -140,7 +140,7 @@ export async function getCommentsByRecipeId(cookbookId, recipeId) {
         const results = await cookbookService.getCommentsByRecipeId(cookbookRecipeId);
         return results.rows;
     } catch (error) {
-        throw new Error('Error retrieving comment: ' + error.message, { cause: error });
+        throw new Error('Erreur lors de la récupération du commentaire : ' + error.message, { cause: error });
     }
 }
 
@@ -148,7 +148,7 @@ export async function updateComment(commentId, comment) {
     try {
         return await cookbookService.updateComment(commentId, comment);
     } catch (e) {
-        throw new Error('Error updating comment: ' + e.message, { cause: e });
+        throw new Error('Erreur lors de la modification du commentaire : ' + e.message, { cause: e });
     }
 }
 
@@ -156,6 +156,6 @@ export async function deleteComment(commentId) {
     try {
         return await cookbookService.deleteComment(commentId);
     } catch (e) {
-        throw new Error('Error deleting comment: ' + e.message, { cause: e });
+        throw new Error('Erreur lors de la suppression du commentaire : ' + e.message, { cause: e });
     }
 }
