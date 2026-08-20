@@ -11,7 +11,7 @@ export const SORT_OPTIONS = [
 const ORDER_OPTIONS = [
 ];
 
-export default function FilterMenu({sortBy, order, onSortByChange, onOrderChange}) {
+export default function FilterMenu({sortBy, order, onSortByChange, onOrderChange, options = SORT_OPTIONS}) {
 
     const [isOpen, setIsOpen] = useState(false);
 
@@ -29,7 +29,7 @@ export default function FilterMenu({sortBy, order, onSortByChange, onOrderChange
                     <div className={"py-4 px-3"} >
                         <p className={"text-[#9C9C9C]"}>Trier par</p>
                         <div className={"ml-2 mt-3 flex flex-col gap-[12px]"}>
-                            {SORT_OPTIONS.map((option) => (
+                            {options.map((option) => (
                                 <Bullet
                                     key={option.key}
                                     text={option.label}

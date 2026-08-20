@@ -4,6 +4,8 @@ server/.env
 server/.claude/
 server/public/
 
+web/node_modules
+
 db/.env
 db/18/
 
@@ -14,3 +16,4 @@ postman/
 .idea/
 .claude/
 .mcp.json
+node_modules
