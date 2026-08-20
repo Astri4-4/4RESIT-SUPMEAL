@@ -5,6 +5,7 @@ export const recipeApi = {
     "getRecipe": (id) => client.get("/recipes/" + id, {}),
     "getShoppingList": () => client.get("/recipes/shopping-list", {}),
     "addIngredientsToShoppingList": (recipeId) => client.post(`/recipes/shopping-list?recipeId=${recipeId}`, {}),
+    "removeFromShoppingList": (itemId) => client.delete(`/recipes/shopping-list/${itemId}`),
     "createRecipe": (recipe) => client.post("/recipes", recipe),
     "importFromUrl": (url) => client.post("/recipes/import", {url}),
     "updateRecipe": (id, updates) => client.patch(`/recipes/${id}`, updates),
