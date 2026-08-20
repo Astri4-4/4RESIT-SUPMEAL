@@ -13,6 +13,7 @@ import CreateRecipe from "./pages/CreateRecipe.jsx";
 import CookbookDashboard from "./pages/CookbookDashboard.jsx";
 import CreateCookbook from "./pages/CreateCookbook.jsx";
 import Cookbook from "./pages/Cookbook.jsx";
+import Cookbooks from "./pages/Cookbooks.jsx";
 
 function App() {
 
@@ -79,6 +80,14 @@ function App() {
             </Navbar>
           </ProtectedRoute>
         }></Route>
+
+        <Route path={"/cookbooks/all"} element={
+          <ProtectedRoute>
+            <Navbar page={"cookbooks"}>
+              <Cookbooks></Cookbooks>
+            </Navbar>
+          </ProtectedRoute>
+        } ></Route>
 
         <Route path={"/cookbooks/create"} element={
           <ProtectedRoute>

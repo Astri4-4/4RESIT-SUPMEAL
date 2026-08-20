@@ -1,7 +1,7 @@
 import client, {BASE_URL} from "./client.js";
 
 const cookbookApi = {
-    "getUserCookbook": () => client.get("/cookbooks/", {}),
+    "getUserCookbook": (limit = 10, offset = 0) => client.get(`/cookbooks/?limit=${limit}&offset=${offset}`, {}),
     "getMemberCookbook": (id) => client.get("/cookbooks/" + id + "/users/", {}),
     "getCookbook": (id) => client.get(`/cookbooks/${id}`, {}),
     "getCookbookRecipes": (id) => client.get(`/cookbooks/${id}/recipes`, {}),

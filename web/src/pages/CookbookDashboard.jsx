@@ -166,7 +166,7 @@ export default function CookbookDashboard() {
                     {
                         cookbooks.length !== 0 && cookbooks.length > 3 && (
                             <div className={"flex justify-center"} >
-                                <Button text={"Voir tous mes cookbooks"} variant={"blue"} trailing={<ChevronRight/>} className={"mt-[50px] w-fit"} />
+                                <Button text={"Voir tous mes cookbooks"} variant={"blue"} trailing={<ChevronRight/>} className={"mt-[50px] w-fit"} onClick={() => navigate("/cookbooks/all")} />
                             </div>
                         )
                     }
