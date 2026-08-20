@@ -34,7 +34,6 @@ export default function Dashboard() {
 
     return (
         <div className={"flex-1"}>
-            <Alert type="error" message="Bienvenue sur votre tableau de bord !" />
             <div>
                 <h1 className={"font-primary text-5xl font-bold"} >Bonjour {user?.username} !</h1>
             </div>
