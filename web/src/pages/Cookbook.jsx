@@ -11,6 +11,7 @@ import userApi from "../api/user.js";
 import {BASE_URL} from "../api/client.js";
 import {useAuth} from "../context/AuthContext.jsx";
 import {useAlert} from "../context/AlertContext.jsx";
+import ChatWidget from "../components/ChatWidget.jsx";
 
 const ROLE_LABELS = {
     owner: "Créateur",
@@ -479,6 +480,7 @@ export default function Cookbook() {
 
             </div>
 
+            <ChatWidget cookbookId={id} />
         </div>
     )
 }

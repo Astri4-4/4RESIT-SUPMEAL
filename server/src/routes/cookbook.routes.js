@@ -30,7 +30,8 @@ import {
     updateCookbook,
     deleteRecipeFromCookbook,
     getCommentsByRecipeId,
-    updateComment
+    updateComment,
+    getMessagesByCookbookId
 } from "../controllers/cookbook.controller.js";
 import {doRecipeExistsBody, doRecipeExistsParam, doUserHasWritePermission, searchRecipesValidator} from "../middlewares/recipe.middleware.js";
 import {searchRecipesInCookbook} from "../controllers/recipe.controller.js";
@@ -677,5 +678,44 @@ router.delete("/:cookbookId/recipes/:recipeId/comments/:commentId", [rateLimitGe
     }
 
 })
+
+/**
+ * @openapi
+ * /cookbooks/{cookbookId}/messages:
+ *   get:
+ *     summary: Get the message history of a cookbook's chat
+ *     tags: [Cookbooks]
+ *     parameters:
+ *       - in: path
+ *         name: cookbookId
+ *         required: true
+ *         schema:
+ *           type: string
+ *     responses:
+ *       200:
+ *         description: List of messages
+ *       404:
+ *         description: Cookbook not found
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
+ *       500:
+ *         description: Error retrieving messages
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
+ */
+router.get("/:cookbookId/messages", [rateLimitGeneral, verifyToken, getCookbookValidator, validate, doCookbookExistsById, isMemberOfCookbook], async (req, res) => {
+    const cookbookId = req.params.cookbookId;
+
+    try {
+        const result = await getMessagesByCookbookId(cookbookId);
+        res.status(200).json(result);
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+});
 
 export default router;
