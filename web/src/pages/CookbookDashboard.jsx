@@ -6,19 +6,7 @@ import {ChevronRight, Plus} from "@boxicons/react";
 import Button from "../components/ui/Button.jsx";
 import {BASE_URL} from "../api/client.js";
 import {useNavigate} from "react-router-dom";
-
-function timeAgo(dateString) {
-    const minutes = Math.floor((Date.now() - new Date(dateString).getTime()) / 60000);
-
-    if (minutes < 1) return "À l'instant";
-    if (minutes < 60) return `Il y a ${minutes} minute${minutes > 1 ? "s" : ""}`;
-
-    const hours = Math.floor(minutes / 60);
-    if (hours < 24) return `Il y a ${hours} heure${hours > 1 ? "s" : ""}`;
-
-    const days = Math.floor(hours / 24);
-    return `Il y a ${days} jour${days > 1 ? "s" : ""}`;
-}
+import {timeAgo} from "../utils/date.js";
 
 function getActivityContent(activity) {
     const recipeTag = {label: activity.recipe_title, color: "#FFB857"};
@@ -33,7 +21,7 @@ function getActivityContent(activity) {
                 tags: [cookbookTag],
                 buttonText: "Voir le commentaire",
                 image,
-                to: `/recipe/${activity.recipe_id}`,
+                to: `/cookbooks/${activity.cookbook_id}/recipes/${activity.recipe_id}`,
                 height: "h-[150px]"
             };
         case "join":

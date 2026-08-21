@@ -308,7 +308,7 @@ export default function Cookbook() {
                                     <div className={"flex items-center gap-2 mt-auto pt-2"}>
                                         <DurationTag duration={recipe.preptime + recipe.cooktime} />
                                         {inCookbook ? (
-                                            <Button variant={"blue"} textSize={"12"} weight={"400"} text={"Voir la recette"} trailing={<ChevronRight width={16} height={16} />} className={"flex-1"} onClick={() => navigate(`/recipe/${recipe.id}`)} />
+                                            <Button variant={"blue"} textSize={"12"} weight={"400"} text={"Voir la recette"} trailing={<ChevronRight width={16} height={16} />} className={"flex-1"} onClick={() => navigate(`/cookbooks/${id}/recipes/${recipe.id}`)} />
                                         ) : (
                                             <Button variant={"primary"} textSize={"12"} weight={"400"} text={"Ajouter"} trailing={<Plus width={16} height={16} />} className={"flex-1"} onClick={() => handleAddRecipe(recipe.id)} />
                                         )}
