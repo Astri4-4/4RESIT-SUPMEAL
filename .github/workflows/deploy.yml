@@ -1,0 +1,19 @@
+name: Deploy to homelab
+
+on:
+  push:
+    branches: [master]
+  workflow_dispatch: {}
+
+jobs:
+  deploy:
+    runs-on: [self-hosted, homelab]
+    steps:
+      - name: Pull latest code and redeploy
+        run: |
+          cd /opt/supmeal
+          git fetch origin
+          git checkout master
+          git pull --ff-only origin master
+          docker compose pull
+          docker compose up -d --build --remove-orphans

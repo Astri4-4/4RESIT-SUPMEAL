@@ -1,9 +1,0 @@
-  deploy:
-    needs: build-and-push
-    runs-on: [self-hosted, homelab]
-    steps:
-      - name: Redeploy
-        run: |
-          cd /opt/supmeal
-          docker compose pull
-          docker compose up -d
