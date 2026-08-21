@@ -12,6 +12,8 @@ jobs:
       - name: Pull latest code and redeploy
         run: |
           git config --global --add safe.directory /opt/4RESIT-SUPMEAL
+          mkdir -p ~/.ssh
+          ssh-keyscan -H github.com >> ~/.ssh/known_hosts 2>/dev/null
           cd /opt/4RESIT-SUPMEAL
           git fetch origin
           git checkout master
