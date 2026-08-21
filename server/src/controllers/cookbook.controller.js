@@ -3,6 +3,7 @@ import {deleteCookbookImage} from '../middlewares/asset.middleware.js';
 import {createComment} from "../services/cookbook.service.js";
 import * as planService from "../services/plan.service.js";
 import {createActivity} from "../services/activity.service.js";
+import * as messageService from "../services/message.service.js";
 
 export async function createCookbook(user, cookbook) {
     cookbook.ownerId = user.id;
@@ -157,5 +158,13 @@ export async function deleteComment(commentId) {
         return await cookbookService.deleteComment(commentId);
     } catch (e) {
         throw new Error('Erreur lors de la suppression du commentaire : ' + e.message, { cause: e });
+    }
+}
+
+export async function getMessagesByCookbookId(cookbookId) {
+    try {
+        return await messageService.getMessagesByCookbookId(cookbookId);
+    } catch (error) {
+        throw new Error('Erreur lors de la récupération des messages : ' + error.message, { cause: error });
     }
 }

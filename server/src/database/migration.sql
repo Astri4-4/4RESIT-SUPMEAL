@@ -4,6 +4,7 @@ DROP TABLE IF EXISTS shopping_list_items;
 DROP TABLE IF EXISTS favorites;
 DROP TABLE IF EXISTS meal_plan_items;
 DROP TABLE IF EXISTS meal_plans;
+DROP TABLE IF EXISTS cookbook_messages;
 DROP TABLE IF EXISTS cookbook_recipe_comments;
 DROP TABLE IF EXISTS cookbook_recipes;
 DROP TABLE IF EXISTS recipe_steps;
@@ -42,6 +43,15 @@ CREATE TABLE cookbook_users (
     cookbook_id INT NOT NULL REFERENCES cookbooks(id) ON DELETE CASCADE,
     user_id INT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
     role VARCHAR(20) NOT NULL DEFAULT 'viewer',
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE cookbook_messages (
+    id SERIAL PRIMARY KEY,
+    cookbook_id INT NOT NULL REFERENCES cookbooks(id) ON DELETE CASCADE,
+    user_id INT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+    message TEXT NOT NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
