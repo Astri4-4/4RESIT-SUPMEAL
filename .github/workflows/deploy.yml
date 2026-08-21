@@ -5,15 +5,21 @@ on:
     branches: [master]
   workflow_dispatch: {}
 
+permissions:
+  contents: read
+
 jobs:
   deploy:
     runs-on: [self-hosted, homelab]
     steps:
       - name: Pull latest code and redeploy
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          cd /opt/supmeal
-          git fetch origin
+          git config --global --add safe.directory /opt/4RESIT-SUPMEAL
+          cd /opt/4RESIT-SUPMEAL
+          git fetch "https://x-access-token:${GH_TOKEN}@github.com/${{ github.repository }}.git" master
           git checkout master
-          git pull --ff-only origin master
+          git reset --hard FETCH_HEAD
           docker compose pull
           docker compose up -d --build --remove-orphans
