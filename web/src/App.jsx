@@ -14,6 +14,7 @@ import CookbookDashboard from "./pages/CookbookDashboard.jsx";
 import CreateCookbook from "./pages/CreateCookbook.jsx";
 import Cookbook from "./pages/Cookbook.jsx";
 import Cookbooks from "./pages/Cookbooks.jsx";
+import CookbookRecipe from "./pages/CookbookRecipe.jsx";
 
 function App() {
 
@@ -101,6 +102,14 @@ function App() {
           <ProtectedRoute>
             <Navbar page={"cookbooks"}>
               <Cookbook></Cookbook>
+            </Navbar>
+          </ProtectedRoute>
+        } ></Route>
+
+        <Route path={"/cookbooks/:cookbookId/recipes/:recipeId"} element={
+          <ProtectedRoute>
+            <Navbar page={"cookbooks"}>
+              <CookbookRecipe></CookbookRecipe>
             </Navbar>
           </ProtectedRoute>
         } ></Route>

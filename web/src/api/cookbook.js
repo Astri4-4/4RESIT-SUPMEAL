@@ -11,6 +11,10 @@ const cookbookApi = {
     "removeRecipe": (cookbookId, recipeId) => client.delete(`/cookbooks/${cookbookId}/recipes/${recipeId}`),
     "removeMember": (cookbookId, userId) => client.delete(`/cookbooks/${cookbookId}/members/${userId}`),
     "remove": (id) => client.delete(`/cookbooks/${id}`),
+    "getComments": (cookbookId, recipeId) => client.get(`/cookbooks/${cookbookId}/recipes/${recipeId}/comments`, {}),
+    "addComment": (cookbookId, recipeId, comment) => client.post(`/cookbooks/${cookbookId}/recipes/${recipeId}/comments`, {comment}),
+    "updateComment": (cookbookId, recipeId, commentId, comment) => client.patch(`/cookbooks/${cookbookId}/recipes/${recipeId}/comments/${commentId}`, {comment}),
+    "deleteComment": (cookbookId, recipeId, commentId) => client.delete(`/cookbooks/${cookbookId}/recipes/${recipeId}/comments/${commentId}`),
     "update": async (id, {title, description, imageFile}) => {
         const formData = new FormData();
         if (title !== undefined) formData.append("title", title);
