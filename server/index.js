@@ -1,11 +1,13 @@
 import http from "http";
 import {testConnection} from "./src/database/db.js";
+import {ensureSchema} from "./src/database/migrate.js";
 import app from "./src/app.js";
 import {initChatWebSocket} from "./src/websocket/chat.ws.js";
 
 const PORT = process.env.PORT || 3000;
 
 await testConnection();
+await ensureSchema();
 
 const server = http.createServer(app);
 initChatWebSocket(server);
