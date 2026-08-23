@@ -17,8 +17,8 @@ export default function Navbar({page, children, ...props}) {
 
             <div className={"w-42.5 h-screen py-8.75 flex flex-col items-between justify-between"} >
                 <div>
-                    <div className={"mb-25 flex justify-center"} >
-                        <img src="https://placehold.co/80x80" className={"rounded-full"} alt="favicon"/>
+                    <div className={"mb-25 flex justify-center bg-white mx-5 rounded-full aspect-square"} >
+                        <img src="/favicon.svg" className={"rounded-full w-[40px] bg-white"} alt="favicon"/>
                     </div>
 
                     <div className={"w-full flex flex-col gap- justify-center px-5"} >
