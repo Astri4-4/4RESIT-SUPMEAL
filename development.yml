@@ -1,0 +1,62 @@
+services:
+    app:
+        build:
+            dockerfile: Dockerfile
+            context: ./server
+        depends_on:
+            db:
+                condition: service_healthy
+            redis:
+                condition: service_started
+        container_name: my_app_dev
+        ports:
+            - "3000:3000"
+        volumes:
+            - ./server:/app
+            - /app/node_modules
+        env_file:
+            - ./server/.env
+
+    web:
+        image: node:22-alpine
+        working_dir: /app
+        container_name: my_web_dev
+        depends_on:
+            - app
+        command: sh -c "npm install && npm run dev"
+        ports:
+            - "5173:5173"
+        volumes:
+            - ./web:/app
+            - /app/node_modules
+        environment:
+            - VITE_API_URL=http://localhost:3000
+            - CHOKIDAR_USEPOLLING=true
+
+    db:
+        image: postgres:18-alpine
+        container_name: db_dev
+        env_file:
+            - ./db/.env
+        ports:
+            - "5432:5432"
+        volumes:
+            - ./db:/var/lib/postgresql
+        healthcheck:
+            test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB}"]
+            interval: 5s
+            timeout: 5s
+            retries: 10
+
+    redis:
+        image: redis:7-alpine
+        container_name: my_redis_dev
+        ports:
+            - "6379:6379"
+        volumes:
+            - ./redis:/data
+        command: redis-server --appendonly yes
+
+volumes:
+    db_data:
+    redis_data:
