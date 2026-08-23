@@ -152,19 +152,19 @@ export default function CookbookRecipe() {
                         <h1 className={"text-black text-3xl font-bold font-primary text-center"}>{recipe.title}</h1>
 
                         <div className={"flex items-center justify-center gap-4 h-11 mt-[15px]"}>
-                            <ChefHat color={"#FFB857"} width={24} height={24} />
+                            <ChefHat color={"#A2BADE"} width={24} height={24} />
                             <p>Temps de préparation: {convertToHoursAndMinutes(recipe.preptime)}</p>
                             <div className={"border-r border-black h-full w-4"}></div>
                             {
                                 recipe.cooktime !== undefined && recipe.cooktime > 0 && (
                                     <>
-                                        <Oven color={"#FFB857"} />
+                                        <Oven color={"#A2BADE"} />
                                         <p>Temps de cuisson: {convertToHoursAndMinutes(recipe.cooktime)}</p>
                                         <div className={"border-r border-black h-full w-4"}></div>
                                     </>
                                 )
                             }
-                            <ForkKnife color={"#FFB857"} />
+                            <ForkKnife color={"#A2BADE"} />
                             <p>{recipe.servings} personne{(recipe.servings > 1) ? 's' : ''}</p>
                         </div>
                     </div>

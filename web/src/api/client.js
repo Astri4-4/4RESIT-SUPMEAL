@@ -1,5 +1,5 @@
 // src/api/client.js
-const BASE_URL = import.meta.env.VITE_API_URL || 'https://supback.sachaguerin.fr'
+const BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000'
 
 class ApiError extends Error {
     constructor(message, status, data) {
