@@ -15,6 +15,7 @@ import CreateCookbook from "./pages/CreateCookbook.jsx";
 import Cookbook from "./pages/Cookbook.jsx";
 import Cookbooks from "./pages/Cookbooks.jsx";
 import CookbookRecipe from "./pages/CookbookRecipe.jsx";
+import AI from "./pages/AI.jsx";
 
 function App() {
 
@@ -110,6 +111,14 @@ function App() {
           <ProtectedRoute>
             <Navbar page={"cookbooks"}>
               <CookbookRecipe></CookbookRecipe>
+            </Navbar>
+          </ProtectedRoute>
+        } ></Route>
+
+        <Route path={"/ai"} element={
+          <ProtectedRoute>
+            <Navbar page={"ai"}>
+              <AI></AI>
             </Navbar>
           </ProtectedRoute>
         } ></Route>

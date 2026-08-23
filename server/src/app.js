@@ -10,6 +10,7 @@ import recipeRouter from "./routes/recipe.routes.js";
 import planRouter from "./routes/plan.routes.js";
 import favoriteRouter from "./routes/favorite.routes.js";
 import tagRouter from "./routes/tag.routes.js";
+import aiRouter from "./routes/ai.routes.js";
 
 const app = express();
 
@@ -30,6 +31,7 @@ app.use('/recipes', recipeRouter);
 app.use('/plans', planRouter);
 app.use('/favorites', favoriteRouter);
 app.use('/tags', tagRouter);
+app.use('/ai', aiRouter);
 
 app.use('/public', express.static('src/public'));
 

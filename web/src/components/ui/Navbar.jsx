@@ -1,11 +1,12 @@
-import {HomeAlt2, BowlHot, BookLibrary, UserCircle} from "@boxicons/react";
+import {HomeAlt2, BowlHot, BookLibrary, UserCircle, Robot} from "@boxicons/react";
 import {useNavigate} from "react-router-dom";
 
 const variants = {
     "dashboard": "bg-green",
     "recipes": "bg-[#FFE7C5]",
     "account": "bg-[#F6EBFF]",
-    "cookbooks": "bg-[#E8F1FF]"
+    "cookbooks": "bg-[#E8F1FF]",
+    "ai": "bg-[#E8F1FF]"
 }
 
 export default function Navbar({page, children, ...props}) {
@@ -36,6 +37,11 @@ export default function Navbar({page, children, ...props}) {
                         <div onClick={() => navigate("/cookbooks")} className={`${(page === "cookbooks") ? "bg-white  shadow-[0px_0px_20px_0px_rgba(0,0,0,0.10)] text-[#A2BADE]" : " text-[#9C9C9C]" } aspect-square w-full rounded-[25px] flex flex-col items-center justify-center gap-3.25 cursor-pointer`} >
                             <BookLibrary width={48} height={48}/>
                             <p className={`${(page === "cookbooks") ? "font-bold" : ""} text-[16px]`} >Cookbooks</p>
+                        </div>
+
+                        <div onClick={() => navigate("/ai")} className={`${(page === "ai") ? "bg-white  shadow-[0px_0px_20px_0px_rgba(0,0,0,0.10)] text-[#A2BADE]" : " text-[#9C9C9C]" } aspect-square w-full rounded-[25px] flex flex-col items-center justify-center gap-3.25 cursor-pointer`} >
+                            <Robot width={48} height={48}/>
+                            <p className={`${(page === "ai") ? "font-bold" : ""} text-[16px]`} >AI</p>
                         </div>
 
                     </div>
