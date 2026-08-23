@@ -70,11 +70,13 @@ export default function Login() {
 
     return (
 
-        <div className={"bg-primary w-screen h-screen flex justify-center items-center"} >
+        <div className={"bg-white w-screen h-screen flex justify-center items-center"} >
+
+            <img src="/logo.svg" className={"w-[400px] absolute top-10 left-10"} alt=""/>
 
             <div className={"bg-white rounded-[20px] p-16 shadow-[0px_0px_20px_0px_rgba(0,0,0,0.10)]"} >
 
-                <h1 className={"text-center text-[32px] font-bold"} >De retour aux fourneaux !</h1>
+                <h1 className={"text-center text-[32px] font-bold font-primary"} >De retour aux fourneaux !</h1>
 
                 <div className={"flex flex-col gap-6 mt-8.75"} >
 
