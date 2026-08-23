@@ -3,7 +3,7 @@ WORKDIR /app
 COPY web/package*.json ./
 RUN npm install
 COPY web/ .
-ENV VITE_API_URL=https://supback.sachaguerin.fr
+ENV VITE_API_URL=https://supmealback.sachaguerin.fr
 RUN npm run build
 
 FROM nginx:alpine

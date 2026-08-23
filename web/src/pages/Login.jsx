@@ -70,13 +70,13 @@ export default function Login() {
 
     return (
 
-        <div className={"bg-white w-screen h-screen flex justify-center items-center"} >
+        <div className={"bg-white min-h-screen flex flex-col justify-center items-center gap-8 py-10 px-4"} >
 
-            <img src="/logo.svg" className={"w-[400px] absolute top-10 left-10"} alt=""/>
+            <img src="/logo.svg" className={"w-[160px] sm:w-[220px] md:w-[400px] md:absolute md:top-10 md:left-10"} alt=""/>
 
-            <div className={"bg-white rounded-[20px] p-16 shadow-[0px_0px_20px_0px_rgba(0,0,0,0.10)]"} >
+            <div className={"w-full max-w-md sm:max-w-lg bg-white rounded-[20px] p-6 sm:p-10 md:p-16 shadow-[0px_0px_20px_0px_rgba(0,0,0,0.10)]"} >
 
-                <h1 className={"text-center text-[32px] font-bold font-primary"} >De retour aux fourneaux !</h1>
+                <h1 className={"text-center text-2xl sm:text-[32px] font-bold font-primary"} >De retour aux fourneaux !</h1>
 
                 <div className={"flex flex-col gap-6 mt-8.75"} >
 

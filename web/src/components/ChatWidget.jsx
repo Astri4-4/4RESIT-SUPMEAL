@@ -89,7 +89,7 @@ export default function ChatWidget({cookbookId}) {
         return (
             <button
                 onClick={handleOpen}
-                className={"fixed bottom-10 right-10 z-50 bg-white rounded-[10px] shadow-[0px_0px_4px_0px_rgba(0,0,0,0.2)] flex items-center gap-2.5 px-4 py-[7px] cursor-pointer"}
+                className={"fixed bottom-24 right-4 sm:bottom-10 sm:right-10 z-50 bg-white rounded-[10px] shadow-[0px_0px_4px_0px_rgba(0,0,0,0.2)] flex items-center gap-2.5 px-4 py-[7px] cursor-pointer"}
             >
                 <div className={"relative shrink-0"}>
                     <MessageCircleReply size={24} color={"#000"} />
@@ -107,7 +107,7 @@ export default function ChatWidget({cookbookId}) {
     const groups = groupMessagesByDay(messages);
 
     return (
-        <div className={"fixed bottom-10 right-10 z-50 bg-white w-[400px] h-[566px] rounded-[10px] shadow-[0px_0px_4px_0px_rgba(0,0,0,0.2)] flex flex-col overflow-hidden"}>
+        <div className={"fixed inset-x-4 bottom-24 top-20 sm:inset-x-auto sm:top-auto sm:bottom-10 sm:right-10 z-50 bg-white w-auto sm:w-[400px] h-auto sm:h-[566px] rounded-[10px] shadow-[0px_0px_4px_0px_rgba(0,0,0,0.2)] flex flex-col overflow-hidden"}>
             <div className={"flex items-center justify-between px-4 pt-[18px] pb-2.5 shrink-0"}>
                 <p className={"text-black text-2xl font-bold font-primary"}>Messages</p>
                 <button onClick={() => setIsOpen(false)} className={"text-[#9C9C9C] cursor-pointer shrink-0"}>

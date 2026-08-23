@@ -185,7 +185,7 @@ export default function RecipeDetail() {
 
     return (
         <div>
-            <div className={"w-full flex items-center justify-between mb-[55px]"}>
+            <div className={"w-full flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-8 md:mb-[55px]"}>
                 <Breadcrumb path={[
                     {label: "Accueil", link: "/dashboard"},
                     {label: "Mes recettes", link: "/recipes"},
@@ -196,13 +196,13 @@ export default function RecipeDetail() {
 
             </div>
 
-            <div className="flex gap-15" >
-                <div className={"w-[54%]"} >
+            <div className="flex flex-col lg:flex-row gap-8 lg:gap-15" >
+                <div className={"w-full lg:w-[54%]"} >
 
-                    <div className={"px-[42px] py-[18px]  bg-white rounded-[20px] shadow-[0px_0px_20px_0px_rgba(0,0,0,0.10)]"} >
+                    <div className={"px-4 py-4 sm:px-[42px] sm:py-[18px] bg-white rounded-[20px] shadow-[0px_0px_20px_0px_rgba(0,0,0,0.10)]"} >
                         <h1 className={"text-black text-3xl font-bold font-primary text-center"} >{recipe?.title}</h1>
 
-                        <div className={"flex items-center justify-center gap-4 h-11 mt-[15px]"}>
+                        <div className={"flex flex-wrap items-center justify-center gap-x-4 gap-y-2 min-h-11 mt-[15px]"}>
                             <ChefHat color={"#FFB857"} width={24} height={24} />
                             <p>Temps de préparation: {convertToHoursAndMinutes(recipe?.preptime)}</p>
                             <div className={"border-r border-black h-full w-4"} ></div>
@@ -224,7 +224,7 @@ export default function RecipeDetail() {
 
                     </div>
 
-                    <div className={"px-[42px] py-[18px]  bg-white rounded-[20px] shadow-[0px_0px_20px_0px_rgba(0,0,0,0.10)] mt-[38px]"} >
+                    <div className={"px-4 py-4 sm:px-[42px] sm:py-[18px] bg-white rounded-[20px] shadow-[0px_0px_20px_0px_rgba(0,0,0,0.10)] mt-[38px]"} >
                         <h2 className={"text-black text-2xl font-bold font-primary"} >Étapes de la préparation</h2>
 
                         <ol className={"list-none"} >
@@ -287,10 +287,10 @@ export default function RecipeDetail() {
                         ))}
                     </div>
 
-                    <div className={"px-[42px] py-[18px]  bg-white rounded-[20px] shadow-[0px_0px_20px_0px_rgba(0,0,0,0.10)] mt-[37px]"} >
+                    <div className={"px-4 py-4 sm:px-[42px] sm:py-[18px] bg-white rounded-[20px] shadow-[0px_0px_20px_0px_rgba(0,0,0,0.10)] mt-[37px]"} >
                         <h2 className={"text-black text-2xl font-bold font-primary"} >Ingrédients</h2>
 
-                        <ul className={"columns-2 gap-x-[54px] mt-4"}>
+                        <ul className={"columns-1 sm:columns-2 gap-x-[54px] mt-4"}>
                             {
                                 recipe?.ingredients.map((ingredient) => (
                                     <li key={ingredient.id} className={"flex items-center gap-3 py-2 break-inside-avoid"} >
@@ -304,7 +304,7 @@ export default function RecipeDetail() {
 
                 </div>
             </div>
-            <div className={"flex justify-end gap-4 mt-[37px]"}>
+            <div className={"flex flex-col sm:flex-row sm:justify-end gap-3 sm:gap-4 mt-[37px]"}>
                 <Button variant={"primary"} text={"Modifier la recette"} className={"w-fit"} onClick={() => navigate(`/recipe/${recipe.id}/edit`)} />
                 <button className={"bg-[#FF5757] rounded-[10px] px-4 py-[7px] flex items-center justify-center gap-2 text-center text-[20px] font-[700] text-white cursor-pointer"} onClick={() => setIsDeletePopupOpen(true)} >
                     Supprimer la recette
@@ -318,7 +318,7 @@ export default function RecipeDetail() {
 
                     Clique sur « Supprimer la recette » pour confirmer.
                 </p>
-                <div className={"flex justify-center gap-8 mt-8"}>
+                <div className={"flex flex-col sm:flex-row justify-center gap-3 sm:gap-8 mt-8"}>
                     <Button text={"Annuler"} variant={"blue"} onClick={() => setIsDeletePopupOpen(false)} />
                     <button className={"bg-[#FF5757] rounded-[10px] px-4 py-[7px] flex items-center justify-center gap-2 text-center text-[20px] font-[700] text-white cursor-pointer disabled:opacity-60 disabled:cursor-not-allowed"} onClick={handleDeleteRecipe} disabled={isDeleting} >
                         {isDeleting ? "Suppression..." : "Supprimer la recette"}
@@ -326,7 +326,7 @@ export default function RecipeDetail() {
                 </div>
             </Popup>
             <Popup isOpen={isPlanPopupOpen} onClose={() => setIsPlanPopupOpen(false)}>
-                <div className={"w-[380px]"}>
+                <div className={"w-[380px] max-w-full"}>
                     <div className={"flex items-center justify-center gap-4"}>
                         <ButtonCircleIcon variant={"purple"} icon={<ChevronLeft width={16} height={16} />} onClick={handlePrevMonth} />
                         <h2 className={"text-xl font-bold text-center capitalize"} >

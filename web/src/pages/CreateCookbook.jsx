@@ -136,11 +136,11 @@ export default function CreateCookbook() {
         <div>
             <Breadcrumb path={[{ label: "Accueil", link: "/dashboard" }, { label: "Cookbooks", link: "/cookbooks" }, { label: "Créer un cookbook", link: "/cookbooks/create" }]} />
 
-            <div className={"flex gap-15 mt-[38px]"} >
+            <div className={"flex flex-col lg:flex-row gap-8 lg:gap-15 mt-8 lg:mt-[38px]"} >
 
-                <div className={"w-[56%]"}>
+                <div className={"w-full lg:w-[56%]"}>
 
-                    <div className={"py-4.5 px-12 bg-white rounded-[20px] shadow-[0px_0px_20px_0px_rgba(0,0,0,0.10)]"} >
+                    <div className={"py-4.5 px-6 sm:px-12 bg-white rounded-[20px] shadow-[0px_0px_20px_0px_rgba(0,0,0,0.10)]"} >
                         <input
                             value={title}
                             onChange={(e) => setTitle(e.target.value)}
@@ -240,7 +240,7 @@ export default function CreateCookbook() {
                         onChange={(e) => handleSelectImage(e.target.files?.[0])}
                     />
 
-                    <div className={"px-10 py-10 bg-white rounded-[20px] shadow-[0px_0px_20px_0px_rgba(0,0,0,0.10)] mt-[37px] flex flex-col gap-7"} >
+                    <div className={"px-5 py-6 sm:px-10 sm:py-10 bg-white rounded-[20px] shadow-[0px_0px_20px_0px_rgba(0,0,0,0.10)] mt-[37px] flex flex-col gap-7"} >
                         <h2 className={"text-black text-2xl font-bold font-primary"} >Invite des membres à rejoindre ton cookbook !</h2>
 
                         <div className={"flex flex-col gap-2.5"}>

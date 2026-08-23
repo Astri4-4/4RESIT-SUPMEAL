@@ -184,11 +184,11 @@ export default function CreateRecipe() {
         <div>
             <Breadcrumb path={[{ label: "Accueil", link: "/dashboard" }, { label: "Recettes", link: "/recipes" }, { label: isEditMode ? "Modifier la recette" : "Créer une recette", link: "/create-recipe" }]} />
 
-            <div className={"flex gap-15 mt-[38px]"} >
+            <div className={"flex flex-col lg:flex-row gap-8 lg:gap-15 mt-8 lg:mt-[38px]"} >
 
-                <div className={"w-[56%]"}>
+                <div className={"w-full lg:w-[56%]"}>
 
-                    <div className={"py-4.5 px-12 bg-white rounded-[20px] shadow-[0px_0px_20px_0px_rgba(0,0,0,0.10)]"} >
+                    <div className={"py-4.5 px-6 sm:px-12 bg-white rounded-[20px] shadow-[0px_0px_20px_0px_rgba(0,0,0,0.10)]"} >
                         <input
                             value={title}
                             onChange={(e) => setTitle(e.target.value)}
@@ -196,7 +196,7 @@ export default function CreateRecipe() {
                             className={"text-black text-3xl font-bold font-primary text-center w-full focus:outline-none placeholder:text-[#9C9C9C]"}
                         />
 
-                        <div className={"flex items-center justify-center gap-4 h-11 mt-[15px]"}>
+                        <div className={"flex flex-wrap items-center justify-center gap-x-4 gap-y-2 min-h-11 mt-[15px]"}>
                             <ChefHat color={"#FFB857"} width={24} height={24} />
                             <div className={"flex items-center gap-1"}>
                                 <span>Temps de préparation :</span>
@@ -227,7 +227,7 @@ export default function CreateRecipe() {
                         />
                     </div>
 
-                    <div className={"px-[42px] py-[18px] bg-white rounded-[20px] shadow-[0px_0px_20px_0px_rgba(0,0,0,0.10)] mt-[38px]"} >
+                    <div className={"px-4 py-4 sm:px-[42px] sm:py-[18px] bg-white rounded-[20px] shadow-[0px_0px_20px_0px_rgba(0,0,0,0.10)] mt-[38px]"} >
                         <h2 className={"text-black text-2xl font-bold font-primary"} >Étapes de la préparation</h2>
 
                         <ol className={"list-none"} >
@@ -288,7 +288,7 @@ export default function CreateRecipe() {
                         onChange={(e) => handleSelectImage(e.target.files?.[0])}
                     />
 
-                    <div className={"px-[42px] py-[42px] bg-white rounded-[20px] shadow-[0px_0px_20px_0px_rgba(0,0,0,0.10)] mt-[37px] flex flex-col gap-7"} >
+                    <div className={"px-5 py-6 sm:px-[42px] sm:py-[42px] bg-white rounded-[20px] shadow-[0px_0px_20px_0px_rgba(0,0,0,0.10)] mt-[37px] flex flex-col gap-7"} >
                         <h2 className={"text-black text-2xl font-bold font-primary"} >Ajouter des tags</h2>
                         <TagCategoryList
                             tags={allTags}
@@ -297,7 +297,7 @@ export default function CreateRecipe() {
                         />
                     </div>
 
-                    <div className={"px-[42px] py-[18px] bg-white rounded-[20px] shadow-[0px_0px_20px_0px_rgba(0,0,0,0.10)] mt-[37px]"} >
+                    <div className={"px-4 py-4 sm:px-[42px] sm:py-[18px] bg-white rounded-[20px] shadow-[0px_0px_20px_0px_rgba(0,0,0,0.10)] mt-[37px]"} >
                         <h2 className={"text-black text-2xl font-bold font-primary"} >Ingrédients</h2>
 
                         <ul className={"mt-4 flex flex-col gap-3"}>

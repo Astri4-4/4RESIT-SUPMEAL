@@ -189,18 +189,18 @@ export default function Account() {
 
     return (
         <div>
-            <div className={"flex justify-between"}>
+            <div className={"flex flex-col sm:flex-row sm:justify-between gap-4"}>
                 <div>
-                    <h1 className={"text-black text-5xl font-bold font-primary"} >Mon compte</h1>
+                    <h1 className={"text-black text-3xl sm:text-5xl font-bold font-primary"} >Mon compte</h1>
                     <p className={"text-neutral-400 text-sm font-normal mt-3 italic"} >Modifie ici tes identifiants, ton mot de passe et paramètre tes préférences culinaires !</p>
                 </div>
-                <Button text={"Se déconnecter"} trailing={<Power />} variant={"ghost"} onClick={logout} />
+                <Button text={"Se déconnecter"} trailing={<Power />} variant={"ghost"} onClick={logout} className={"self-start"} />
             </div>
 
-            <div className={"mt-9 flex gap-9 items-start"}>
+            <div className={"mt-9 flex flex-col lg:flex-row gap-9 lg:items-start"}>
 
-                <div className={"flex flex-col gap-9 w-[34%]"}>
-                    <div className={"shadow-[0px_0px_20px_0px_rgba(0,0,0,0.10)] w-full p-[42px] rounded-[20px] flex flex-col gap-6"} >
+                <div className={"flex flex-col gap-9 w-full lg:w-[34%]"}>
+                    <div className={"shadow-[0px_0px_20px_0px_rgba(0,0,0,0.10)] w-full p-5 sm:p-[42px] rounded-[20px] flex flex-col gap-6"} >
                         <h2 className={"text-black text-2xl font-bold font-primary"} >Modifier mes identifiants</h2>
 
                         <Input placeholder={ user?.username || "Nom d'utilisateur"} value={username} onChange={(e) => setUsername(e.target.value)} />
@@ -211,7 +211,7 @@ export default function Account() {
                         <DisabledButton disabled={!hasChanged || isSubmitting} text={"Appliquer les modifications"} variant={"primary"} onClick={handleSubmitIdentifiants} />
                     </div>
 
-                    <div className={"shadow-[0px_0px_20px_0px_rgba(0,0,0,0.10)] w-full p-[42px] rounded-[20px] flex flex-col gap-4"} >
+                    <div className={"shadow-[0px_0px_20px_0px_rgba(0,0,0,0.10)] w-full p-5 sm:p-[42px] rounded-[20px] flex flex-col gap-4"} >
                         <h2 className={"text-black text-2xl font-bold font-primary"} >Compte lié</h2>
 
                         <div className={"flex items-center justify-between"}>
@@ -234,7 +234,7 @@ export default function Account() {
                 </div>
 
                 <div className={"flex flex-col gap-9 flex-1"}>
-                    <div className={"shadow-[0px_0px_20px_0px_rgba(0,0,0,0.10)] w-full p-[42px] rounded-[20px] flex flex-col gap-6"} >
+                    <div className={"shadow-[0px_0px_20px_0px_rgba(0,0,0,0.10)] w-full p-5 sm:p-[42px] rounded-[20px] flex flex-col gap-6"} >
                         <h2 className={"text-black text-2xl font-bold font-primary"} >Mes préférences culinaires</h2>
 
                         <TagCategoryList
@@ -253,7 +253,7 @@ export default function Account() {
                         </div>
                     </div>
 
-                    <div className={"shadow-[0px_0px_20px_0px_rgba(0,0,0,0.10)] w-full p-[42px] rounded-[20px] flex gap-9"} >
+                    <div className={"shadow-[0px_0px_20px_0px_rgba(0,0,0,0.10)] w-full p-5 sm:p-[42px] rounded-[20px] flex flex-col sm:flex-row gap-9"} >
                         <div className={"flex-1 flex flex-col gap-4"}>
                             <h2 className={"text-black text-2xl font-bold font-primary"} >Importer mes données</h2>
 
@@ -296,7 +296,7 @@ export default function Account() {
                         </div>
                     </div>
 
-                    <div className={"text-neutral-400 text-sm flex gap-16"} >
+                    <div className={"text-neutral-400 text-sm flex flex-col sm:flex-row gap-4 sm:gap-16"} >
                         <p className={"italic"}>Tu as le droit de demander la suppression de tes données personnelles à tout moment. Clique sur « Supprimer le compte » pour supprimer ton compte et les données qui y sont associées.
                             Une confirmation te sera demandée avant de poursuivre cette action.</p>
                         <button
@@ -319,7 +319,7 @@ export default function Account() {
 
                     Clique sur « Supprimer mon compte » pour confirmer.
                 </p>
-                <div className={"flex justify-center gap-8 mt-8"}>
+                <div className={"flex flex-col sm:flex-row justify-center gap-3 sm:gap-8 mt-8"}>
                     <Button text={"Annuler"} variant={"blue"} onClick={() => setIsDeleteAccountPopupOpen(false)} />
                     <button className={"bg-[#FF5757] rounded-[10px] px-4 py-[7px] flex items-center justify-center gap-2 text-center text-[20px] font-[700] text-white cursor-pointer disabled:opacity-60 disabled:cursor-not-allowed"} onClick={handleDeleteAccount} disabled={false} >
                         {"Supprimer mon compte"}

@@ -65,7 +65,7 @@ export default function Calendar({...props}) {
 
             </div>
 
-            <div className={"bg-[#FBF6FF] rounded-[20px] shadow-[0px_0px_20px_0px_rgba(0,0,0,0.10)] px-10.5 pt-8.5 pb-5 mt-6"} >
+            <div className={"bg-[#FBF6FF] rounded-[20px] shadow-[0px_0px_20px_0px_rgba(0,0,0,0.10)] px-2 sm:px-10.5 pt-4 sm:pt-8.5 pb-5 mt-6"} >
 
                 <div className={"grid grid-cols-7"} >
                     {weekDays.map(day => (

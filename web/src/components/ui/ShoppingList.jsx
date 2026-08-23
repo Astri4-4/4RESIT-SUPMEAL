@@ -95,7 +95,7 @@ export default function ShoppingList({...props}) {
                 </button>
             </div>
 
-            <div className={"py-9 px-9 bg-[#FFF3E3] rounded-[20px] h-100 grid grid-cols-[repeat(auto-fill,minmax(140px,1fr))] gap-x-[24px] gap-y-3 content-start overflow-y-auto shadow-[0px_0px_20px_0px_rgba(0,0,0,0.10)]"} >
+            <div className={"py-5 px-5 sm:py-9 sm:px-9 bg-[#FFF3E3] rounded-[20px] h-100 grid grid-cols-[repeat(auto-fill,minmax(140px,1fr))] gap-x-[24px] gap-y-3 content-start overflow-y-auto shadow-[0px_0px_20px_0px_rgba(0,0,0,0.10)]"} >
                 {list.map((item) => (
                     <ShoppingListItem key={item.id} item={item} onRemove={() => handleRemove(item.id)} ></ShoppingListItem>
                 ))}

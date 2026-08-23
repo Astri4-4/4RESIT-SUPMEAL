@@ -84,8 +84,8 @@ export default function Recipes() {
 
         <div>
             <div className={"flex flex-col items-center gap-8"} >
-                <h1 className={"font-primary text-[32px] font-bold text-center"} >Retrouve ici toutes tes recettes enregistrées !</h1>
-                <div className={"w-[54%] flex gap-3.75"}>
+                <h1 className={"font-primary text-2xl sm:text-[32px] font-bold text-center"} >Retrouve ici toutes tes recettes enregistrées !</h1>
+                <div className={"w-full sm:w-[80%] md:w-[54%] flex gap-3.75"}>
                     <Input
                         placeholder="Rechercher une recette..."
                         className={"flex-1"}
@@ -112,7 +112,7 @@ export default function Recipes() {
                 </div>
             </div>
 
-            <div className={"flex flex-wrap gap-[75px] justify-start mt-8"}>
+            <div className={"flex flex-wrap gap-6 sm:gap-10 lg:gap-[75px] justify-center sm:justify-start mt-8"}>
                 <div className={"group w-[250px] flex flex-col justify-center items-center rounded-[20px] shadow-[0px_0px_20px_0px_rgba(0,0,0,0.10)] p-1 max-w-[250px] border-2 border-dotted border-[#9C9C9C] hover:bg-[#F5F5F5] transition cursor-pointer"} onClick={() => setIsUrlPopupOpen(true)}>
                     <Plus color="#9C9C9C" width={85} height={85} />
                     <p className={"text-black text-xl font-bold group-hover:font-bold font-secondary w-28 text-center mt-8"} >Ajouter une recette</p>

@@ -1,0 +1,26 @@
+name: Deploy production (SSH)
+
+on:
+  workflow_dispatch: {}
+
+permissions:
+  contents: read
+
+jobs:
+  deploy:
+    runs-on: [self-hosted, homelab]
+    steps:
+      - name: SSH into 192.168.10.174 and redeploy production compose
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          ssh -o StrictHostKeyChecking=accept-new 192.168.10.174 bash -s <<EOF
+          set -e
+          git config --global --add safe.directory /opt/4RESIT-SUPMEAL
+          cd /opt/4RESIT-SUPMEAL
+          git fetch "https://x-access-token:${GH_TOKEN}@github.com/${{ github.repository }}.git" master
+          git checkout master
+          git reset --hard FETCH_HEAD
+          docker compose -f compose.yaml pull
+          docker compose -f compose.yaml up -d --build --remove-orphans
+          EOF

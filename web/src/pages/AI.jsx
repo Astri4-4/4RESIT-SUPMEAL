@@ -139,24 +139,24 @@ export default function AI() {
 
 
     return (
-        <div className={"w-full h-[calc(100vh-4.375rem)] flex flex-col"} >
+        <div className={"w-full h-[calc(100dvh-7.5rem)] md:h-[calc(100dvh-4.375rem)] flex flex-col"} >
             <div className={"flex items-center gap-3 mb-5 shrink-0"} >
-                <div className={"w-12 h-12 rounded-full bg-[#A2BADE] text-white flex items-center justify-center shrink-0"} >
-                    <ChefHat width={26} height={26} />
+                <div className={"w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-[#A2BADE] text-white flex items-center justify-center shrink-0"} >
+                    <ChefHat width={22} height={22} className={"sm:w-[26px] sm:h-[26px]"} />
                 </div>
-                <div>
-                    <h1 className={"text-2xl font-[700]"} >Assistant recettes</h1>
-                    <p className={"text-sm text-[#9C9C9C]"} >Décris un plat, je te génère la recette</p>
+                <div className={"min-w-0"}>
+                    <h1 className={"text-xl sm:text-2xl font-[700]"} >Assistant recettes</h1>
+                    <p className={"text-xs sm:text-sm text-[#9C9C9C] truncate"} >Décris un plat, je te génère la recette</p>
                 </div>
             </div>
 
             <div className={"flex-1 overflow-y-auto flex flex-col gap-4 pr-1"} >
                 {
                     chat.length === 0 && !isLoading && (
-                        <div className={"flex-1 flex flex-col items-center justify-center gap-2 text-[#9C9C9C] text-center"} >
-                            <ChefHat width={56} height={56} />
-                            <p className={"text-lg font-[700]"} >Décris le plat que tu veux cuisiner</p>
-                            <p className={"text-sm"} >Ex : "Une recette de tarte aux pommes pour 6 personnes"</p>
+                        <div className={"flex-1 flex flex-col items-center justify-center gap-2 text-[#9C9C9C] text-center px-4"} >
+                            <ChefHat width={40} height={40} className={"sm:w-14 sm:h-14"} />
+                            <p className={"text-base sm:text-lg font-[700]"} >Décris le plat que tu veux cuisiner</p>
+                            <p className={"text-xs sm:text-sm"} >Ex : "Une recette de tarte aux pommes pour 6 personnes"</p>
                         </div>
                     )
                 }
@@ -167,7 +167,7 @@ export default function AI() {
                             {message.role === "user" ? <UserCircle width={20} height={20} /> : <ChefHat width={20} height={20} />}
                         </div>
 
-                        <div className={`max-w-[65%] flex flex-col gap-3 px-4 py-3 rounded-2xl ${message.role === "user" ? "bg-[#FFE7C5] rounded-br-sm" : "bg-[#E8F1FF] rounded-bl-sm"}`} >
+                        <div className={`max-w-[85%] sm:max-w-[65%] flex flex-col gap-3 px-4 py-3 rounded-2xl ${message.role === "user" ? "bg-[#FFE7C5] rounded-br-sm" : "bg-[#E8F1FF] rounded-bl-sm"}`} >
                             <p className={"text-base whitespace-pre-wrap break-words"} >{message.content}</p>
 
                             {

@@ -240,16 +240,16 @@ export default function Cookbook() {
 
     return (
         <div>
-            <div className={"flex items-start justify-between"}>
+            <div className={"flex flex-col sm:flex-row sm:items-start justify-between gap-2"}>
                 <Breadcrumb path={[{ label: "Accueil", link: "/dashboard" }, { label: "Cookbooks", link: "/cookbooks" }, { label: `Cookbook: ${cookbook.title}`, link: `/cookbooks/${id}` }]} />
                 {owner && <p className={"text-[#9C9C9C] text-sm"}>Cookbook créé par {owner.username}</p>}
             </div>
 
-            <div className={"flex gap-15 mt-[38px]"} >
+            <div className={"flex flex-col lg:flex-row gap-8 lg:gap-15 mt-8 lg:mt-[38px]"} >
 
-                <div className={"w-[56%]"}>
+                <div className={"w-full lg:w-[56%]"}>
 
-                    <div className={"py-4.5 px-12 bg-white rounded-[20px] shadow-[0px_0px_20px_0px_rgba(0,0,0,0.10)]"} >
+                    <div className={"py-4.5 px-6 sm:px-12 bg-white rounded-[20px] shadow-[0px_0px_20px_0px_rgba(0,0,0,0.10)]"} >
                         {isEditing ? (
                             <>
                                 <input
@@ -374,7 +374,7 @@ export default function Cookbook() {
                         </div>
                     )}
 
-                    <div className={"px-10 py-10 bg-white rounded-[20px] shadow-[0px_0px_20px_0px_rgba(0,0,0,0.10)] mt-[37px] flex flex-col gap-7"} >
+                    <div className={"px-5 py-6 sm:px-10 sm:py-10 bg-white rounded-[20px] shadow-[0px_0px_20px_0px_rgba(0,0,0,0.10)] mt-[37px] flex flex-col gap-7"} >
                         <h2 className={"text-black text-2xl font-bold font-primary"} >{members.length} membre{members.length > 1 ? "s" : ""} dans ce cookbook !</h2>
 
                         <div className={"flex flex-col gap-2.5 w-full"}>

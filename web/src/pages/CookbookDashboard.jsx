@@ -62,7 +62,7 @@ function ActivityCard({activity, navigate}) {
 
     return (
         <div className={"bg-white rounded-[20px] shadow-[0px_0px_20px_0px_rgba(0,0,0,0.10)] " + content.height + " shrink-0 flex overflow-hidden"}>
-            <div className={"w-[220px] shrink-0 bg-[#D9D9D9]"}>
+            <div className={"w-[110px] sm:w-[220px] shrink-0 bg-[#D9D9D9]"}>
                 {content.image && (
                     <img src={BASE_URL + content.image} className={"w-full h-full object-cover"} alt=""/>
                 )}
@@ -131,20 +131,20 @@ export default function CookbookDashboard() {
     }, []);
 
     return (
-        <div className={"px-[85px] py-[27px]"}>
+        <div className={"px-4 py-4 sm:px-[85px] sm:py-[27px]"}>
             <p className={"text-neutral-400 text-sm italic"}>Retrouve tes recettes et les dernières activités de tes cookbooks !</p>
 
-            <div className={"mt-6 flex gap-[150px]"} >
+            <div className={"mt-6 flex flex-col xl:flex-row gap-10 xl:gap-[150px]"} >
 
-                <div className={"w-[30%]"}>
-                    <h2 className={"text-3xl font-bold font-primary"}>Mes cookbooks récents</h2>
+                <div className={"w-full xl:w-[30%]"}>
+                    <h2 className={"text-2xl sm:text-3xl font-bold font-primary"}>Mes cookbooks récents</h2>
 
-                    <div className={"mt-[55px] grid grid-cols-2 gap-x-[76px] gap-y-[50px]"}>
+                    <div className={"mt-8 sm:mt-[55px] grid grid-cols-2 gap-x-6 sm:gap-x-[76px] gap-y-6 sm:gap-y-[50px]"}>
 
                         {cookbooks.slice(0, 3).map((cookbook) => (
                             <CookbookVerticalCard key={cookbook.id} cookbook={cookbook} />
                         ))}
-                        <div onClick={() => navigate("/cookbooks/create")} className={"group w-[250px] h-[319px] flex flex-col justify-center items-center rounded-[20px] shadow-[0px_0px_20px_0px_rgba(0,0,0,0.10)] p-1 max-w-[200px] border-2 border-dotted border-[#9C9C9C] hover:bg-[#F5F5F5] transition cursor-pointer"}>
+                        <div onClick={() => navigate("/cookbooks/create")} className={"group w-full h-[200px] sm:h-[319px] flex flex-col justify-center items-center rounded-[20px] shadow-[0px_0px_20px_0px_rgba(0,0,0,0.10)] p-1 max-w-[200px] border-2 border-dotted border-[#9C9C9C] hover:bg-[#F5F5F5] transition cursor-pointer"}>
                             <Plus color="#9C9C9C" width={85} height={85} />
                             <p className={"text-black text-xl font-bold group-hover:font-bold font-secondary w-28 text-center mt-8"} >Créer un cookbook</p>
 
@@ -161,10 +161,10 @@ export default function CookbookDashboard() {
 
                 </div>
 
-                <div className={"flex-1"} >
-                    <h2 className={"text-3xl font-bold font-primary"}>Dernières activités</h2>
+                <div className={"flex-1 min-w-0"} >
+                    <h2 className={"text-2xl sm:text-3xl font-bold font-primary"}>Dernières activités</h2>
 
-                    <div className={"mt-[55px] flex flex-col gap-[30px] max-h-[700px] overflow-y-auto pr-2"}>
+                    <div className={"mt-8 sm:mt-[55px] flex flex-col gap-[30px] max-h-[700px] overflow-y-auto pr-2"}>
                         {activities.length === 0 && (
                             <p className={"text-neutral-400 italic"}>Aucune activité récente pour le moment.</p>
                         )}

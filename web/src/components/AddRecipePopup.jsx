@@ -46,7 +46,7 @@ export default function AddRecipePopup({isOpen, onClose}) {
     return (
         <Popup isOpen={isOpen} onClose={handleClose}>
             <h2 className="text-xl font-bold mb-4 text-center">Une nouvelle recette à ajouter ? C'est par ici !</h2>
-            <div className={"flex gap-9.5"}>
+            <div className={"flex flex-col sm:flex-row gap-4 sm:gap-9.5"}>
                 <Input
                     placeholder="Lien marmiton..."
                     value={url}

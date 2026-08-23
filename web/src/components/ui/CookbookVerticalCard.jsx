@@ -19,9 +19,9 @@ export default function CookbookVerticalCard({cookbook, ...props}) {
     }, []);
 
     return (
-        <div className={"shadow-[0px_0px_20px_0px_rgba(0,0,0,0.10)] w-[200px] rounded-[20px]"}>
-            <div className={"w-[200px] h-[200px] rounded-[20px] p-1 overflow-hidden "}>
-                <img src={BASE_URL + cookbook.image_url} className={"rounded-[16px] object-cover min-h-[200px]"} alt=""/>
+        <div className={"shadow-[0px_0px_20px_0px_rgba(0,0,0,0.10)] w-full max-w-[200px] rounded-[20px]"}>
+            <div className={"w-full aspect-square rounded-[20px] p-1 overflow-hidden "}>
+                <img src={BASE_URL + cookbook.image_url} className={"w-full h-full rounded-[16px] object-cover"} alt=""/>
             </div>
             <div className={"p-2.5"} >
                 <h3 className={"text-black font-bold font-primary"} >{cookbook.title}</h3>
