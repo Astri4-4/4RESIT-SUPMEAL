@@ -70,7 +70,7 @@ export default function Login() {
 
     return (
 
-        <div className={"bg-white w-screen h-screen flex justify-center items-center"} >
+        <div className={"bg-white w-screen h-screen flex justify-center items-center bg-[url('/background_accueil_supmeal.svg')] bg-cover bg-center bg-no-repeat"} >
 
             <img src="/logo.svg" className={"w-[400px] absolute top-10 left-10"} alt=""/>
 
