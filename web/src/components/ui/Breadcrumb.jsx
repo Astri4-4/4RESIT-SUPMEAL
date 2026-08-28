@@ -10,7 +10,7 @@ export default function Breadcrumb({path, ...props}) {
     return (
         <p className={"text-[14px]"} >{
             remaining.map((item, index) => (
-                <span key={index} onClick={() => navigate(item.link)} className={"text-[14px] text-[#9C9C9C] cursor-pointer"} >{item.label} / </span>
+                <span key={index} onClick={() => navigate(item.link)}> <span className={"text-[14px] text-[#9C9C9C] hover:underline cursor-pointer"}>{item.label}</span> <span className={"text-[14px] text-[#9C9C9C] no-underline"}>/</span> </span>
             ))
         }{last.label}</p>
 

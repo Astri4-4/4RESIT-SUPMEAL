@@ -6,6 +6,7 @@ server/src/public/
 
 
 web/node_modules
+web/packege-lock.json
 
 db/.env
 db/18/
