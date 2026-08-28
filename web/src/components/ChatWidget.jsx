@@ -36,34 +36,48 @@ function groupMessagesByDay(messages) {
 
 export default function ChatWidget({cookbookId}) {
     const {user} = useAuth();
-    const {messages, sendMessage} = useCookbookChat(cookbookId);
+    const {messages, historyLoaded, sendMessage} = useCookbookChat(cookbookId);
 
     const [isOpen, setIsOpen] = useState(false);
     const [unreadCount, setUnreadCount] = useState(0);
     const [draft, setDraft] = useState("");
 
-    const hasLoadedRef = useRef(false);
+    const baselineSetRef = useRef(false);
     const previousLengthRef = useRef(0);
     const scrollRef = useRef(null);
 
     useEffect(() => {
-        if (!hasLoadedRef.current) {
-            hasLoadedRef.current = true;
+        // Switching cookbook: drop the old baseline so the new history isn't
+        // mistaken for unread messages.
+        baselineSetRef.current = false;
+        previousLengthRef.current = 0;
+    }, [cookbookId]);
+
+    useEffect(() => {
+        // Wait for the initial history fetch, then take its length as the
+        // baseline so past messages are never counted as unread.
+        if (!historyLoaded) return;
+
+        if (!baselineSetRef.current) {
+            baselineSetRef.current = true;
+            previousLengthRef.current = messages.length;
+            return;
+        }
+
+        // While the panel is open, keep the baseline in sync so nothing that
+        // arrives (or already arrived) counts as unread once it's closed again.
+        if (isOpen) {
             previousLengthRef.current = messages.length;
             return;
         }
 
         if (messages.length > previousLengthRef.current) {
             const newMessages = messages.slice(previousLengthRef.current);
-            previousLengthRef.current = messages.length;
-            if (!isOpen) {
-                const fromOthers = newMessages.filter((message) => message.user_id !== user?.id).length;
-                setUnreadCount((count) => count + fromOthers);
-            }
-        } else {
-            previousLengthRef.current = messages.length;
+            const fromOthers = newMessages.filter((message) => message.user_id !== user?.id).length;
+            setUnreadCount((count) => count + fromOthers);
         }
-    }, [messages, isOpen, user?.id]);
+        previousLengthRef.current = messages.length;
+    }, [messages, isOpen, user?.id, historyLoaded]);
 
     useEffect(() => {
         if (isOpen && scrollRef.current) {
