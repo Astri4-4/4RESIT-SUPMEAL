@@ -4,13 +4,41 @@ import Breadcrumb from "../components/ui/Breadcrumb.jsx";
 import Tag from "../components/ui/Tag.jsx";
 import Popup from "../components/Popup.jsx";
 import Button from "../components/ui/Button.jsx";
-import {ChefHat, Oven, ForkKnife, X} from "@boxicons/react";
+import ToggleIconButton from "../components/ui/ToggleIconButton.jsx";
+import ButtonCircleIcon from "../components/ui/ButtonCircleIcon.jsx";
+import {ChefHat, Oven, ForkKnife, X, CalendarPlus, CalendarCheck, CartPlus, CartCheck, ChevronLeft, ChevronRight} from "@boxicons/react";
 import cookbookApi from "../api/cookbook.js";
 import recipeApi from "../api/recipe.js";
+import planApi from "../api/plan.js";
 import {BASE_URL} from "../api/client.js";
 import {useAuth} from "../context/AuthContext.jsx";
 import {useAlert} from "../context/AlertContext.jsx";
 import {timeAgo} from "../utils/date.js";
+
+const WEEKDAY_LABELS = ["LUN", "MAR", "MER", "JEU", "VEN", "SAM", "DIM"];
+
+function formatDate(date) {
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, "0");
+    const day = String(date.getDate()).padStart(2, "0");
+    return `${year}-${month}-${day}`;
+}
+
+function getCalendarDays(viewDate) {
+    const year = viewDate.getFullYear();
+    const month = viewDate.getMonth();
+    const firstOfMonth = new Date(year, month, 1);
+    const startOffset = (firstOfMonth.getDay() + 6) % 7;
+    const start = new Date(year, month, 1 - startOffset);
+
+    const days = [];
+    for (let i = 0; i < 42; i++) {
+        const date = new Date(start);
+        date.setDate(start.getDate() + i);
+        days.push({date, inMonth: date.getMonth() === month});
+    }
+    return days;
+}
 
 function EditIcon({...props}) {
     return (
@@ -38,6 +66,13 @@ export default function CookbookRecipe() {
     const [editingText, setEditingText] = useState("");
     const [isDeletePopupOpen, setIsDeletePopupOpen] = useState(false);
     const [isDeleting, setIsDeleting] = useState(false);
+
+    const [isMealPlanHovered, setIsMealPlanHovered] = useState(false);
+    const [isShoppingListHovered, setIsShoppingListHovered] = useState(false);
+    const [isPlanPopupOpen, setIsPlanPopupOpen] = useState(false);
+    const [plan, setPlan] = useState(null);
+    const [viewDate, setViewDate] = useState(() => new Date());
+    const [isTogglingDate, setIsTogglingDate] = useState(false);
 
     useEffect(() => {
         (async () => {
@@ -122,9 +157,71 @@ export default function CookbookRecipe() {
         }
     };
 
+    const handleOpenPlanPopup = async () => {
+        setIsPlanPopupOpen(true);
+        if (!plan) {
+            try {
+                const data = await planApi.getMyPlan();
+                setPlan(data);
+            } catch (error) {
+                console.log(error);
+            }
+        }
+    };
+
+    const handleToggleDate = async (date) => {
+        if (!plan || isTogglingDate) return;
+
+        const dateStr = formatDate(date);
+        const existing = plan.items.find((item) => item.recipe_id === recipe.id && item.date === dateStr);
+
+        setIsTogglingDate(true);
+        try {
+            if (existing) {
+                await planApi.removeItem(plan.id, existing.id);
+                setPlan((prev) => ({...prev, items: prev.items.filter((item) => item.id !== existing.id)}));
+            } else {
+                const created = await planApi.addItem(plan.id, dateStr, recipe.id);
+                setPlan((prev) => ({...prev, items: [...prev.items, {...created, date: dateStr}]}));
+            }
+        } catch (error) {
+            console.log(error);
+            showError(error.message || "Impossible de planifier cette recette.");
+        } finally {
+            setIsTogglingDate(false);
+        }
+    };
+
+    const handlePrevMonth = () => {
+        setViewDate((prev) => new Date(prev.getFullYear(), prev.getMonth() - 1, 1));
+    };
+
+    const handleNextMonth = () => {
+        setViewDate((prev) => new Date(prev.getFullYear(), prev.getMonth() + 1, 1));
+    };
+
+    const handleAddToShoppingList = async () => {
+        try {
+            await recipeApi.addIngredientsToShoppingList(recipe.id);
+            setRecipe((prev) => ({...prev, inShoppingList: true}));
+        } catch (error) {
+            console.log(error);
+            showError(error.message || "Impossible d'ajouter à la liste de courses.");
+        }
+    };
+
     if (!cookbook || !recipe) {
         return <div>Chargement...</div>;
     }
+
+    const plannedDates = new Set(
+        (plan?.items || [])
+            .filter((item) => item.recipe_id === recipe.id)
+            .map((item) => item.date)
+    );
+    const hasPlannedDate = plan ? plannedDates.size > 0 : recipe.inMealPlan;
+    const showAsInMealPlan = isMealPlanHovered ? !hasPlannedDate : hasPlannedDate;
+    const showAsInShoppingList = isShoppingListHovered ? !recipe.inShoppingList : recipe.inShoppingList;
 
     const members = cookbook.members || [];
     const owner = members.find((member) => member.role === "owner");
@@ -255,6 +352,29 @@ export default function CookbookRecipe() {
                         {recipe.image_url && (
                             <img src={BASE_URL + recipe.image_url} className={"w-full h-full object-cover"} alt="" />
                         )}
+
+                        <div className={"absolute top-4.5 right-3.5 flex flex-col gap-2.5"}>
+                            <ToggleIconButton
+                                icon={showAsInMealPlan ? <CalendarCheck color={"#6EA8FE"} /> : <CalendarPlus color={"#9C9C9C"} />}
+                                className={` ${showAsInMealPlan ? "border-[#6EA8FE] border-2" : ""}`}
+                                onClick={handleOpenPlanPopup}
+                                onMouseEnter={() => setIsMealPlanHovered(true)}
+                                onMouseLeave={() => setIsMealPlanHovered(false)}
+                                hasTooltip={true}
+                                tooltip={"Planifier ma recette"}
+                                tooltipColor={"border-[#6EA8FE] text-[#6EA8FE]"}
+                            />
+                            <ToggleIconButton
+                                icon={showAsInShoppingList ? <CartCheck color={"#FFB857"} /> : <CartPlus color={"#9C9C9C"} />}
+                                className={` ${showAsInShoppingList ? "border-[#FFB857] border-2" : ""}`}
+                                onClick={handleAddToShoppingList}
+                                onMouseEnter={() => setIsShoppingListHovered(true)}
+                                onMouseLeave={() => setIsShoppingListHovered(false)}
+                                hasTooltip={true}
+                                tooltip={"Ajouter à la liste de courses"}
+                                tooltipColor={"border-[#FFB857] text-[#FFB857]"}
+                            />
+                        </div>
                     </div>
 
                     <div className={"flex flex-wrap gap-2.5 mt-[37px]"}>
@@ -311,6 +431,52 @@ export default function CookbookRecipe() {
                     <button className={"bg-[#FF5757] rounded-[10px] px-4 py-[7px] flex items-center justify-center gap-2 text-center text-[20px] font-[700] text-white cursor-pointer disabled:opacity-60 disabled:cursor-not-allowed"} onClick={handleDeleteRecipe} disabled={isDeleting}>
                         {isDeleting ? "Suppression..." : "Supprimer la recette"}
                     </button>
+                </div>
+            </Popup>
+
+            <Popup isOpen={isPlanPopupOpen} onClose={() => setIsPlanPopupOpen(false)}>
+                <div className={"w-[380px]"}>
+                    <div className={"flex items-center justify-center gap-4"}>
+                        <ButtonCircleIcon variant={"purple"} icon={<ChevronLeft width={16} height={16} />} onClick={handlePrevMonth} />
+                        <h2 className={"text-xl font-bold text-center capitalize"}>
+                            {viewDate.toLocaleDateString("fr-FR", {month: "long", year: "numeric"})}
+                        </h2>
+                        <ButtonCircleIcon variant={"purple"} icon={<ChevronRight width={16} height={16} />} onClick={handleNextMonth} />
+                    </div>
+
+                    <div className={"grid grid-cols-7 mt-4 text-center text-sm font-bold"}>
+                        {WEEKDAY_LABELS.map((label) => (
+                            <div key={label}>{label}</div>
+                        ))}
+                    </div>
+
+                    <div className={"grid grid-cols-7 gap-y-2 mt-2"}>
+                        {
+                            getCalendarDays(viewDate).map(({date, inMonth}) => {
+                                const dateStr = formatDate(date);
+                                const isToday = dateStr === formatDate(new Date());
+                                const isPlanned = plannedDates.has(dateStr);
+                                return (
+                                    <button
+                                        key={dateStr}
+                                        disabled={!inMonth || !plan}
+                                        onClick={() => handleToggleDate(date)}
+                                        className={`w-9 h-9 mx-auto rounded-full flex items-center justify-center text-sm
+                                            ${!inMonth ? "text-[#9C9C9C] cursor-default" : "text-black cursor-pointer"}
+                                            ${isToday ? "border border-black" : ""}
+                                            ${isPlanned ? "bg-[#E5C7FF] font-bold" : ""}
+                                        `}
+                                    >
+                                        {date.getDate()}
+                                    </button>
+                                );
+                            })
+                        }
+                    </div>
+
+                    <div className={"flex justify-center mt-6"}>
+                        <Button text={"Valider"} variant={"blue"} onClick={() => setIsPlanPopupOpen(false)} />
+                    </div>
                 </div>
             </Popup>
         </div>

@@ -1,8 +1,18 @@
+import {useNavigate} from "react-router-dom";
 import {BASE_URL} from "../../api/client.js";
 
 export default function LongRecipeCard({recipe}) {
+    const navigate = useNavigate();
+
+    const handleClick = () => {
+        if (recipe?.id) navigate(`/recipe/${recipe.id}`);
+    }
+
     return (
-        <div className={"bg-white shadow-[0px_0px_20px_0px_rgba(0,0,0,0.10)] rounded-[20px] overflow-hidden flex gap-8"} >
+        <div
+            className={"bg-white shadow-[0px_0px_20px_0px_rgba(0,0,0,0.10)] rounded-[20px] overflow-hidden flex gap-8 cursor-pointer"}
+            onClick={handleClick}
+        >
             <div className={"shrink-0 w-[282px] min-h-32.5 max-h-38 p-[2px] rounded-[20px] overflow-hidden"}>
                 <img src={(recipe?.image_url) ? BASE_URL + recipe?.image_url : "https://placehold.co/1920x1080"} className={"w-full h-full object-cover rounded-[20px]"} alt=""/>
             </div>

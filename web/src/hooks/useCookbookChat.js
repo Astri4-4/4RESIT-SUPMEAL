@@ -8,6 +8,7 @@ const RECONNECT_DELAY_MS = 3000;
 export default function useCookbookChat(cookbookId) {
     const [messages, setMessages] = useState([]);
     const [connected, setConnected] = useState(false);
+    const [historyLoaded, setHistoryLoaded] = useState(false);
     const wsRef = useRef(null);
     const reconnectTimeoutRef = useRef(null);
 
@@ -22,6 +23,8 @@ export default function useCookbookChat(cookbookId) {
                 if (!cancelled) setMessages(history || []);
             } catch (error) {
                 console.log(error);
+            } finally {
+                if (!cancelled) setHistoryLoaded(true);
             }
         })();
 
@@ -66,5 +69,5 @@ export default function useCookbookChat(cookbookId) {
         }
     }, []);
 
-    return {messages, connected, sendMessage};
+    return {messages, connected, historyLoaded, sendMessage};
 }

@@ -2,7 +2,8 @@ server/node_modules
 server/package-lock.json
 server/.env
 server/.claude/
-server/public/
+server/src/public/
+
 
 web/node_modules
 
